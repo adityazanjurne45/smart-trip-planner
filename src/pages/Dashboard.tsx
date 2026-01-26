@@ -6,6 +6,7 @@ import Navbar from "@/components/layout/Navbar";
 import TripForm from "@/components/dashboard/TripForm";
 import TripRecommendations from "@/components/dashboard/TripRecommendations";
 import { Loader2 } from "lucide-react";
+import { useProfile } from "@/hooks/useProfile";
 
 export interface TripDetails {
   boardingPoint: string;
@@ -43,6 +44,8 @@ const Dashboard = () => {
   const [recommendations, setRecommendations] = useState<Recommendations | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const navigate = useNavigate();
+
+  const { profile } = useProfile(user?.id);
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
@@ -104,6 +107,11 @@ const Dashboard = () => {
                 ? `AI-powered recommendations for your trip from ${tripDetails.boardingPoint} to ${tripDetails.destinationPoint}`
                 : "Enter your trip details and let our AI find the best options for you"}
             </p>
+            {profile && !tripDetails && (
+              <p className="text-sm text-primary mt-2">
+                ✨ Recommendations will be personalized based on your profile preferences
+              </p>
+            )}
           </div>
 
           {/* Content */}
@@ -116,6 +124,7 @@ const Dashboard = () => {
               isGenerating={isGenerating}
               onGenerated={handleRecommendationsGenerated}
               onNewTrip={handleNewTrip}
+              userProfile={profile}
             />
           )}
         </div>
