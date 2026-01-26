@@ -1,10 +1,11 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { TripDetails, Recommendations } from "@/pages/Dashboard";
-import { MapPin, Building2, Car, ArrowLeft, Loader2, Clock, DollarSign, Star, Navigation } from "lucide-react";
+import { MapPin, Building2, Car, ArrowLeft, Loader2, Clock, DollarSign, Star, Navigation, Save, Check } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import WeatherCard from "./WeatherCard";
+import { UserProfile } from "@/types/profile";
 
 interface TripRecommendationsProps {
   tripDetails: TripDetails;
@@ -12,6 +13,7 @@ interface TripRecommendationsProps {
   isGenerating: boolean;
   onGenerated: (recs: Recommendations) => void;
   onNewTrip: () => void;
+  userProfile?: UserProfile | null;
 }
 
 const TripRecommendations = ({
@@ -20,8 +22,11 @@ const TripRecommendations = ({
   isGenerating,
   onGenerated,
   onNewTrip,
+  userProfile,
 }: TripRecommendationsProps) => {
   const { toast } = useToast();
+  const [tripSaved, setTripSaved] = useState(false);
+  const [savingTrip, setSavingTrip] = useState(false);
 
   useEffect(() => {
     if (isGenerating && !recommendations) {
@@ -31,8 +36,20 @@ const TripRecommendations = ({
 
   const generateRecommendations = async () => {
     try {
+      // Build user preferences object
+      const userPreferences = userProfile ? {
+        travel_style: userProfile.travel_style,
+        accommodation_type: userProfile.accommodation_type,
+        transportation_choice: userProfile.transportation_choice,
+        traffic_sensitivity: userProfile.traffic_sensitivity,
+        food_preference: userProfile.food_preference,
+        language_preference: userProfile.language_preference,
+        budget_range_min: userProfile.budget_range_min,
+        budget_range_max: userProfile.budget_range_max,
+      } : undefined;
+
       const { data, error } = await supabase.functions.invoke("generate-trip-recommendations", {
-        body: tripDetails,
+        body: { ...tripDetails, userPreferences },
       });
 
       if (error) {
@@ -82,6 +99,39 @@ const TripRecommendations = ({
     }
   };
 
+  const saveToHistory = async () => {
+    setSavingTrip(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Not authenticated");
+
+      const { error } = await supabase.from('past_trips').insert({
+        user_id: user.id,
+        destination: tripDetails.destinationPoint,
+        boarding_point: tripDetails.boardingPoint,
+        duration: tripDetails.duration,
+        budget: tripDetails.budget,
+        trip_date: new Date().toISOString().split('T')[0],
+      });
+
+      if (error) throw error;
+
+      setTripSaved(true);
+      toast({
+        title: "Trip saved!",
+        description: "This trip has been added to your history.",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: "Failed to save trip. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setSavingTrip(false);
+    }
+  };
+
   if (isGenerating) {
     return (
       <div className="travel-card p-12 text-center">
@@ -97,6 +147,11 @@ const TripRecommendations = ({
             </h3>
             <p className="text-muted-foreground">
               Our AI is finding the best recommendations for your trip from {tripDetails.boardingPoint} to {tripDetails.destinationPoint}...
+              {userProfile && (
+                <span className="block mt-1 text-sm text-primary">
+                  Personalizing based on your travel preferences
+                </span>
+              )}
             </p>
           </div>
         </div>
@@ -213,10 +268,32 @@ const TripRecommendations = ({
       </div>
 
       {/* Actions */}
-      <div className="flex justify-center pt-4">
+      <div className="flex justify-center gap-4 pt-4">
         <Button variant="travel-outline" onClick={onNewTrip}>
           <ArrowLeft className="w-4 h-4 mr-2" />
           Plan Another Trip
+        </Button>
+        <Button
+          variant="travel"
+          onClick={saveToHistory}
+          disabled={tripSaved || savingTrip}
+        >
+          {tripSaved ? (
+            <>
+              <Check className="w-4 h-4 mr-2" />
+              Saved to History
+            </>
+          ) : savingTrip ? (
+            <>
+              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              Saving...
+            </>
+          ) : (
+            <>
+              <Save className="w-4 h-4 mr-2" />
+              Save to History
+            </>
+          )}
         </Button>
       </div>
     </div>
