@@ -4,6 +4,7 @@ import { TripDetails, Recommendations } from "@/pages/Dashboard";
 import { MapPin, Building2, Car, ArrowLeft, Loader2, Clock, DollarSign, Star, Navigation } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import WeatherCard from "./WeatherCard";
 
 interface TripRecommendationsProps {
   tripDetails: TripDetails;
@@ -109,9 +110,13 @@ const TripRecommendations = ({
 
   return (
     <div className="space-y-8">
-      {/* Trip Summary */}
-      <div className="travel-card p-6 bg-primary/5 border-primary/20">
-        <div className="flex items-start justify-between gap-4 flex-wrap">
+      {/* Weather & Trip Summary Row */}
+      <div className="grid md:grid-cols-2 gap-6">
+        {/* Weather Card */}
+        <WeatherCard destination={tripDetails.destinationPoint} />
+        
+        {/* Trip Summary */}
+        <div className="travel-card p-6 bg-primary/5 border-primary/20 flex flex-col justify-between">
           <div>
             <div className="flex items-center gap-2 text-primary font-medium mb-2">
               <Navigation className="w-4 h-4" />
@@ -119,13 +124,13 @@ const TripRecommendations = ({
             </div>
             <p className="text-foreground">{recommendations.summary}</p>
           </div>
-          <div className="flex gap-4 text-sm">
+          <div className="flex gap-6 text-sm mt-4">
             <div className="text-center">
-              <div className="font-semibold text-foreground">{tripDetails.duration}</div>
+              <div className="text-2xl font-bold text-foreground">{tripDetails.duration}</div>
               <div className="text-muted-foreground">Days</div>
             </div>
             <div className="text-center">
-              <div className="font-semibold text-foreground">${tripDetails.budget}</div>
+              <div className="text-2xl font-bold text-foreground">${tripDetails.budget}</div>
               <div className="text-muted-foreground">Budget</div>
             </div>
           </div>

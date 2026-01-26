@@ -1,1 +1,7 @@
 project_id = "ougzdilltmluqjbbnvgm"
+
+[functions.generate-trip-recommendations]
+verify_jwt = false
+
+[functions.get-weather]
+verify_jwt = false
