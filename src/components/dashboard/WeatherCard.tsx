@@ -30,6 +30,7 @@ interface WeatherData {
 
 interface WeatherCardProps {
   destination: string;
+  onWeatherLoad?: (weather: { temp: number; condition: string }) => void;
 }
 
 const getWeatherIcon = (condition: string) => {
@@ -68,7 +69,7 @@ const getSmallWeatherIcon = (condition: string) => {
   }
 };
 
-const WeatherCard = ({ destination }: WeatherCardProps) => {
+const WeatherCard = ({ destination, onWeatherLoad }: WeatherCardProps) => {
   const [weather, setWeather] = useState<WeatherData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -92,6 +93,14 @@ const WeatherCard = ({ destination }: WeatherCardProps) => {
         }
 
         setWeather(data);
+        
+        // Notify parent component of weather data
+        if (onWeatherLoad && data?.current) {
+          onWeatherLoad({
+            temp: data.current.temp,
+            condition: data.current.condition,
+          });
+        }
       } catch (err) {
         console.error("Weather fetch error:", err);
         setError(err instanceof Error ? err.message : "Failed to fetch weather");
