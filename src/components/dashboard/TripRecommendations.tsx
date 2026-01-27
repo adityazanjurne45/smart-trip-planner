@@ -1,10 +1,14 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TripDetails, Recommendations } from "@/pages/Dashboard";
-import { MapPin, Building2, Car, ArrowLeft, Loader2, Clock, DollarSign, Star, Navigation, Save, Check } from "lucide-react";
+import { MapPin, Building2, Car, ArrowLeft, Loader2, Clock, DollarSign, Star, Navigation, Save, Check, Calendar, Map, List } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import WeatherCard from "./WeatherCard";
+import DayWiseItinerary from "./DayWiseItinerary";
+import TripWarnings from "./TripWarnings";
+import TripActions from "./TripActions";
 import { UserProfile } from "@/types/profile";
 
 interface TripRecommendationsProps {
@@ -27,6 +31,7 @@ const TripRecommendations = ({
   const { toast } = useToast();
   const [tripSaved, setTripSaved] = useState(false);
   const [savingTrip, setSavingTrip] = useState(false);
+  const [weather, setWeather] = useState<{ temp: number; condition: string } | undefined>();
 
   useEffect(() => {
     if (isGenerating && !recommendations) {
@@ -154,6 +159,16 @@ const TripRecommendations = ({
               )}
             </p>
           </div>
+          {/* Progress animation */}
+          <div className="flex gap-2 mt-4">
+            {[0, 1, 2].map((i) => (
+              <div
+                key={i}
+                className="w-3 h-3 rounded-full bg-primary animate-bounce"
+                style={{ animationDelay: `${i * 0.15}s` }}
+              />
+            ))}
+          </div>
         </div>
       </div>
     );
@@ -164,138 +179,220 @@ const TripRecommendations = ({
   }
 
   return (
-    <div className="space-y-8">
-      {/* Weather & Trip Summary Row */}
-      <div className="grid md:grid-cols-2 gap-6">
-        {/* Weather Card */}
-        <WeatherCard destination={tripDetails.destinationPoint} />
-        
-        {/* Trip Summary */}
-        <div className="travel-card p-6 bg-primary/5 border-primary/20 flex flex-col justify-between">
+    <div className="space-y-6">
+      {/* Actions Bar */}
+      <div className="flex items-center justify-between flex-wrap gap-4">
+        <Button variant="ghost" onClick={onNewTrip} className="gap-2">
+          <ArrowLeft className="w-4 h-4" />
+          New Trip
+        </Button>
+        <TripActions
+          tripDetails={tripDetails}
+          recommendations={recommendations}
+          onSaveTrip={saveToHistory}
+          isSaving={savingTrip}
+        />
+      </div>
+
+      {/* Tabs for different views */}
+      <Tabs defaultValue="overview" className="w-full">
+        <TabsList className="grid w-full grid-cols-3 mb-6">
+          <TabsTrigger value="overview" className="gap-2">
+            <List className="w-4 h-4" />
+            <span className="hidden sm:inline">Overview</span>
+          </TabsTrigger>
+          <TabsTrigger value="itinerary" className="gap-2">
+            <Calendar className="w-4 h-4" />
+            <span className="hidden sm:inline">Day-by-Day</span>
+          </TabsTrigger>
+          <TabsTrigger value="details" className="gap-2">
+            <Map className="w-4 h-4" />
+            <span className="hidden sm:inline">Details</span>
+          </TabsTrigger>
+        </TabsList>
+
+        {/* Overview Tab */}
+        <TabsContent value="overview" className="space-y-6 animate-fade-in">
+          {/* Weather & Trip Summary Row */}
+          <div className="grid md:grid-cols-2 gap-6">
+            {/* Weather Card */}
+            <WeatherCard destination={tripDetails.destinationPoint} onWeatherLoad={setWeather} />
+            
+            {/* Trip Summary */}
+            <div className="travel-card p-6 bg-primary/5 border-primary/20 flex flex-col justify-between">
+              <div>
+                <div className="flex items-center gap-2 text-primary font-medium mb-2">
+                  <Navigation className="w-4 h-4" />
+                  Your Trip Summary
+                </div>
+                <p className="text-foreground">{recommendations.summary}</p>
+              </div>
+              <div className="flex gap-6 text-sm mt-4">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-foreground">{tripDetails.duration}</div>
+                  <div className="text-muted-foreground">Days</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-foreground">${tripDetails.budget}</div>
+                  <div className="text-muted-foreground">Budget</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-foreground">{recommendations.touristPlaces.length}</div>
+                  <div className="text-muted-foreground">Places</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Smart Warnings */}
+          <TripWarnings
+            tripDetails={tripDetails}
+            recommendations={recommendations}
+            weather={weather}
+          />
+
+          {/* Quick View Cards */}
+          <div className="grid md:grid-cols-3 gap-4">
+            <div className="travel-card p-5">
+              <div className="flex items-center gap-2 mb-3">
+                <div className="w-8 h-8 rounded-lg bg-travel-coral/10 flex items-center justify-center">
+                  <MapPin className="w-4 h-4 text-travel-coral" />
+                </div>
+                <span className="font-medium text-foreground">Top Attractions</span>
+              </div>
+              <ul className="space-y-2">
+                {recommendations.touristPlaces.slice(0, 3).map((place, i) => (
+                  <li key={i} className="text-sm text-muted-foreground flex items-start gap-2">
+                    <span className="text-primary font-medium">{i + 1}.</span>
+                    {place.name}
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="travel-card p-5">
+              <div className="flex items-center gap-2 mb-3">
+                <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <Building2 className="w-4 h-4 text-primary" />
+                </div>
+                <span className="font-medium text-foreground">Best Hotels</span>
+              </div>
+              <ul className="space-y-2">
+                {recommendations.hotels.slice(0, 3).map((hotel, i) => (
+                  <li key={i} className="text-sm text-muted-foreground flex items-center justify-between">
+                    <span className="truncate">{hotel.name}</span>
+                    <span className="text-primary font-medium">{hotel.pricePerNight}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="travel-card p-5">
+              <div className="flex items-center gap-2 mb-3">
+                <div className="w-8 h-8 rounded-lg bg-travel-forest/10 flex items-center justify-center">
+                  <Car className="w-4 h-4 text-travel-forest" />
+                </div>
+                <span className="font-medium text-foreground">Transport</span>
+              </div>
+              <ul className="space-y-2">
+                {recommendations.vehicles.map((vehicle, i) => (
+                  <li key={i} className="text-sm text-muted-foreground flex items-center justify-between">
+                    <span>{vehicle.type}</span>
+                    <span className="text-travel-forest font-medium">{vehicle.estimatedCost}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </TabsContent>
+
+        {/* Day-by-Day Itinerary Tab */}
+        <TabsContent value="itinerary" className="animate-fade-in">
+          <DayWiseItinerary
+            tripDetails={tripDetails}
+            recommendations={recommendations}
+            weather={weather}
+          />
+        </TabsContent>
+
+        {/* Details Tab */}
+        <TabsContent value="details" className="space-y-8 animate-fade-in">
+          {/* Tourist Places */}
           <div>
-            <div className="flex items-center gap-2 text-primary font-medium mb-2">
-              <Navigation className="w-4 h-4" />
-              Your Trip Summary
-            </div>
-            <p className="text-foreground">{recommendations.summary}</p>
-          </div>
-          <div className="flex gap-6 text-sm mt-4">
-            <div className="text-center">
-              <div className="text-2xl font-bold text-foreground">{tripDetails.duration}</div>
-              <div className="text-muted-foreground">Days</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-foreground">${tripDetails.budget}</div>
-              <div className="text-muted-foreground">Budget</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Tourist Places */}
-      <div>
-        <div className="flex items-center gap-2 mb-4">
-          <div className="w-10 h-10 rounded-xl bg-travel-coral/10 flex items-center justify-center">
-            <MapPin className="w-5 h-5 text-travel-coral" />
-          </div>
-          <h2 className="text-xl font-semibold text-foreground">Tourist Places</h2>
-        </div>
-        <div className="grid md:grid-cols-2 gap-4">
-          {recommendations.touristPlaces.map((place, index) => (
-            <div key={index} className="travel-card p-5">
-              <h3 className="font-semibold text-foreground mb-2">{place.name}</h3>
-              <p className="text-muted-foreground text-sm mb-3">{place.description}</p>
-              <div className="flex items-center gap-4 text-sm">
-                <div className="flex items-center gap-1 text-muted-foreground">
-                  <Clock className="w-4 h-4" />
-                  {place.estimatedTime}
-                </div>
-                <div className="flex items-center gap-1 text-muted-foreground">
-                  <DollarSign className="w-4 h-4" />
-                  {place.entryFee}
-                </div>
+            <div className="flex items-center gap-2 mb-4">
+              <div className="w-10 h-10 rounded-xl bg-travel-coral/10 flex items-center justify-center">
+                <MapPin className="w-5 h-5 text-travel-coral" />
               </div>
+              <h2 className="text-xl font-semibold text-foreground">Tourist Places</h2>
             </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Hotels */}
-      <div>
-        <div className="flex items-center gap-2 mb-4">
-          <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-            <Building2 className="w-5 h-5 text-primary" />
-          </div>
-          <h2 className="text-xl font-semibold text-foreground">Recommended Hotels</h2>
-        </div>
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {recommendations.hotels.map((hotel, index) => (
-            <div key={index} className="travel-card p-5">
-              <h3 className="font-semibold text-foreground mb-1">{hotel.name}</h3>
-              <p className="text-muted-foreground text-sm mb-3">{hotel.location}</p>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-1 text-sm">
-                  <Star className="w-4 h-4 text-travel-gold fill-travel-gold" />
-                  <span className="text-foreground font-medium">{hotel.rating}</span>
+            <div className="grid md:grid-cols-2 gap-4">
+              {recommendations.touristPlaces.map((place, index) => (
+                <div key={index} className="travel-card p-5">
+                  <h3 className="font-semibold text-foreground mb-2">{place.name}</h3>
+                  <p className="text-muted-foreground text-sm mb-3">{place.description}</p>
+                  <div className="flex items-center gap-4 text-sm">
+                    <div className="flex items-center gap-1 text-muted-foreground">
+                      <Clock className="w-4 h-4" />
+                      {place.estimatedTime}
+                    </div>
+                    <div className="flex items-center gap-1 text-muted-foreground">
+                      <DollarSign className="w-4 h-4" />
+                      {place.entryFee}
+                    </div>
+                  </div>
                 </div>
-                <div className="text-primary font-semibold">{hotel.pricePerNight}/night</div>
-              </div>
+              ))}
             </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Vehicles */}
-      <div>
-        <div className="flex items-center gap-2 mb-4">
-          <div className="w-10 h-10 rounded-xl bg-travel-forest/10 flex items-center justify-center">
-            <Car className="w-5 h-5 text-travel-forest" />
           </div>
-          <h2 className="text-xl font-semibold text-foreground">Transportation Options</h2>
-        </div>
-        <div className="grid md:grid-cols-2 gap-4">
-          {recommendations.vehicles.map((vehicle, index) => (
-            <div key={index} className="travel-card p-5">
-              <div className="flex items-center justify-between mb-2">
-                <h3 className="font-semibold text-foreground">{vehicle.type}</h3>
-                <span className="text-primary font-semibold">{vehicle.estimatedCost}</span>
-              </div>
-              <p className="text-muted-foreground text-sm mb-2">{vehicle.reason}</p>
-              <p className="text-xs text-muted-foreground">Best for: {vehicle.suitableFor}</p>
-            </div>
-          ))}
-        </div>
-      </div>
 
-      {/* Actions */}
-      <div className="flex justify-center gap-4 pt-4">
-        <Button variant="travel-outline" onClick={onNewTrip}>
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Plan Another Trip
-        </Button>
-        <Button
-          variant="travel"
-          onClick={saveToHistory}
-          disabled={tripSaved || savingTrip}
-        >
-          {tripSaved ? (
-            <>
-              <Check className="w-4 h-4 mr-2" />
-              Saved to History
-            </>
-          ) : savingTrip ? (
-            <>
-              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-              Saving...
-            </>
-          ) : (
-            <>
-              <Save className="w-4 h-4 mr-2" />
-              Save to History
-            </>
-          )}
-        </Button>
-      </div>
+          {/* Hotels */}
+          <div>
+            <div className="flex items-center gap-2 mb-4">
+              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                <Building2 className="w-5 h-5 text-primary" />
+              </div>
+              <h2 className="text-xl font-semibold text-foreground">Recommended Hotels</h2>
+            </div>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {recommendations.hotels.map((hotel, index) => (
+                <div key={index} className="travel-card p-5">
+                  <h3 className="font-semibold text-foreground mb-1">{hotel.name}</h3>
+                  <p className="text-muted-foreground text-sm mb-3">{hotel.location}</p>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-1 text-sm">
+                      <Star className="w-4 h-4 text-travel-gold fill-travel-gold" />
+                      <span className="text-foreground font-medium">{hotel.rating}</span>
+                    </div>
+                    <div className="text-primary font-semibold">{hotel.pricePerNight}/night</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Vehicles */}
+          <div>
+            <div className="flex items-center gap-2 mb-4">
+              <div className="w-10 h-10 rounded-xl bg-travel-forest/10 flex items-center justify-center">
+                <Car className="w-5 h-5 text-travel-forest" />
+              </div>
+              <h2 className="text-xl font-semibold text-foreground">Transportation Options</h2>
+            </div>
+            <div className="grid md:grid-cols-2 gap-4">
+              {recommendations.vehicles.map((vehicle, index) => (
+                <div key={index} className="travel-card p-5">
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="font-semibold text-foreground">{vehicle.type}</h3>
+                    <span className="text-primary font-semibold">{vehicle.estimatedCost}</span>
+                  </div>
+                  <p className="text-muted-foreground text-sm mb-2">{vehicle.reason}</p>
+                  <p className="text-xs text-muted-foreground">Best for: {vehicle.suitableFor}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };

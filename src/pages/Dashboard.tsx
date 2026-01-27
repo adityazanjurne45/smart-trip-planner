@@ -3,8 +3,9 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
 import Navbar from "@/components/layout/Navbar";
-import TripForm from "@/components/dashboard/TripForm";
+import TripWizard from "@/components/dashboard/TripWizard";
 import TripRecommendations from "@/components/dashboard/TripRecommendations";
+import AIAssistant from "@/components/dashboard/AIAssistant";
 import { Loader2 } from "lucide-react";
 import { useProfile } from "@/hooks/useProfile";
 
@@ -116,7 +117,7 @@ const Dashboard = () => {
 
           {/* Content */}
           {!tripDetails ? (
-            <TripForm onSubmit={handleTripSubmit} />
+            <TripWizard onSubmit={handleTripSubmit} />
           ) : (
             <TripRecommendations
               tripDetails={tripDetails}
@@ -129,6 +130,9 @@ const Dashboard = () => {
           )}
         </div>
       </main>
+
+      {/* AI Travel Assistant */}
+      <AIAssistant tripDetails={tripDetails ?? undefined} recommendations={recommendations ?? undefined} />
     </div>
   );
 };
