@@ -1,6 +1,12 @@
 import { useMemo } from "react";
 import { TripDetails, Recommendations } from "@/pages/Dashboard";
-import { MarkerData } from "./MapMarkers";
+
+export interface MarkerData {
+  position: [number, number];
+  name: string;
+  description?: string;
+  type: "attraction" | "hotel" | "start" | "end";
+}
 
 // Simulated coordinates for demo (in real app, use geocoding API)
 const cityCoordinates: Record<string, [number, number]> = {

@@ -11,7 +11,6 @@ import TripWarnings from "./TripWarnings";
 import TripActions from "./TripActions";
 import TripMap from "./TripMap";
 import { UserProfile } from "@/types/profile";
-import "./map/map-styles.css";
 
 interface TripRecommendationsProps {
   tripDetails: TripDetails;
