@@ -104,6 +104,22 @@ export default {
           "0%, 100%": { transform: "translateY(0)" },
           "50%": { transform: "translateY(-10px)" },
         },
+        "slow-zoom": {
+          "0%": { transform: "scale(1.1)" },
+          "100%": { transform: "scale(1.15)" },
+        },
+        "pulse-slow": {
+          "0%, 100%": { opacity: "0.4" },
+          "50%": { opacity: "0.7" },
+        },
+        shimmer: {
+          "0%": { backgroundPosition: "-200% 0" },
+          "100%": { backgroundPosition: "200% 0" },
+        },
+        "route-draw": {
+          from: { strokeDashoffset: "1000" },
+          to: { strokeDashoffset: "0" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -112,6 +128,10 @@ export default {
         "fade-in": "fade-in 0.4s ease-out forwards",
         "slide-in-right": "slide-in-right 0.5s ease-out forwards",
         float: "float 6s ease-in-out infinite",
+        "slow-zoom": "slow-zoom 20s ease-out forwards",
+        "pulse-slow": "pulse-slow 4s ease-in-out infinite",
+        shimmer: "shimmer 2s linear infinite",
+        "route-draw": "route-draw 2s ease-out forwards",
       },
       boxShadow: {
         soft: "0 4px 20px -4px hsl(200 25% 15% / 0.1)",
