@@ -2,14 +2,16 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TripDetails, Recommendations } from "@/pages/Dashboard";
-import { MapPin, Building2, Car, ArrowLeft, Loader2, Clock, DollarSign, Star, Navigation, Save, Check, Calendar, Map, List } from "lucide-react";
+import { MapPin, Building2, Car, ArrowLeft, Loader2, Clock, DollarSign, Star, Navigation, Save, Check, Calendar, Map, List, MapPinned } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import WeatherCard from "./WeatherCard";
 import DayWiseItinerary from "./DayWiseItinerary";
 import TripWarnings from "./TripWarnings";
 import TripActions from "./TripActions";
+import TripMap from "./TripMap";
 import { UserProfile } from "@/types/profile";
+import "./map/map-styles.css";
 
 interface TripRecommendationsProps {
   tripDetails: TripDetails;
@@ -196,10 +198,14 @@ const TripRecommendations = ({
 
       {/* Tabs for different views */}
       <Tabs defaultValue="overview" className="w-full">
-        <TabsList className="grid w-full grid-cols-3 mb-6">
+        <TabsList className="grid w-full grid-cols-4 mb-6">
           <TabsTrigger value="overview" className="gap-2">
             <List className="w-4 h-4" />
             <span className="hidden sm:inline">Overview</span>
+          </TabsTrigger>
+          <TabsTrigger value="map" className="gap-2">
+            <MapPinned className="w-4 h-4" />
+            <span className="hidden sm:inline">Map</span>
           </TabsTrigger>
           <TabsTrigger value="itinerary" className="gap-2">
             <Calendar className="w-4 h-4" />
@@ -304,6 +310,11 @@ const TripRecommendations = ({
               </ul>
             </div>
           </div>
+        </TabsContent>
+
+        {/* Map Tab */}
+        <TabsContent value="map" className="animate-fade-in">
+          <TripMap tripDetails={tripDetails} recommendations={recommendations} />
         </TabsContent>
 
         {/* Day-by-Day Itinerary Tab */}
