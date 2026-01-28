@@ -1,53 +1,64 @@
 import { useEffect, useRef, useState } from "react";
 import { MapPin, Navigation, Clock, Route } from "lucide-react";
-
 interface Point {
   x: number;
   y: number;
   label: string;
   type: "start" | "end" | "attraction" | "hotel";
 }
-
 const LiveMapPreview = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [vehicleProgress, setVehicleProgress] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
-
-  const points: Point[] = [
-    { x: 80, y: 280, label: "New York", type: "start" },
-    { x: 200, y: 180, label: "Hotel", type: "hotel" },
-    { x: 350, y: 120, label: "Beach", type: "attraction" },
-    { x: 500, y: 160, label: "Museum", type: "attraction" },
-    { x: 620, y: 100, label: "Miami", type: "end" },
-  ];
+  const points: Point[] = [{
+    x: 80,
+    y: 280,
+    label: "New York",
+    type: "start"
+  }, {
+    x: 200,
+    y: 180,
+    label: "Hotel",
+    type: "hotel"
+  }, {
+    x: 350,
+    y: 120,
+    label: "Beach",
+    type: "attraction"
+  }, {
+    x: 500,
+    y: 160,
+    label: "Museum",
+    type: "attraction"
+  }, {
+    x: 620,
+    y: 100,
+    label: "Miami",
+    type: "end"
+  }];
 
   // Intersection observer for visibility
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true);
-        }
-      },
-      { threshold: 0.3 }
-    );
-
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        setIsVisible(true);
+      }
+    }, {
+      threshold: 0.3
+    });
     if (containerRef.current) {
       observer.observe(containerRef.current);
     }
-
     return () => observer.disconnect();
   }, []);
 
   // Animation loop
   useEffect(() => {
     if (!isVisible) return;
-
     const interval = setInterval(() => {
-      setVehicleProgress((prev) => (prev >= 100 ? 0 : prev + 0.5));
+      setVehicleProgress(prev => prev >= 100 ? 0 : prev + 0.5);
     }, 50);
-
     return () => clearInterval(interval);
   }, [isVisible]);
 
@@ -55,10 +66,8 @@ const LiveMapPreview = () => {
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
-
     const dpr = window.devicePixelRatio || 1;
     const rect = canvas.getBoundingClientRect();
     canvas.width = rect.width * dpr;
@@ -73,7 +82,6 @@ const LiveMapPreview = () => {
     gradient.addColorStop(0, "hsl(185, 72%, 32%)");
     gradient.addColorStop(0.5, "hsl(16, 85%, 58%)");
     gradient.addColorStop(1, "hsl(160, 45%, 35%)");
-
     ctx.strokeStyle = gradient;
     ctx.lineWidth = 4;
     ctx.lineCap = "round";
@@ -83,7 +91,6 @@ const LiveMapPreview = () => {
     const dashProgress = isVisible ? vehicleProgress * 10 : 0;
     ctx.setLineDash([15, 10]);
     ctx.lineDashOffset = -dashProgress;
-
     ctx.beginPath();
     ctx.moveTo(points[0].x, points[0].y);
 
@@ -98,16 +105,9 @@ const LiveMapPreview = () => {
     ctx.stroke();
 
     // Draw markers
-    points.forEach((point) => {
+    points.forEach(point => {
       // Outer glow
-      const glowGradient = ctx.createRadialGradient(
-        point.x,
-        point.y,
-        0,
-        point.x,
-        point.y,
-        20
-      );
+      const glowGradient = ctx.createRadialGradient(point.x, point.y, 0, point.x, point.y, 20);
       glowGradient.addColorStop(0, getPointColor(point.type, 0.4));
       glowGradient.addColorStop(1, "transparent");
       ctx.fillStyle = glowGradient;
@@ -137,7 +137,7 @@ const LiveMapPreview = () => {
     // Draw vehicle
     if (isVisible) {
       const totalLength = getTotalPathLength();
-      const currentDistance = (vehicleProgress / 100) * totalLength;
+      const currentDistance = vehicleProgress / 100 * totalLength;
       const vehiclePos = getPositionOnPath(currentDistance);
 
       // Vehicle shadow
@@ -153,7 +153,6 @@ const LiveMapPreview = () => {
       ctx.fillText("🚗", vehiclePos.x, vehiclePos.y - 5);
     }
   }, [vehicleProgress, isVisible, points]);
-
   function getPointColor(type: string, opacity: number): string {
     switch (type) {
       case "start":
@@ -168,7 +167,6 @@ const LiveMapPreview = () => {
         return `hsla(185, 72%, 32%, ${opacity})`;
     }
   }
-
   function getTotalPathLength(): number {
     let length = 0;
     for (let i = 1; i < points.length; i++) {
@@ -178,28 +176,27 @@ const LiveMapPreview = () => {
     }
     return length;
   }
-
-  function getPositionOnPath(distance: number): { x: number; y: number } {
+  function getPositionOnPath(distance: number): {
+    x: number;
+    y: number;
+  } {
     let accumulated = 0;
     for (let i = 1; i < points.length; i++) {
       const dx = points[i].x - points[i - 1].x;
       const dy = points[i].y - points[i - 1].y;
       const segmentLength = Math.sqrt(dx * dx + dy * dy);
-
       if (accumulated + segmentLength >= distance) {
         const t = (distance - accumulated) / segmentLength;
         return {
           x: points[i - 1].x + dx * t,
-          y: points[i - 1].y + dy * t,
+          y: points[i - 1].y + dy * t
         };
       }
       accumulated += segmentLength;
     }
     return points[points.length - 1];
   }
-
-  return (
-    <section ref={containerRef} className="py-24 bg-secondary/30 relative overflow-hidden">
+  return <section ref={containerRef} className="py-24 bg-secondary/30 relative overflow-hidden">
       {/* Background */}
       <div className="absolute inset-0">
         <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
@@ -227,7 +224,7 @@ const LiveMapPreview = () => {
           <div className="relative rounded-2xl overflow-hidden bg-card border border-border shadow-hero">
             {/* Map Header */}
             <div className="flex items-center justify-between p-4 border-b border-border bg-card/80 backdrop-blur-sm">
-              <div className="flex items-center gap-4">
+              <div className="gap-4 bg-secondary flex items-center justify-start">
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <MapPin className="w-4 h-4 text-primary" />
                   <span>New York</span>
@@ -246,11 +243,10 @@ const LiveMapPreview = () => {
 
             {/* Canvas Map */}
             <div className="relative h-80 md:h-96 bg-gradient-to-br from-background to-secondary/50">
-              <canvas
-                ref={canvasRef}
-                className="w-full h-full"
-                style={{ width: "100%", height: "100%" }}
-              />
+              <canvas ref={canvasRef} className="w-full h-full bg-zinc-400" style={{
+              width: "100%",
+              height: "100%"
+            }} />
 
               {/* Legend */}
               <div className="absolute bottom-4 left-4 flex flex-wrap gap-3 bg-card/90 backdrop-blur-sm rounded-lg px-4 py-2 border border-border">
@@ -283,8 +279,6 @@ const LiveMapPreview = () => {
           </div>
         </div>
       </div>
-    </section>
-  );
+    </section>;
 };
-
 export default LiveMapPreview;
