@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { TripDetails, Recommendations } from "@/pages/Dashboard";
-import { Map, Maximize2, Minimize2, RotateCcw, Play, Pause, MapPin, Building2, Navigation } from "lucide-react";
+import { TripDetails, Recommendations } from "@/types/trip";
+import { Map, Maximize2, Minimize2, RotateCcw, Play, Pause, Navigation, Layers } from "lucide-react";
 import { useMapData } from "./map/useMapData";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
@@ -19,31 +19,64 @@ interface TripMapProps {
   recommendations: Recommendations | null;
 }
 
-// Custom icon creator
-const createCustomIcon = (color: string, emoji: string) => {
+// Destination images for preview card
+const destinationImages: Record<string, string> = {
+  paris: "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=400&h=200&fit=crop",
+  london: "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=400&h=200&fit=crop",
+  tokyo: "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=400&h=200&fit=crop",
+  dubai: "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=400&h=200&fit=crop",
+  singapore: "https://images.unsplash.com/photo-1525625293386-3f8f99389edd?w=400&h=200&fit=crop",
+  bangkok: "https://images.unsplash.com/photo-1508009603885-50cf7c579365?w=400&h=200&fit=crop",
+  bali: "https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=400&h=200&fit=crop",
+  rome: "https://images.unsplash.com/photo-1552832230-c0197dd311b5?w=400&h=200&fit=crop",
+  sydney: "https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9?w=400&h=200&fit=crop",
+  mumbai: "https://images.unsplash.com/photo-1570168007204-dfb528c6958f?w=400&h=200&fit=crop",
+  delhi: "https://images.unsplash.com/photo-1587474260584-136574528ed5?w=400&h=200&fit=crop",
+  goa: "https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?w=400&h=200&fit=crop",
+  jaipur: "https://images.unsplash.com/photo-1477587458883-47145ed94245?w=400&h=200&fit=crop",
+  default: "https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=400&h=200&fit=crop",
+};
+
+const getDestinationImage = (destination: string): string => {
+  const key = destination.toLowerCase().split(",")[0].trim();
+  return destinationImages[key] || destinationImages.default;
+};
+
+// Custom icon creator with cleaner design
+const createCustomIcon = (type: "hotel" | "attraction" | "start" | "end" | "transport") => {
+  const configs = {
+    start: { bg: "#22c55e", icon: "🚀", size: 40 },
+    end: { bg: "#8b5cf6", icon: "📍", size: 40 },
+    attraction: { bg: "#ef4444", icon: "🎯", size: 36 },
+    hotel: { bg: "#3b82f6", icon: "🏨", size: 36 },
+    transport: { bg: "#f59e0b", icon: "🚗", size: 36 },
+  };
+
+  const config = configs[type];
+
   return L.divIcon({
     html: `
       <div style="
-        background: ${color};
-        width: 36px;
-        height: 36px;
+        background: ${config.bg};
+        width: ${config.size}px;
+        height: ${config.size}px;
         border-radius: 50% 50% 50% 0;
         transform: rotate(-45deg);
         display: flex;
         align-items: center;
         justify-content: center;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.25);
         border: 3px solid white;
       ">
-        <div style="transform: rotate(45deg); font-size: 16px;">
-          ${emoji}
+        <div style="transform: rotate(45deg); font-size: ${config.size * 0.45}px;">
+          ${config.icon}
         </div>
       </div>
     `,
     className: "custom-map-marker",
-    iconSize: [36, 36],
-    iconAnchor: [18, 36],
-    popupAnchor: [0, -36],
+    iconSize: [config.size, config.size],
+    iconAnchor: [config.size / 2, config.size],
+    popupAnchor: [0, -config.size],
   });
 };
 
@@ -66,6 +99,7 @@ const TripMap = ({ tripDetails, recommendations }: TripMapProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isAnimating, setIsAnimating] = useState(true);
   const [mapReady, setMapReady] = useState(false);
+  const [mapStyle, setMapStyle] = useState<"satellite" | "street">("satellite");
   
   const {
     markers,
@@ -89,9 +123,34 @@ const TripMap = ({ tripDetails, recommendations }: TripMapProps) => {
       zoomControl: true,
     });
 
-    L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-    }).addTo(map);
+    // Satellite/Hybrid tile layer
+    const satelliteLayer = L.tileLayer(
+      "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+      {
+        attribution: "Tiles &copy; Esri",
+      }
+    );
+
+    const streetLayer = L.tileLayer(
+      "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",
+      {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      }
+    );
+
+    // Add labels overlay for satellite view
+    const labelsLayer = L.tileLayer(
+      "https://{s}.basemaps.cartocdn.com/rastertiles/voyager_only_labels/{z}/{x}/{y}{r}.png",
+      {
+        attribution: '',
+      }
+    );
+
+    satelliteLayer.addTo(map);
+    labelsLayer.addTo(map);
+
+    // Store layers for switching
+    (map as any)._customLayers = { satelliteLayer, streetLayer, labelsLayer };
 
     mapRef.current = map;
     setMapReady(true);
@@ -104,6 +163,25 @@ const TripMap = ({ tripDetails, recommendations }: TripMapProps) => {
       mapRef.current = null;
     };
   }, []);
+
+  // Handle map style toggle
+  useEffect(() => {
+    if (!mapRef.current || !mapReady) return;
+    
+    const map = mapRef.current;
+    const layers = (map as any)._customLayers;
+    if (!layers) return;
+
+    if (mapStyle === "satellite") {
+      map.removeLayer(layers.streetLayer);
+      layers.satelliteLayer.addTo(map);
+      layers.labelsLayer.addTo(map);
+    } else {
+      map.removeLayer(layers.satelliteLayer);
+      map.removeLayer(layers.labelsLayer);
+      layers.streetLayer.addTo(map);
+    }
+  }, [mapStyle, mapReady]);
 
   // Update map view when center/zoom changes
   useEffect(() => {
@@ -118,15 +196,15 @@ const TripMap = ({ tripDetails, recommendations }: TripMapProps) => {
 
     const map = mapRef.current;
     
-    // Clear existing layers except tile layer
+    // Clear existing markers and polylines
     map.eachLayer((layer) => {
-      if (!(layer instanceof L.TileLayer)) {
+      if (layer instanceof L.Marker || layer instanceof L.Polyline) {
         map.removeLayer(layer);
       }
     });
 
     // Add route polyline with glow effect
-    const glowLine = L.polyline(mainRoute, {
+    L.polyline(mainRoute, {
       color: "#3b82f6",
       weight: 8,
       opacity: 0.3,
@@ -134,7 +212,7 @@ const TripMap = ({ tripDetails, recommendations }: TripMapProps) => {
       lineJoin: "round",
     }).addTo(map);
 
-    const mainLine = L.polyline(mainRoute, {
+    L.polyline(mainRoute, {
       color: "#3b82f6",
       weight: 4,
       opacity: 0.9,
@@ -143,28 +221,37 @@ const TripMap = ({ tripDetails, recommendations }: TripMapProps) => {
       dashArray: vehicleType === "bike" ? "10, 5" : undefined,
     }).addTo(map);
 
-    // Add markers
+    // Add markers with clean info popups
     markers.forEach((marker) => {
-      const iconConfig = {
-        start: { color: "#22c55e", emoji: "🚀" },
-        end: { color: "#8b5cf6", emoji: "🎯" },
-        attraction: { color: "#ef4444", emoji: "📍" },
-        hotel: { color: "#3b82f6", emoji: "🏨" },
-      };
+      const icon = createCustomIcon(marker.type);
       
-      const config = iconConfig[marker.type];
-      const icon = createCustomIcon(config.color, config.emoji);
+      const popupContent = `
+        <div style="min-width: 180px; padding: 8px;">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+            <span style="font-size: 20px;">${
+              marker.type === "start" ? "🚀" : 
+              marker.type === "end" ? "📍" : 
+              marker.type === "hotel" ? "🏨" : "🎯"
+            }</span>
+            <h4 style="font-weight: 600; margin: 0; font-size: 14px;">${marker.name}</h4>
+          </div>
+          ${marker.description ? `<p style="font-size: 12px; color: #666; margin: 0 0 8px 0;">${marker.description}</p>` : ""}
+          <span style="display: inline-block; padding: 3px 10px; font-size: 11px; border-radius: 9999px; background: ${
+            marker.type === "hotel" ? "rgba(59, 130, 246, 0.1)" : 
+            marker.type === "attraction" ? "rgba(239, 68, 68, 0.1)" : 
+            "rgba(34, 197, 94, 0.1)"
+          }; color: ${
+            marker.type === "hotel" ? "#3b82f6" : 
+            marker.type === "attraction" ? "#ef4444" : 
+            "#22c55e"
+          }; text-transform: capitalize; font-weight: 500;">
+            ${marker.type}
+          </span>
+        </div>
+      `;
       
       L.marker(marker.position, { icon })
-        .bindPopup(`
-          <div style="min-width: 150px; padding: 8px;">
-            <h4 style="font-weight: 600; margin-bottom: 4px;">${marker.name}</h4>
-            ${marker.description ? `<p style="font-size: 12px; color: #666; margin-bottom: 8px;">${marker.description}</p>` : ""}
-            <span style="display: inline-block; padding: 2px 8px; font-size: 11px; border-radius: 9999px; background: rgba(59, 130, 246, 0.1); color: #3b82f6; text-transform: capitalize;">
-              ${marker.type}
-            </span>
-          </div>
-        `)
+        .bindPopup(popupContent)
         .addTo(map);
     });
 
@@ -183,7 +270,6 @@ const TripMap = ({ tripDetails, recommendations }: TripMapProps) => {
     const map = mapRef.current;
     let currentIndex = 0;
     
-    // Create vehicle marker
     if (vehicleMarkerRef.current) {
       map.removeLayer(vehicleMarkerRef.current);
     }
@@ -211,7 +297,6 @@ const TripMap = ({ tripDetails, recommendations }: TripMapProps) => {
     };
   }, [mainRoute, vehicleType, isAnimating, mapReady]);
 
-  // Handle animation toggle
   useEffect(() => {
     if (!isAnimating && vehicleMarkerRef.current && mapRef.current) {
       mapRef.current.removeLayer(vehicleMarkerRef.current);
@@ -225,8 +310,8 @@ const TripMap = ({ tripDetails, recommendations }: TripMapProps) => {
     }
   };
 
-  const toggleAnimation = () => {
-    setIsAnimating(prev => !prev);
+  const toggleMapStyle = () => {
+    setMapStyle(prev => prev === "satellite" ? "street" : "satellite");
   };
 
   const trafficColors = {
@@ -262,15 +347,20 @@ const TripMap = ({ tripDetails, recommendations }: TripMapProps) => {
           <Button
             variant="ghost"
             size="icon"
-            onClick={toggleAnimation}
+            onClick={toggleMapStyle}
+            className="h-9 w-9"
+            title={mapStyle === "satellite" ? "Switch to street view" : "Switch to satellite view"}
+          >
+            <Layers className="w-4 h-4" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setIsAnimating(prev => !prev)}
             className="h-9 w-9"
             title={isAnimating ? "Pause animation" : "Play animation"}
           >
-            {isAnimating ? (
-              <Pause className="w-4 h-4" />
-            ) : (
-              <Play className="w-4 h-4" />
-            )}
+            {isAnimating ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
           </Button>
           <Button
             variant="ghost"
@@ -288,11 +378,7 @@ const TripMap = ({ tripDetails, recommendations }: TripMapProps) => {
             className="h-9 w-9"
             title={isExpanded ? "Minimize" : "Fullscreen"}
           >
-            {isExpanded ? (
-              <Minimize2 className="w-4 h-4" />
-            ) : (
-              <Maximize2 className="w-4 h-4" />
-            )}
+            {isExpanded ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
           </Button>
         </div>
       </div>
@@ -301,25 +387,44 @@ const TripMap = ({ tripDetails, recommendations }: TripMapProps) => {
       <div className={`relative ${isExpanded ? "h-[calc(100%-64px)]" : "h-[400px] md:h-[500px]"}`}>
         <div ref={mapContainerRef} className="h-full w-full" />
         
+        {/* Destination Preview Card */}
+        <div className="absolute top-4 right-4 z-[1000]">
+          <div className="bg-background/95 backdrop-blur-sm rounded-xl shadow-lg border border-border overflow-hidden w-52">
+            <img 
+              src={getDestinationImage(tripDetails.destinationPoint)}
+              alt={tripDetails.destinationPoint}
+              className="w-full h-24 object-cover"
+            />
+            <div className="p-3">
+              <h4 className="font-semibold text-foreground text-sm">{tripDetails.destinationPoint}</h4>
+              <p className="text-xs text-muted-foreground">Your destination</p>
+            </div>
+          </div>
+        </div>
+
         {/* Legend overlay */}
         <div className="absolute top-4 left-4 z-[1000]">
           <div className="bg-background/95 backdrop-blur-sm rounded-xl shadow-lg border border-border p-3 space-y-2">
-            <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Legend</h4>
+            <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Map Legend</h4>
             <div className="flex items-center gap-2 text-sm">
               <span>🚀</span>
-              <span className="text-foreground">Boarding Point</span>
-            </div>
-            <div className="flex items-center gap-2 text-sm">
-              <span>🎯</span>
-              <span className="text-foreground">Destination</span>
+              <span className="text-foreground">Departure</span>
             </div>
             <div className="flex items-center gap-2 text-sm">
               <span>📍</span>
-              <span className="text-foreground">Attractions</span>
+              <span className="text-foreground">Destination</span>
             </div>
             <div className="flex items-center gap-2 text-sm">
               <span>🏨</span>
               <span className="text-foreground">Hotels</span>
+            </div>
+            <div className="flex items-center gap-2 text-sm">
+              <span>🎯</span>
+              <span className="text-foreground">Attractions</span>
+            </div>
+            <div className="flex items-center gap-2 text-sm">
+              <span>{vehicleType === "car" ? "🚗" : "🏍️"}</span>
+              <span className="text-foreground">Transport</span>
             </div>
           </div>
         </div>

@@ -20,7 +20,7 @@ import {
   X,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { TripDetails, Recommendations } from "@/pages/Dashboard";
+import { TripDetails, Recommendations } from "@/types/trip";
 import { cn } from "@/lib/utils";
 
 interface Message {

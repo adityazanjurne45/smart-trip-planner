@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { Slider } from "@/components/ui/slider";
 import { MapPin, Navigation, Calendar, Wallet, Sparkles, Loader2, ArrowLeft, ArrowRight, Check, AlertTriangle } from "lucide-react";
-import { TripDetails } from "@/pages/Dashboard";
+import { TripDetails } from "@/types/trip";
 import { z } from "zod";
 import CityAutocomplete from "./CityAutocomplete";
 import { cn } from "@/lib/utils";

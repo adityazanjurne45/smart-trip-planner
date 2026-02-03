@@ -30,7 +30,7 @@ import {
   Loader2,
   FileText,
 } from "lucide-react";
-import { TripDetails, Recommendations } from "@/pages/Dashboard";
+import { TripDetails, Recommendations } from "@/types/trip";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 

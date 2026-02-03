@@ -1,6 +1,6 @@
 import { AlertTriangle, DollarSign, Clock, CloudRain, Info, CheckCircle2 } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { TripDetails, Recommendations } from "@/pages/Dashboard";
+import { TripDetails, Recommendations } from "@/types/trip";
 import { cn } from "@/lib/utils";
 
 interface TripWarningsProps {

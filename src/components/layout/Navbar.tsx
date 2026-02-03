@@ -80,8 +80,8 @@ const Navbar = () => {
 
   const navLinks = user ? [
     { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-    { to: "/dashboard", label: "Plan Trip", icon: Route },
-    { to: "/profile", label: "My Trips", icon: History },
+    { to: "/plan-trip", label: "Plan Trip", icon: Route },
+    { to: "/my-trips", label: "My Trips", icon: History },
   ] : [];
 
   const isActive = (path: string) => location.pathname === path;

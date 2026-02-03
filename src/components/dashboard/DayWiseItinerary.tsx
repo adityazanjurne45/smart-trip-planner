@@ -20,7 +20,7 @@ import {
   AlertTriangle,
   CheckCircle2,
 } from "lucide-react";
-import { Recommendations, TripDetails } from "@/pages/Dashboard";
+import { Recommendations, TripDetails } from "@/types/trip";
 import { cn } from "@/lib/utils";
 
 interface DayWiseItineraryProps {
