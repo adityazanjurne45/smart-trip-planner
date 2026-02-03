@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { TripDetails, Recommendations } from "@/pages/Dashboard";
+import { TripDetails, Recommendations } from "@/types/trip";
 import { MapPin, Building2, Car, ArrowLeft, Loader2, Clock, DollarSign, Star, Navigation, Save, Check, Calendar, Map, List, MapPinned } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";

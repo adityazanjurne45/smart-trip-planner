@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { TripDetails, Recommendations } from "@/pages/Dashboard";
+import { TripDetails, Recommendations } from "@/types/trip";
 
 export interface MarkerData {
   position: [number, number];

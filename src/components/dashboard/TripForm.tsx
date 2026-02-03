@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { MapPin, Navigation, Calendar, Wallet, Sparkles, Loader2 } from "lucide-react";
-import { TripDetails } from "@/pages/Dashboard";
+import { TripDetails } from "@/types/trip";
 import { z } from "zod";
 
 const tripSchema = z.object({

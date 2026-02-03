@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Star, MapPin, Users, ChevronDown, Sparkles, ArrowRight } from "lucide-react";
+import { ChevronDown, Sparkles, ArrowRight, Zap, Shield, Brain } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import heroImage from "@/assets/hero-travel.jpg";
 
@@ -10,37 +10,30 @@ const Hero = () => {
 
   return (
     <section className="relative min-h-screen flex flex-col justify-center overflow-hidden">
-      {/* Background Image with Premium Overlay */}
+      {/* Background Image with Strong Dark Overlay for Text Clarity */}
       <div className="absolute inset-0 z-0">
         <img
           src={heroImage}
           alt="Beautiful coastal Mediterranean town at sunset"
           className="w-full h-full object-cover"
         />
-        {/* Multi-layer gradient for depth and text clarity */}
-        <div className="absolute inset-0 bg-gradient-to-b from-background/90 via-background/60 to-background/95" />
-        <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-transparent to-accent/5" />
+        {/* Strong multi-layer gradient for maximum text readability */}
+        <div className="absolute inset-0 bg-gradient-to-b from-background/95 via-background/80 to-background" />
+        <div className="absolute inset-0 bg-gradient-to-r from-background/60 via-transparent to-background/40" />
+        <div className="absolute inset-0 bg-foreground/10" />
       </div>
 
       {/* Main Content */}
       <div className="relative z-10 container mx-auto px-4 pt-28 pb-20">
         <div className="max-w-4xl mx-auto text-center">
-          {/* Trust Badge */}
+          {/* Honest Badge */}
           <div 
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-card/80 backdrop-blur-sm border border-border shadow-soft mb-8 animate-fade-up"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-card/90 backdrop-blur-sm border border-border shadow-soft mb-8 animate-fade-up"
           >
-            <Star className="w-4 h-4 text-travel-gold fill-travel-gold" />
+            <Brain className="w-4 h-4 text-primary" />
             <span className="text-foreground text-sm font-medium">
-              Trusted by 10,000+ travelers worldwide
+              Smart AI-powered trip planning made simple
             </span>
-            <div className="flex -space-x-1.5">
-              {[1, 2, 3].map((i) => (
-                <div 
-                  key={i} 
-                  className="w-6 h-6 rounded-full bg-gradient-to-br from-primary to-accent border-2 border-card shadow-sm" 
-                />
-              ))}
-            </div>
           </div>
 
           {/* Headline */}
@@ -57,7 +50,7 @@ const Hero = () => {
 
           {/* Subheadline with improved contrast */}
           <p 
-            className="text-lg md:text-xl text-muted-foreground mb-10 max-w-2xl mx-auto leading-relaxed animate-fade-up" 
+            className="text-lg md:text-xl text-foreground/80 mb-10 max-w-2xl mx-auto leading-relaxed animate-fade-up" 
             style={{ animationDelay: "0.2s" }}
           >
             AI-powered trip planning that's{" "}
@@ -86,7 +79,7 @@ const Hero = () => {
               <Button 
                 variant="outline" 
                 size="xl" 
-                className="bg-card/50 backdrop-blur-sm hover:bg-card transition-all duration-300"
+                className="bg-card/80 backdrop-blur-sm hover:bg-card transition-all duration-300 border-border"
               >
                 Sign In
               </Button>
@@ -99,45 +92,45 @@ const Hero = () => {
             style={{ animationDelay: "0.4s" }}
           >
             {[
-              { label: "AI-Powered", color: "bg-primary/10 text-primary" },
-              { label: "Real-time Traffic", color: "bg-accent/10 text-accent" },
-              { label: "Budget Optimized", color: "bg-travel-forest/10 text-travel-forest" },
-              { label: "Hotel & Transport", color: "bg-travel-gold/10 text-travel-gold" },
+              { label: "AI-Powered", icon: Brain, color: "bg-primary/10 text-primary border-primary/20" },
+              { label: "Real-time Data", icon: Zap, color: "bg-accent/10 text-accent border-accent/20" },
+              { label: "Budget Optimized", icon: Shield, color: "bg-travel-forest/10 text-travel-forest border-travel-forest/20" },
             ].map((pill) => (
               <span 
                 key={pill.label}
-                className={`px-4 py-2 rounded-full text-sm font-medium ${pill.color} border border-current/10`}
+                className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium ${pill.color} border`}
               >
+                <pill.icon className="w-4 h-4" />
                 {pill.label}
               </span>
             ))}
           </div>
 
-          {/* Stats Cards */}
+          {/* Value Proposition Cards */}
           <div 
-            className="grid grid-cols-3 gap-4 max-w-lg mx-auto animate-fade-up" 
+            className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-2xl mx-auto animate-fade-up" 
             style={{ animationDelay: "0.5s" }}
           >
-            <div className="bg-card/80 backdrop-blur-sm rounded-2xl p-4 border border-border shadow-soft hover:shadow-medium transition-shadow">
-              <div className="flex items-center justify-center gap-1 mb-1">
-                <MapPin className="w-4 h-4 text-accent" />
-                <span className="text-2xl font-bold text-foreground">500+</span>
+            <div className="bg-card/90 backdrop-blur-sm rounded-2xl p-5 border border-border shadow-soft hover:shadow-medium transition-shadow text-left">
+              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center mb-3">
+                <Brain className="w-5 h-5 text-primary" />
               </div>
-              <span className="text-muted-foreground text-xs font-medium uppercase tracking-wider">Destinations</span>
+              <h3 className="font-semibold text-foreground mb-1">Smart Planning</h3>
+              <p className="text-sm text-muted-foreground">AI analyzes your preferences to create personalized itineraries</p>
             </div>
-            <div className="bg-card/80 backdrop-blur-sm rounded-2xl p-4 border border-border shadow-soft hover:shadow-medium transition-shadow">
-              <div className="flex items-center justify-center gap-1 mb-1">
-                <Users className="w-4 h-4 text-primary" />
-                <span className="text-2xl font-bold text-foreground">10K+</span>
+            <div className="bg-card/90 backdrop-blur-sm rounded-2xl p-5 border border-border shadow-soft hover:shadow-medium transition-shadow text-left">
+              <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center mb-3">
+                <Zap className="w-5 h-5 text-accent" />
               </div>
-              <span className="text-muted-foreground text-xs font-medium uppercase tracking-wider">Travelers</span>
+              <h3 className="font-semibold text-foreground mb-1">Instant Results</h3>
+              <p className="text-sm text-muted-foreground">Get hotel, transport & attraction recommendations in seconds</p>
             </div>
-            <div className="bg-card/80 backdrop-blur-sm rounded-2xl p-4 border border-border shadow-soft hover:shadow-medium transition-shadow">
-              <div className="flex items-center justify-center gap-1 mb-1">
-                <Star className="w-4 h-4 text-travel-gold fill-travel-gold" />
-                <span className="text-2xl font-bold text-foreground">4.9</span>
+            <div className="bg-card/90 backdrop-blur-sm rounded-2xl p-5 border border-border shadow-soft hover:shadow-medium transition-shadow text-left">
+              <div className="w-10 h-10 rounded-xl bg-travel-forest/10 flex items-center justify-center mb-3">
+                <Shield className="w-5 h-5 text-travel-forest" />
               </div>
-              <span className="text-muted-foreground text-xs font-medium uppercase tracking-wider">Rating</span>
+              <h3 className="font-semibold text-foreground mb-1">Budget Friendly</h3>
+              <p className="text-sm text-muted-foreground">Plans optimized for your budget without compromising quality</p>
             </div>
           </div>
         </div>
