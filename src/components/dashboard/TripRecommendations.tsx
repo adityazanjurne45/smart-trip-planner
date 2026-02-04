@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { TripDetails, Recommendations } from "@/types/trip";
-import { MapPin, Building2, Car, ArrowLeft, Loader2, Clock, DollarSign, Star, Navigation, Save, Check, Calendar, Map, List, MapPinned } from "lucide-react";
+import { TripDetails, Recommendations, PlaceImage } from "@/types/trip";
+import { MapPin, Building2, Car, ArrowLeft, Loader2, Clock, DollarSign, Star, Navigation, Save, Check, Calendar, Map, List, MapPinned, ImageIcon } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import WeatherCard from "./WeatherCard";
@@ -10,6 +10,7 @@ import DayWiseItinerary from "./DayWiseItinerary";
 import TripWarnings from "./TripWarnings";
 import TripActions from "./TripActions";
 import TripMap from "./TripMap";
+import PlaceImageGallery from "@/components/ui/PlaceImageGallery";
 import { UserProfile } from "@/types/profile";
 
 interface TripRecommendationsProps {
@@ -218,6 +219,21 @@ const TripRecommendations = ({
 
         {/* Overview Tab */}
         <TabsContent value="overview" className="space-y-6 animate-fade-in">
+          {/* Destination Hero Image */}
+          <div className="relative">
+            <PlaceImageGallery
+              query={tripDetails.destinationPoint}
+              type="destination"
+              showGallery
+              className="w-full"
+              aspectRatio={21 / 9}
+            />
+            <div className="absolute bottom-4 left-4 bg-black/60 backdrop-blur-sm rounded-xl px-4 py-2">
+              <h2 className="text-white text-xl font-bold">{tripDetails.destinationPoint}</h2>
+              <p className="text-white/80 text-sm">Your destination awaits</p>
+            </div>
+          </div>
+
           {/* Weather & Trip Summary Row */}
           <div className="grid md:grid-cols-2 gap-6">
             {/* Weather Card */}
@@ -335,19 +351,28 @@ const TripRecommendations = ({
               </div>
               <h2 className="text-xl font-semibold text-foreground">Tourist Places</h2>
             </div>
-            <div className="grid md:grid-cols-2 gap-4">
+            <div className="grid md:grid-cols-2 gap-6">
               {recommendations.touristPlaces.map((place, index) => (
-                <div key={index} className="travel-card p-5">
-                  <h3 className="font-semibold text-foreground mb-2">{place.name}</h3>
-                  <p className="text-muted-foreground text-sm mb-3">{place.description}</p>
-                  <div className="flex items-center gap-4 text-sm">
-                    <div className="flex items-center gap-1 text-muted-foreground">
-                      <Clock className="w-4 h-4" />
-                      {place.estimatedTime}
-                    </div>
-                    <div className="flex items-center gap-1 text-muted-foreground">
-                      <DollarSign className="w-4 h-4" />
-                      {place.entryFee}
+                <div key={index} className="travel-card overflow-hidden">
+                  <PlaceImageGallery
+                    query={`${place.name} ${tripDetails.destinationPoint}`}
+                    type="tourist_place"
+                    showGallery
+                    aspectRatio={16 / 10}
+                    showAttribution
+                  />
+                  <div className="p-5">
+                    <h3 className="font-semibold text-foreground mb-2">{place.name}</h3>
+                    <p className="text-muted-foreground text-sm mb-3">{place.description}</p>
+                    <div className="flex items-center gap-4 text-sm">
+                      <div className="flex items-center gap-1 text-muted-foreground">
+                        <Clock className="w-4 h-4" />
+                        {place.estimatedTime}
+                      </div>
+                      <div className="flex items-center gap-1 text-muted-foreground">
+                        <DollarSign className="w-4 h-4" />
+                        {place.entryFee}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -363,17 +388,25 @@ const TripRecommendations = ({
               </div>
               <h2 className="text-xl font-semibold text-foreground">Recommended Hotels</h2>
             </div>
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {recommendations.hotels.map((hotel, index) => (
-                <div key={index} className="travel-card p-5">
-                  <h3 className="font-semibold text-foreground mb-1">{hotel.name}</h3>
-                  <p className="text-muted-foreground text-sm mb-3">{hotel.location}</p>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-1 text-sm">
-                      <Star className="w-4 h-4 text-travel-gold fill-travel-gold" />
-                      <span className="text-foreground font-medium">{hotel.rating}</span>
+                <div key={index} className="travel-card overflow-hidden">
+                  <PlaceImageGallery
+                    query={`${hotel.name} hotel ${tripDetails.destinationPoint}`}
+                    type="hotel"
+                    aspectRatio={4 / 3}
+                    showAttribution
+                  />
+                  <div className="p-4">
+                    <h3 className="font-semibold text-foreground mb-1">{hotel.name}</h3>
+                    <p className="text-muted-foreground text-sm mb-3">{hotel.location}</p>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-1 text-sm">
+                        <Star className="w-4 h-4 text-travel-gold fill-travel-gold" />
+                        <span className="text-foreground font-medium">{hotel.rating}</span>
+                      </div>
+                      <div className="text-primary font-semibold">{hotel.pricePerNight}/night</div>
                     </div>
-                    <div className="text-primary font-semibold">{hotel.pricePerNight}/night</div>
                   </div>
                 </div>
               ))}
@@ -388,15 +421,23 @@ const TripRecommendations = ({
               </div>
               <h2 className="text-xl font-semibold text-foreground">Transportation Options</h2>
             </div>
-            <div className="grid md:grid-cols-2 gap-4">
+            <div className="grid md:grid-cols-2 gap-6">
               {recommendations.vehicles.map((vehicle, index) => (
-                <div key={index} className="travel-card p-5">
-                  <div className="flex items-center justify-between mb-2">
-                    <h3 className="font-semibold text-foreground">{vehicle.type}</h3>
-                    <span className="text-primary font-semibold">{vehicle.estimatedCost}</span>
+                <div key={index} className="travel-card overflow-hidden">
+                  <PlaceImageGallery
+                    query={`${vehicle.type} India transportation rental`}
+                    type="transport"
+                    aspectRatio={16 / 9}
+                    showAttribution
+                  />
+                  <div className="p-5">
+                    <div className="flex items-center justify-between mb-2">
+                      <h3 className="font-semibold text-foreground">{vehicle.type}</h3>
+                      <span className="text-primary font-semibold">{vehicle.estimatedCost}</span>
+                    </div>
+                    <p className="text-muted-foreground text-sm mb-2">{vehicle.reason}</p>
+                    <p className="text-xs text-muted-foreground">Best for: {vehicle.suitableFor}</p>
                   </div>
-                  <p className="text-muted-foreground text-sm mb-2">{vehicle.reason}</p>
-                  <p className="text-xs text-muted-foreground">Best for: {vehicle.suitableFor}</p>
                 </div>
               ))}
             </div>
