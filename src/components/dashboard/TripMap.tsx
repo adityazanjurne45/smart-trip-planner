@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { TripDetails, Recommendations } from "@/types/trip";
-import { Map, Maximize2, Minimize2, RotateCcw, Play, Pause, Navigation, Layers } from "lucide-react";
+import { TripDetails, Recommendations, PlaceImage } from "@/types/trip";
+import { Map, Maximize2, Minimize2, RotateCcw, Play, Pause, Navigation, Layers, Camera, ImageOff } from "lucide-react";
 import { useMapData } from "./map/useMapData";
+import { fetchPlaceImages } from "@/lib/api/images";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
@@ -19,27 +20,64 @@ interface TripMapProps {
   recommendations: Recommendations | null;
 }
 
-// Destination images for preview card
-const destinationImages: Record<string, string> = {
-  paris: "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=400&h=200&fit=crop",
-  london: "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=400&h=200&fit=crop",
-  tokyo: "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=400&h=200&fit=crop",
-  dubai: "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=400&h=200&fit=crop",
-  singapore: "https://images.unsplash.com/photo-1525625293386-3f8f99389edd?w=400&h=200&fit=crop",
-  bangkok: "https://images.unsplash.com/photo-1508009603885-50cf7c579365?w=400&h=200&fit=crop",
-  bali: "https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=400&h=200&fit=crop",
-  rome: "https://images.unsplash.com/photo-1552832230-c0197dd311b5?w=400&h=200&fit=crop",
-  sydney: "https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9?w=400&h=200&fit=crop",
-  mumbai: "https://images.unsplash.com/photo-1570168007204-dfb528c6958f?w=400&h=200&fit=crop",
-  delhi: "https://images.unsplash.com/photo-1587474260584-136574528ed5?w=400&h=200&fit=crop",
-  goa: "https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?w=400&h=200&fit=crop",
-  jaipur: "https://images.unsplash.com/photo-1477587458883-47145ed94245?w=400&h=200&fit=crop",
-  default: "https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=400&h=200&fit=crop",
-};
+// Component for destination preview with real images
+const DestinationPreview = ({ destination }: { destination: string }) => {
+  const [image, setImage] = useState<PlaceImage | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(false);
 
-const getDestinationImage = (destination: string): string => {
-  const key = destination.toLowerCase().split(",")[0].trim();
-  return destinationImages[key] || destinationImages.default;
+  useEffect(() => {
+    const loadImage = async () => {
+      setIsLoading(true);
+      try {
+        const images = await fetchPlaceImages(destination, 'destination', 1);
+        if (images.length > 0) {
+          setImage(images[0]);
+        } else {
+          setError(true);
+        }
+      } catch {
+        setError(true);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    loadImage();
+  }, [destination]);
+
+  return (
+    <div className="bg-background/95 backdrop-blur-sm rounded-xl shadow-lg border border-border overflow-hidden w-52">
+      {isLoading ? (
+        <div className="w-full h-24 bg-muted animate-pulse flex items-center justify-center">
+          <Camera className="w-6 h-6 text-muted-foreground" />
+        </div>
+      ) : error || !image ? (
+        <div className="w-full h-24 bg-muted flex items-center justify-center">
+          <ImageOff className="w-6 h-6 text-muted-foreground" />
+        </div>
+      ) : (
+        <img 
+          src={image.thumbUrl}
+          alt={destination}
+          className="w-full h-24 object-cover"
+        />
+      )}
+      <div className="p-3">
+        <h4 className="font-semibold text-foreground text-sm">{destination}</h4>
+        <p className="text-xs text-muted-foreground">Your destination</p>
+        {image && (
+          <a 
+            href={image.photographerUrl} 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="text-xs text-primary hover:underline mt-1 block"
+          >
+            Photo by {image.photographer}
+          </a>
+        )}
+      </div>
+    </div>
+  );
 };
 
 // Custom icon creator with cleaner design
@@ -387,19 +425,9 @@ const TripMap = ({ tripDetails, recommendations }: TripMapProps) => {
       <div className={`relative ${isExpanded ? "h-[calc(100%-64px)]" : "h-[400px] md:h-[500px]"}`}>
         <div ref={mapContainerRef} className="h-full w-full" />
         
-        {/* Destination Preview Card */}
+        {/* Destination Preview Card with real images */}
         <div className="absolute top-4 right-4 z-[1000]">
-          <div className="bg-background/95 backdrop-blur-sm rounded-xl shadow-lg border border-border overflow-hidden w-52">
-            <img 
-              src={getDestinationImage(tripDetails.destinationPoint)}
-              alt={tripDetails.destinationPoint}
-              className="w-full h-24 object-cover"
-            />
-            <div className="p-3">
-              <h4 className="font-semibold text-foreground text-sm">{tripDetails.destinationPoint}</h4>
-              <p className="text-xs text-muted-foreground">Your destination</p>
-            </div>
-          </div>
+          <DestinationPreview destination={tripDetails.destinationPoint} />
         </div>
 
         {/* Legend overlay */}
