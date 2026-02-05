@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
 import Navbar from "@/components/layout/Navbar";
 import { useProfile } from "@/hooks/useProfile";
-import { Loader2, MapPin, Calendar, Wallet, Star, Trash2, Plus, Compass } from "lucide-react";
+import { Loader2, MapPin, Calendar, Wallet, Star, Trash2, Plus, Compass, GitCompare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -18,10 +18,12 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import TripComparison from "@/components/dashboard/TripComparison";
 
 const MyTrips = () => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [showComparison, setShowComparison] = useState(false);
   const navigate = useNavigate();
 
   const { pastTrips, loading: profileLoading, deletePastTrip } = useProfile(user?.id);
@@ -93,7 +95,25 @@ const MyTrips = () => {
                 Plan New Trip
               </Button>
             </Link>
+            {pastTrips && pastTrips.length >= 2 && (
+              <Button
+                variant="outline"
+                className="gap-2"
+                onClick={() => setShowComparison(!showComparison)}
+              >
+                <GitCompare className="w-4 h-4" />
+                Compare Trips
+              </Button>
+            )}
           </div>
+
+          {/* Trip Comparison */}
+          {showComparison && pastTrips && pastTrips.length >= 2 && (
+            <TripComparison
+              trips={pastTrips}
+              onClose={() => setShowComparison(false)}
+            />
+          )}
 
           {/* Trips List or Empty State */}
           {!pastTrips || pastTrips.length === 0 ? (
