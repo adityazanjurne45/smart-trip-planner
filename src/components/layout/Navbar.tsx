@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
-
+import SmartNotificationPanel from "@/components/dashboard/SmartNotificationPanel";
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [profileData, setProfileData] = useState<{ full_name: string | null; avatar_url: string | null } | null>(null);
@@ -128,6 +128,9 @@ const Navbar = () => {
 
           {/* Right Section - Auth/Avatar */}
           <div className="hidden md:flex items-center gap-3">
+            {user && (
+              <SmartNotificationPanel />
+            )}
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -230,9 +233,15 @@ const Navbar = () => {
               ))}
               <div className="flex flex-col gap-2 px-4 pt-4 border-t border-border mt-2">
                 {user ? (
-                  <Button variant="ghost" onClick={handleLogout} className="w-full justify-start text-destructive">
-                    Log out
-                  </Button>
+                  <>
+                    <div className="flex items-center justify-between pb-2">
+                      <span className="text-sm text-muted-foreground">Notifications</span>
+                      <SmartNotificationPanel />
+                    </div>
+                    <Button variant="ghost" onClick={handleLogout} className="w-full justify-start text-destructive">
+                      Log out
+                    </Button>
+                  </>
                 ) : (
                   <>
                     <Link to="/auth" onClick={() => setIsOpen(false)}>
