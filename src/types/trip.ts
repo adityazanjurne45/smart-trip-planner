@@ -3,6 +3,8 @@ export interface TripDetails {
   destinationPoint: string;
   duration: number;
   budget: number;
+  startDate?: string;
+  endDate?: string;
 }
 
 export interface PlaceImage {

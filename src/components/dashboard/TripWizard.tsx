@@ -4,11 +4,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { Slider } from "@/components/ui/slider";
-import { MapPin, Navigation, Calendar, Wallet, Sparkles, Loader2, ArrowLeft, ArrowRight, Check, AlertTriangle } from "lucide-react";
+import { MapPin, Navigation, Calendar, Wallet, Sparkles, Loader2, ArrowLeft, ArrowRight, Check, AlertTriangle, CalendarDays } from "lucide-react";
 import { TripDetails } from "@/types/trip";
 import { z } from "zod";
 import CityAutocomplete from "./CityAutocomplete";
 import { cn } from "@/lib/utils";
+import TripDatePicker, { TripDates } from "./TripDatePicker";
+import { differenceInDays, format } from "date-fns";
 
 const tripSchema = z.object({
   boardingPoint: z.string().min(2, "Boarding point is required").max(100),
@@ -24,8 +26,9 @@ interface TripWizardProps {
 const STEPS = [
   { id: 1, title: "Departure", icon: MapPin, color: "text-primary", bgColor: "bg-primary/10" },
   { id: 2, title: "Destination", icon: Navigation, color: "text-accent", bgColor: "bg-accent/10" },
-  { id: 3, title: "Duration", icon: Calendar, color: "text-travel-forest", bgColor: "bg-travel-forest/10" },
-  { id: 4, title: "Budget", icon: Wallet, color: "text-travel-gold", bgColor: "bg-travel-gold/10" },
+  { id: 3, title: "Dates", icon: CalendarDays, color: "text-travel-coral", bgColor: "bg-travel-coral/10" },
+  { id: 4, title: "Duration", icon: Calendar, color: "text-travel-forest", bgColor: "bg-travel-forest/10" },
+  { id: 5, title: "Budget", icon: Wallet, color: "text-travel-gold", bgColor: "bg-travel-gold/10" },
 ];
 
 const BUDGET_LEVELS = [
@@ -39,6 +42,7 @@ const TripWizard = ({ onSubmit }: TripWizardProps) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [boardingPoint, setBoardingPoint] = useState("");
   const [destinationPoint, setDestinationPoint] = useState("");
+  const [tripDates, setTripDates] = useState<TripDates | undefined>();
   const [duration, setDuration] = useState("7");
   const [budget, setBudget] = useState("2000");
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -76,13 +80,19 @@ const TripWizard = ({ onSubmit }: TripWizardProps) => {
         }
         break;
       case 3:
+        if (!tripDates?.startDate || !tripDates?.endDate) {
+          setErrors({ dates: "Please select your travel dates" });
+          return false;
+        }
+        break;
+      case 4:
         const dur = parseInt(duration);
         if (!dur || dur < 1 || dur > 30) {
           setErrors({ duration: "Duration must be between 1 and 30 days" });
           return false;
         }
         break;
-      case 4:
+      case 5:
         const bud = parseInt(budget);
         if (!bud || bud < 100) {
           setErrors({ budget: "Budget must be at least $100" });
@@ -112,11 +122,13 @@ const TripWizard = ({ onSubmit }: TripWizardProps) => {
     if (!validateStep(currentStep)) return;
     
     setIsSubmitting(true);
-    const data = {
+    const data: TripDetails = {
       boardingPoint: boardingPoint.trim(),
       destinationPoint: destinationPoint.trim(),
       duration: parseInt(duration),
       budget: parseInt(budget),
+      startDate: tripDates?.startDate ? format(tripDates.startDate, "yyyy-MM-dd") : undefined,
+      endDate: tripDates?.endDate ? format(tripDates.endDate, "yyyy-MM-dd") : undefined,
     };
 
     try {
@@ -135,6 +147,12 @@ const TripWizard = ({ onSubmit }: TripWizardProps) => {
       }
       setIsSubmitting(false);
     }
+  };
+
+  const handleDateChange = (dates: TripDates) => {
+    setTripDates(dates);
+    const days = differenceInDays(dates.endDate, dates.startDate);
+    setDuration(String(days));
   };
 
   const renderStepContent = () => {
@@ -187,6 +205,24 @@ const TripWizard = ({ onSubmit }: TripWizardProps) => {
           </div>
         );
       case 3:
+        return (
+          <div className="space-y-6 animate-fade-up">
+            <div className="text-center">
+              <div className={`w-16 h-16 rounded-2xl ${currentStepData.bgColor} flex items-center justify-center mx-auto mb-4`}>
+                <StepIcon className={`w-8 h-8 ${currentStepData.color}`} />
+              </div>
+              <h2 className="text-2xl font-bold text-foreground mb-2">When do you want to travel?</h2>
+              <p className="text-muted-foreground">Select your departure and return dates</p>
+            </div>
+            
+            <TripDatePicker value={tripDates} onChange={handleDateChange} />
+            
+            {errors.dates && (
+              <p className="text-sm text-destructive text-center">{errors.dates}</p>
+            )}
+          </div>
+        );
+      case 4:
         return (
           <div className="space-y-6 animate-fade-up">
             <div className="text-center">
@@ -256,7 +292,7 @@ const TripWizard = ({ onSubmit }: TripWizardProps) => {
             </div>
           </div>
         );
-      case 4:
+      case 5:
         const budgetLevel = getBudgetLevel();
         return (
           <div className="space-y-6 animate-fade-up">

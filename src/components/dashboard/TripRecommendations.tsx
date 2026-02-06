@@ -12,6 +12,8 @@ import TripActions from "./TripActions";
 import TripMap from "./TripMap";
 import PlaceImageGallery from "@/components/ui/PlaceImageGallery";
 import { UserProfile } from "@/types/profile";
+import DestinationTime from "./DestinationTime";
+import WeatherSuggestions from "./WeatherSuggestions";
 
 interface TripRecommendationsProps {
   tripDetails: TripDetails;
@@ -234,33 +236,52 @@ const TripRecommendations = ({
             </div>
           </div>
 
-          {/* Weather & Trip Summary Row */}
+          {/* Weather, Time & Trip Summary Row */}
           <div className="grid md:grid-cols-2 gap-6">
-            {/* Weather Card */}
-            <WeatherCard destination={tripDetails.destinationPoint} onWeatherLoad={setWeather} />
+            {/* Weather Card with Suggestions */}
+            <div className="space-y-4">
+              <WeatherCard destination={tripDetails.destinationPoint} onWeatherLoad={setWeather} />
+              {weather && (
+                <WeatherSuggestions weather={weather} />
+              )}
+            </div>
             
-            {/* Trip Summary */}
-            <div className="travel-card p-6 bg-primary/5 border-primary/20 flex flex-col justify-between">
-              <div>
-                <div className="flex items-center gap-2 text-primary font-medium mb-2">
-                  <Navigation className="w-4 h-4" />
-                  Your Trip Summary
+            {/* Trip Summary with Destination Time */}
+            <div className="space-y-4">
+              <DestinationTime destination={tripDetails.destinationPoint} showFullDetails />
+              
+              <div className="travel-card p-6 bg-primary/5 border-primary/20 flex flex-col justify-between">
+                <div>
+                  <div className="flex items-center gap-2 text-primary font-medium mb-2">
+                    <Navigation className="w-4 h-4" />
+                    Your Trip Summary
+                  </div>
+                  <p className="text-foreground">{recommendations.summary}</p>
                 </div>
-                <p className="text-foreground">{recommendations.summary}</p>
-              </div>
-              <div className="flex gap-6 text-sm mt-4">
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-foreground">{tripDetails.duration}</div>
-                  <div className="text-muted-foreground">Days</div>
+                <div className="flex gap-6 text-sm mt-4">
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-foreground">{tripDetails.duration}</div>
+                    <div className="text-muted-foreground">Days</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-foreground">${tripDetails.budget}</div>
+                    <div className="text-muted-foreground">Budget</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-foreground">{recommendations.touristPlaces.length}</div>
+                    <div className="text-muted-foreground">Places</div>
+                  </div>
                 </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-foreground">${tripDetails.budget}</div>
-                  <div className="text-muted-foreground">Budget</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-foreground">{recommendations.touristPlaces.length}</div>
-                  <div className="text-muted-foreground">Places</div>
-                </div>
+                {tripDetails.startDate && (
+                  <div className="mt-4 pt-4 border-t border-border text-sm text-muted-foreground">
+                    📅 Trip starts: {new Date(tripDetails.startDate).toLocaleDateString('en-US', { 
+                      weekday: 'long', 
+                      year: 'numeric', 
+                      month: 'long', 
+                      day: 'numeric' 
+                    })}
+                  </div>
+                )}
               </div>
             </div>
           </div>
