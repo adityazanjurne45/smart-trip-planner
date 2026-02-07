@@ -6,6 +6,7 @@ import Navbar from "@/components/layout/Navbar";
 import TripWizard from "@/components/dashboard/TripWizard";
 import TripRecommendations from "@/components/dashboard/TripRecommendations";
 import AIAssistant from "@/components/dashboard/AIAssistant";
+import AIProcessingScreen from "@/components/dashboard/AIProcessingScreen";
 import { Loader2, MapPin, Sparkles } from "lucide-react";
 import { useProfile } from "@/hooks/useProfile";
 import { TripDetails, Recommendations } from "@/types/trip";
@@ -16,6 +17,7 @@ const PlanTrip = () => {
   const [tripDetails, setTripDetails] = useState<TripDetails | null>(null);
   const [recommendations, setRecommendations] = useState<Recommendations | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [showProcessingScreen, setShowProcessingScreen] = useState(false);
   const navigate = useNavigate();
 
   const { profile } = useProfile(user?.id);
@@ -44,17 +46,24 @@ const PlanTrip = () => {
 
   const handleTripSubmit = (details: TripDetails) => {
     setTripDetails(details);
+    setShowProcessingScreen(true);
     setIsGenerating(true);
+  };
+
+  const handleProcessingComplete = () => {
+    // Keep showing until recommendations are ready
   };
 
   const handleRecommendationsGenerated = (recs: Recommendations) => {
     setRecommendations(recs);
     setIsGenerating(false);
+    setShowProcessingScreen(false);
   };
 
   const handleNewTrip = () => {
     setTripDetails(null);
     setRecommendations(null);
+    setShowProcessingScreen(false);
   };
 
   if (loading) {
@@ -65,6 +74,29 @@ const PlanTrip = () => {
           <p className="text-muted-foreground">Loading...</p>
         </div>
       </div>
+    );
+  }
+
+  // Show AI Processing Screen while generating
+  if (showProcessingScreen && tripDetails && !recommendations) {
+    return (
+      <>
+        <AIProcessingScreen 
+          tripDetails={tripDetails}
+          onComplete={handleProcessingComplete}
+        />
+        {/* Hidden TripRecommendations to trigger generation */}
+        <div style={{ display: 'none' }}>
+          <TripRecommendations
+            tripDetails={tripDetails}
+            recommendations={recommendations}
+            isGenerating={isGenerating}
+            onGenerated={handleRecommendationsGenerated}
+            onNewTrip={handleNewTrip}
+            userProfile={profile}
+          />
+        </div>
+      </>
     );
   }
 

@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { ChevronDown, Sparkles, ArrowRight, Zap, Shield, Brain } from "lucide-react";
+import { ChevronDown, Sparkles, ArrowRight, Zap, Shield, Brain, User, LogIn } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import heroImage from "@/assets/hero-travel.jpg";
 
@@ -59,31 +59,50 @@ const Hero = () => {
             <span className="text-travel-forest font-semibold">personalized</span> just for you.
           </p>
 
-          {/* CTA Buttons */}
+          {/* Auth Section - Improved UI */}
           <div 
-            className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12 animate-fade-up" 
+            className="animate-fade-up mb-12" 
             style={{ animationDelay: "0.3s" }}
           >
-            <Link to="/auth?mode=signup">
-              <Button 
-                variant="travel" 
-                size="xl" 
-                className="group shadow-hero hover:shadow-xl transition-all duration-300 hover:scale-105"
-              >
-                <Sparkles className="w-5 h-5 mr-2" />
-                Start Planning Free
-                <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
-              </Button>
-            </Link>
-            <Link to="/auth">
-              <Button 
-                variant="outline" 
-                size="xl" 
-                className="bg-card/80 backdrop-blur-sm hover:bg-card transition-all duration-300 border-border"
-              >
-                Sign In
-              </Button>
-            </Link>
+            {/* Primary CTA for New Users */}
+            <div className="mb-6">
+              <Link to="/auth?mode=signup">
+                <Button 
+                  variant="travel" 
+                  size="xl" 
+                  className="group shadow-hero hover:shadow-xl transition-all duration-300 hover:scale-105"
+                >
+                  <Sparkles className="w-5 h-5 mr-2" />
+                  Create Free Account
+                  <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                </Button>
+              </Link>
+              <p className="text-sm text-muted-foreground mt-3">
+                Get personalized AI recommendations, save trips & more
+              </p>
+            </div>
+            
+            {/* Separator */}
+            <div className="flex items-center gap-4 max-w-xs mx-auto mb-6">
+              <div className="flex-1 h-px bg-border" />
+              <span className="text-xs text-muted-foreground uppercase tracking-wider">or</span>
+              <div className="flex-1 h-px bg-border" />
+            </div>
+            
+            {/* Secondary CTA for Existing Users */}
+            <div className="flex items-center justify-center gap-2">
+              <span className="text-muted-foreground text-sm">Already have an account?</span>
+              <Link to="/auth">
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  className="gap-2 hover:bg-primary/10 hover:text-primary"
+                >
+                  <LogIn className="w-4 h-4" />
+                  Sign In
+                </Button>
+              </Link>
+            </div>
           </div>
 
           {/* Feature Pills */}

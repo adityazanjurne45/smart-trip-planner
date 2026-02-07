@@ -1,30 +1,26 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
 import Navbar from "@/components/layout/Navbar";
 import { useProfile } from "@/hooks/useProfile";
-import { Loader2, MapPin, Calendar, Wallet, Star, Trash2, Plus, Compass, GitCompare } from "lucide-react";
+import { Loader2, Plus, Compass, GitCompare, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
 import TripComparison from "@/components/dashboard/TripComparison";
+import TripCard from "@/components/mytrips/TripCard";
+import TripFilters from "@/components/mytrips/TripFilters";
+import { useToast } from "@/hooks/use-toast";
 
 const MyTrips = () => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [showComparison, setShowComparison] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [yearFilter, setYearFilter] = useState("all");
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   const { pastTrips, loading: profileLoading, deletePastTrip } = useProfile(user?.id);
 
@@ -50,6 +46,64 @@ const MyTrips = () => {
     return () => subscription.unsubscribe();
   }, [navigate]);
 
+  // Get available years from trips
+  const availableYears = useMemo(() => {
+    if (!pastTrips) return [];
+    const years = new Set(pastTrips.map(trip => new Date(trip.trip_date).getFullYear().toString()));
+    return Array.from(years).sort((a, b) => parseInt(b) - parseInt(a));
+  }, [pastTrips]);
+
+  // Get trip status
+  const getTripStatus = (trip: typeof pastTrips[0]) => {
+    const tripDate = new Date(trip.trip_date);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    const endDate = new Date(tripDate);
+    endDate.setDate(endDate.getDate() + trip.duration);
+    
+    if (today < tripDate) return "upcoming";
+    if (today >= tripDate && today <= endDate) return "ongoing";
+    return "completed";
+  };
+
+  // Filter trips
+  const filteredTrips = useMemo(() => {
+    if (!pastTrips) return [];
+    
+    return pastTrips.filter(trip => {
+      // Search filter
+      const matchesSearch = searchQuery === "" || 
+        trip.destination.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        trip.boarding_point.toLowerCase().includes(searchQuery.toLowerCase());
+      
+      // Status filter
+      const status = getTripStatus(trip);
+      const matchesStatus = statusFilter === "all" || status === statusFilter;
+      
+      // Year filter
+      const tripYear = new Date(trip.trip_date).getFullYear().toString();
+      const matchesYear = yearFilter === "all" || tripYear === yearFilter;
+      
+      return matchesSearch && matchesStatus && matchesYear;
+    });
+  }, [pastTrips, searchQuery, statusFilter, yearFilter]);
+
+  // Separate upcoming and past trips
+  const { upcomingTrips, pastTripsList } = useMemo(() => {
+    const upcoming = filteredTrips.filter(trip => getTripStatus(trip) !== "completed");
+    const past = filteredTrips.filter(trip => getTripStatus(trip) === "completed");
+    return { upcomingTrips: upcoming, pastTripsList: past };
+  }, [filteredTrips]);
+
+  const handleDuplicate = (trip: typeof pastTrips[0]) => {
+    toast({
+      title: "Trip duplicated!",
+      description: `Creating a new trip based on your ${trip.destination} itinerary.`,
+    });
+    navigate("/plan-trip");
+  };
+
   if (loading || profileLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -61,21 +115,13 @@ const MyTrips = () => {
     );
   }
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
-  };
-
   return (
     <div className="min-h-screen bg-secondary/20">
       <Navbar />
       <main className="container mx-auto px-4 pt-24 pb-12">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-6xl mx-auto">
           {/* Header */}
-          <div className="flex items-center justify-between mb-8 animate-fade-up">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8 animate-fade-up">
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center">
                 <Compass className="w-6 h-6 text-primary" />
@@ -89,22 +135,24 @@ const MyTrips = () => {
                 </p>
               </div>
             </div>
-            <Link to="/plan-trip">
-              <Button variant="travel" className="gap-2">
-                <Plus className="w-4 h-4" />
-                Plan New Trip
-              </Button>
-            </Link>
-            {pastTrips && pastTrips.length >= 2 && (
-              <Button
-                variant="outline"
-                className="gap-2"
-                onClick={() => setShowComparison(!showComparison)}
-              >
-                <GitCompare className="w-4 h-4" />
-                Compare Trips
-              </Button>
-            )}
+            <div className="flex gap-3">
+              {pastTrips && pastTrips.length >= 2 && (
+                <Button
+                  variant="outline"
+                  className="gap-2"
+                  onClick={() => setShowComparison(!showComparison)}
+                >
+                  <GitCompare className="w-4 h-4" />
+                  Compare Trips
+                </Button>
+              )}
+              <Link to="/plan-trip">
+                <Button variant="travel" className="gap-2">
+                  <Plus className="w-4 h-4" />
+                  Plan New Trip
+                </Button>
+              </Link>
+            </div>
           </div>
 
           {/* Trip Comparison */}
@@ -112,6 +160,19 @@ const MyTrips = () => {
             <TripComparison
               trips={pastTrips}
               onClose={() => setShowComparison(false)}
+            />
+          )}
+
+          {/* Filters */}
+          {pastTrips && pastTrips.length > 0 && (
+            <TripFilters
+              searchQuery={searchQuery}
+              onSearchChange={setSearchQuery}
+              statusFilter={statusFilter}
+              onStatusChange={setStatusFilter}
+              yearFilter={yearFilter}
+              onYearChange={setYearFilter}
+              availableYears={availableYears}
             />
           )}
 
@@ -136,90 +197,63 @@ const MyTrips = () => {
                 </Link>
               </CardContent>
             </Card>
+          ) : filteredTrips.length === 0 ? (
+            <Card className="border-border shadow-soft animate-fade-up">
+              <CardContent className="p-12 text-center">
+                <div className="w-16 h-16 rounded-full bg-muted/50 flex items-center justify-center mx-auto mb-4">
+                  <Search className="w-8 h-8 text-muted-foreground" />
+                </div>
+                <h3 className="text-lg font-semibold text-foreground mb-2">
+                  No trips found
+                </h3>
+                <p className="text-muted-foreground">
+                  Try adjusting your search or filters
+                </p>
+              </CardContent>
+            </Card>
           ) : (
-            <div className="grid gap-4 animate-fade-up" style={{ animationDelay: "0.1s" }}>
-              {pastTrips.map((trip, index) => (
-                <Card 
-                  key={trip.id} 
-                  className="border-border shadow-soft hover:shadow-medium transition-all group"
-                  style={{ animationDelay: `${index * 0.05}s` }}
-                >
-                  <CardContent className="p-6">
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-2">
-                          <MapPin className="w-5 h-5 text-primary" />
-                          <h3 className="text-lg font-semibold text-foreground">
-                            {trip.boarding_point} → {trip.destination}
-                          </h3>
-                        </div>
-                        
-                        <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground mb-3">
-                          <span className="flex items-center gap-1">
-                            <Calendar className="w-4 h-4" />
-                            {trip.duration} days
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <Wallet className="w-4 h-4" />
-                            ${trip.budget.toLocaleString()}
-                          </span>
-                          <span>{formatDate(trip.trip_date)}</span>
-                        </div>
+            <div className="space-y-8">
+              {/* Upcoming Trips */}
+              {upcomingTrips.length > 0 && (
+                <div className="animate-fade-up">
+                  <h2 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+                    Upcoming Trips ({upcomingTrips.length})
+                  </h2>
+                  <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {upcomingTrips.map((trip, index) => (
+                      <TripCard
+                        key={trip.id}
+                        trip={trip}
+                        onDelete={deletePastTrip}
+                        onDuplicate={handleDuplicate}
+                        index={index}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
 
-                        {trip.rating && (
-                          <div className="flex items-center gap-1">
-                            {[...Array(5)].map((_, i) => (
-                              <Star
-                                key={i}
-                                className={`w-4 h-4 ${
-                                  i < trip.rating!
-                                    ? "text-travel-gold fill-travel-gold"
-                                    : "text-muted"
-                                }`}
-                              />
-                            ))}
-                          </div>
-                        )}
-
-                        {trip.notes && (
-                          <p className="text-sm text-muted-foreground mt-2 line-clamp-2">
-                            {trip.notes}
-                          </p>
-                        )}
-                      </div>
-
-                      <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                          <Button 
-                            variant="ghost" 
-                            size="icon"
-                            className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                          <AlertDialogHeader>
-                            <AlertDialogTitle>Delete this trip?</AlertDialogTitle>
-                            <AlertDialogDescription>
-                              This will permanently delete the trip to {trip.destination} from your history. This action cannot be undone.
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel>Cancel</AlertDialogCancel>
-                            <AlertDialogAction
-                              onClick={() => deletePastTrip(trip.id)}
-                              className="bg-destructive hover:bg-destructive/90"
-                            >
-                              Delete
-                            </AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+              {/* Past Trips */}
+              {pastTripsList.length > 0 && (
+                <div className="animate-fade-up" style={{ animationDelay: "0.1s" }}>
+                  <h2 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-travel-forest" />
+                    Past Trips ({pastTripsList.length})
+                  </h2>
+                  <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {pastTripsList.map((trip, index) => (
+                      <TripCard
+                        key={trip.id}
+                        trip={trip}
+                        onDelete={deletePastTrip}
+                        onDuplicate={handleDuplicate}
+                        index={index}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>
