@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TripDetails, Recommendations, PlaceImage } from "@/types/trip";
-import { MapPin, Building2, Car, ArrowLeft, Loader2, Clock, DollarSign, Star, Navigation, Save, Check, Calendar, Map, List, MapPinned, ImageIcon } from "lucide-react";
+import { MapPin, Building2, Car, ArrowLeft, Loader2, Clock, DollarSign, Star, Navigation, Save, Check, Calendar, Map, List, MapPinned, ImageIcon, Ticket } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import WeatherCard from "./WeatherCard";
@@ -14,6 +14,8 @@ import PlaceImageGallery from "@/components/ui/PlaceImageGallery";
 import { UserProfile } from "@/types/profile";
 import DestinationTime from "./DestinationTime";
 import WeatherSuggestions from "./WeatherSuggestions";
+import TicketBooking from "./TicketBooking";
+import SmartWarningsCard from "./SmartWarningsCard";
 
 interface TripRecommendationsProps {
   tripDetails: TripDetails;
@@ -200,7 +202,7 @@ const TripRecommendations = ({
 
       {/* Tabs for different views */}
       <Tabs defaultValue="overview" className="w-full">
-        <TabsList className="grid w-full grid-cols-4 mb-6">
+        <TabsList className="grid w-full grid-cols-5 mb-6">
           <TabsTrigger value="overview" className="gap-2">
             <List className="w-4 h-4" />
             <span className="hidden sm:inline">Overview</span>
@@ -216,6 +218,10 @@ const TripRecommendations = ({
           <TabsTrigger value="details" className="gap-2">
             <Map className="w-4 h-4" />
             <span className="hidden sm:inline">Details</span>
+          </TabsTrigger>
+          <TabsTrigger value="booking" className="gap-2">
+            <Ticket className="w-4 h-4" />
+            <span className="hidden sm:inline">Book Tickets</span>
           </TabsTrigger>
         </TabsList>
 
@@ -287,6 +293,11 @@ const TripRecommendations = ({
           </div>
 
           {/* Smart Warnings */}
+          <SmartWarningsCard 
+            tripDetails={tripDetails} 
+            destination={tripDetails.destinationPoint} 
+          />
+          
           <TripWarnings
             tripDetails={tripDetails}
             recommendations={recommendations}
@@ -463,6 +474,11 @@ const TripRecommendations = ({
               ))}
             </div>
           </div>
+        </TabsContent>
+
+        {/* Book Tickets Tab */}
+        <TabsContent value="booking" className="animate-fade-in">
+          <TicketBooking tripDetails={tripDetails} />
         </TabsContent>
       </Tabs>
     </div>

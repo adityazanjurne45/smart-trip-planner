@@ -176,6 +176,7 @@ const TripWizard = ({ onSubmit }: TripWizardProps) => {
               placeholder="e.g., New York, USA"
               label="Departure City"
               error={errors.boardingPoint}
+              onEnterPress={handleNext}
             />
           </div>
         );
@@ -195,6 +196,7 @@ const TripWizard = ({ onSubmit }: TripWizardProps) => {
               placeholder="e.g., Paris, France"
               label="Destination"
               error={errors.destinationPoint}
+              onEnterPress={handleNext}
             />
             {boardingPoint && (
               <div className="flex items-center gap-2 text-sm text-muted-foreground bg-muted/50 rounded-xl p-4 border border-border">

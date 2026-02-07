@@ -64,6 +64,7 @@ interface CityAutocompleteProps {
   placeholder?: string;
   label?: string;
   error?: string;
+  onEnterPress?: () => void;
 }
 
 const CityAutocomplete = ({
@@ -72,6 +73,7 @@ const CityAutocomplete = ({
   placeholder = "Enter city name",
   label,
   error,
+  onEnterPress,
 }: CityAutocompleteProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [suggestions, setSuggestions] = useState<string[]>([]);
@@ -107,6 +109,17 @@ const CityAutocomplete = ({
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      if (isOpen && highlightedIndex >= 0 && suggestions[highlightedIndex]) {
+        handleSelect(suggestions[highlightedIndex]);
+      } else if (value.trim().length >= 2 && onEnterPress) {
+        setIsOpen(false);
+        onEnterPress();
+      }
+      return;
+    }
+    
     if (!isOpen) return;
 
     switch (e.key) {
@@ -121,12 +134,6 @@ const CityAutocomplete = ({
         setHighlightedIndex((prev) =>
           prev > 0 ? prev - 1 : suggestions.length - 1
         );
-        break;
-      case "Enter":
-        e.preventDefault();
-        if (highlightedIndex >= 0 && suggestions[highlightedIndex]) {
-          handleSelect(suggestions[highlightedIndex]);
-        }
         break;
       case "Escape":
         setIsOpen(false);
