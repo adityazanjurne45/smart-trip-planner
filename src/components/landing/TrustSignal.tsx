@@ -111,29 +111,29 @@ const TrustSignal = () => {
               </p>
             </div>
 
-            {/* Right Column - Stats Card */}
+            {/* Right Column - Stats Card - Cleaner Design */}
             <div 
-              className="bg-primary-foreground/10 backdrop-blur-md rounded-3xl p-8 border border-primary-foreground/20 shadow-2xl animate-fade-up" 
+              className="bg-primary-foreground/8 backdrop-blur-sm rounded-2xl p-6 md:p-7 border border-primary-foreground/15 shadow-xl animate-fade-up lg:mt-4" 
               style={{ animationDelay: "0.3s" }}
             >
-              <h3 className="text-2xl font-bold text-primary-foreground mb-8 text-center">
+              <h3 className="text-lg md:text-xl font-semibold text-primary-foreground mb-6 text-center">
                 Join Our Community
               </h3>
               
-              <div className="space-y-6">
-                {stats.map((stat, index) => (
+              <div className="space-y-3">
+                {stats.map((stat) => (
                   <div 
                     key={stat.label} 
-                    className="flex items-center gap-4 p-4 rounded-2xl bg-primary-foreground/5 border border-primary-foreground/10 hover:bg-primary-foreground/10 transition-colors"
+                    className="flex items-center gap-4 p-3 rounded-xl bg-primary-foreground/5 border border-primary-foreground/10 hover:bg-primary-foreground/8 transition-colors"
                   >
-                    <div className="w-12 h-12 rounded-xl bg-travel-gold/20 flex items-center justify-center">
-                      <stat.icon className="w-6 h-6 text-travel-gold" />
+                    <div className="w-10 h-10 rounded-lg bg-travel-gold/20 flex items-center justify-center flex-shrink-0">
+                      <stat.icon className="w-5 h-5 text-travel-gold" />
                     </div>
-                    <div>
-                      <div className="text-2xl font-bold text-primary-foreground">
+                    <div className="min-w-0">
+                      <div className="text-xl font-bold text-primary-foreground">
                         {stat.value}
                       </div>
-                      <div className="text-sm text-primary-foreground/70">
+                      <div className="text-xs md:text-sm text-primary-foreground/60">
                         {stat.label}
                       </div>
                     </div>
@@ -141,17 +141,17 @@ const TrustSignal = () => {
                 ))}
               </div>
 
-              {/* Testimonial */}
-              <div className="mt-8 p-4 rounded-2xl bg-primary-foreground/5 border border-primary-foreground/10">
-                <div className="flex items-center gap-1 mb-2">
+              {/* Testimonial - Smaller */}
+              <div className="mt-5 p-4 rounded-xl bg-primary-foreground/5 border border-primary-foreground/10">
+                <div className="flex items-center gap-0.5 mb-2">
                   {[1, 2, 3, 4, 5].map((star) => (
-                    <Star key={star} className="w-4 h-4 text-travel-gold fill-travel-gold" />
+                    <Star key={star} className="w-3.5 h-3.5 text-travel-gold fill-travel-gold" />
                   ))}
                 </div>
-                <p className="text-primary-foreground/80 text-sm italic mb-3">
+                <p className="text-primary-foreground/75 text-xs md:text-sm italic mb-2 leading-relaxed">
                   "Travello made planning our family vacation so easy. The AI recommendations were spot on!"
                 </p>
-                <p className="text-primary-foreground/60 text-xs font-medium">
+                <p className="text-primary-foreground/50 text-xs font-medium">
                   — Sarah M., Verified Traveler
                 </p>
               </div>
