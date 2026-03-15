@@ -59,13 +59,13 @@ const Hero = () => {
             <span className="text-travel-forest font-semibold">personalized</span> just for you.
           </p>
 
-          {/* Auth Section - Improved UI */}
+          {/* Auth Section - Clear Hierarchy */}
           <div 
             className="animate-fade-up mb-12" 
             style={{ animationDelay: "0.3s" }}
           >
             {/* Primary CTA for New Users */}
-            <div className="mb-6">
+            <div className="mb-5">
               <Link to="/auth?mode=signup">
                 <Button 
                   variant="travel" 
@@ -82,25 +82,11 @@ const Hero = () => {
               </p>
             </div>
             
-            {/* Separator */}
-            <div className="flex items-center gap-4 max-w-xs mx-auto mb-6">
-              <div className="flex-1 h-px bg-border" />
-              <span className="text-xs text-muted-foreground uppercase tracking-wider">or</span>
-              <div className="flex-1 h-px bg-border" />
-            </div>
-            
-            {/* Secondary CTA for Existing Users */}
-            <div className="flex items-center justify-center gap-2">
-              <span className="text-muted-foreground text-sm">Already have an account?</span>
-              <Link to="/auth">
-                <Button 
-                  variant="ghost" 
-                  size="sm"
-                  className="gap-2 hover:bg-primary/10 hover:text-primary"
-                >
-                  <LogIn className="w-4 h-4" />
-                  Sign In
-                </Button>
+            {/* Secondary CTA for Existing Users - Clear and distinct */}
+            <div className="flex items-center justify-center gap-1.5">
+              <span className="text-sm text-muted-foreground">Already have an account?</span>
+              <Link to="/auth" className="text-sm font-medium text-primary hover:text-primary/80 underline-offset-4 hover:underline transition-colors">
+                Log in
               </Link>
             </div>
           </div>
