@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { ChevronDown, Sparkles, ArrowRight, Zap, Shield, Brain, User, LogIn } from "lucide-react";
+import { ChevronDown, Sparkles, ArrowRight, Zap, Shield, Brain } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import heroImage from "@/assets/hero-travel.jpg";
 
