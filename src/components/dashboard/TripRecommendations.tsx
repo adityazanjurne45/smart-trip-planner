@@ -197,12 +197,16 @@ const TripRecommendations = ({
           <ArrowLeft className="w-4 h-4" />
           New Trip
         </Button>
-        <TripActions
-          tripDetails={tripDetails}
-          recommendations={recommendations}
-          onSaveTrip={saveToHistory}
-          isSaving={savingTrip}
-        />
+        <div className="flex items-center gap-2 flex-wrap">
+          <OfflineTripToggle tripDetails={tripDetails} recommendations={recommendations} />
+          <ShareTrip tripDetails={tripDetails} />
+          <TripActions
+            tripDetails={tripDetails}
+            recommendations={recommendations}
+            onSaveTrip={saveToHistory}
+            isSaving={savingTrip}
+          />
+        </div>
       </div>
 
       {/* Tabs for different views */}
