@@ -27,9 +27,10 @@ interface TripWizardProps {
 const STEPS = [
   { id: 1, title: "Departure", icon: MapPin, color: "text-primary", bgColor: "bg-primary/10" },
   { id: 2, title: "Destination", icon: Navigation, color: "text-accent", bgColor: "bg-accent/10" },
-  { id: 3, title: "Dates", icon: CalendarDays, color: "text-travel-coral", bgColor: "bg-travel-coral/10" },
-  { id: 4, title: "Duration", icon: Calendar, color: "text-travel-forest", bgColor: "bg-travel-forest/10" },
-  { id: 5, title: "Budget", icon: Wallet, color: "text-travel-gold", bgColor: "bg-travel-gold/10" },
+  { id: 3, title: "Travelers", icon: Users, color: "text-purple-500", bgColor: "bg-purple-500/10" },
+  { id: 4, title: "Dates", icon: CalendarDays, color: "text-travel-coral", bgColor: "bg-travel-coral/10" },
+  { id: 5, title: "Duration", icon: Calendar, color: "text-travel-forest", bgColor: "bg-travel-forest/10" },
+  { id: 6, title: "Budget", icon: Wallet, color: "text-travel-gold", bgColor: "bg-travel-gold/10" },
 ];
 
 const BUDGET_LEVELS = [
