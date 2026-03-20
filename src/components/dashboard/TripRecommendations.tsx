@@ -419,6 +419,7 @@ const TripRecommendations = ({
                         {place.entryFee}
                       </div>
                     </div>
+                    <RecommendationReason reasons={getPlaceReasons(place)} />
                   </div>
                 </div>
               ))}
