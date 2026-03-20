@@ -3,10 +3,11 @@ import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
 import Navbar from "@/components/layout/Navbar";
-import { Loader2, MapPin, Clock, Wallet, TrendingUp, Plus, Compass, Calendar, ArrowRight, Sparkles } from "lucide-react";
+import { Loader2, MapPin, Clock, Wallet, TrendingUp, Plus, Compass, Calendar, ArrowRight, Sparkles, BarChart3 } from "lucide-react";
 import { useProfile } from "@/hooks/useProfile";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import TravelAnalytics from "@/components/dashboard/TravelAnalytics";
 
 const Dashboard = () => {
   const [user, setUser] = useState<User | null>(null);
