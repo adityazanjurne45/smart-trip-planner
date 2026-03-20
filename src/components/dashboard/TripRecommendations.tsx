@@ -453,6 +453,7 @@ const TripRecommendations = ({
                       </div>
                       <div className="text-primary font-semibold">{hotel.pricePerNight}/night</div>
                     </div>
+                    <RecommendationReason reasons={getHotelReasons(hotel, tripDetails.budget, tripDetails.duration)} />
                   </div>
                 </div>
               ))}
