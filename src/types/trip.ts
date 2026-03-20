@@ -5,6 +5,7 @@ export interface TripDetails {
   budget: number;
   startDate?: string;
   endDate?: string;
+  travelStyle?: 'solo' | 'couple' | 'family' | 'friends';
 }
 
 export interface PlaceImage {
