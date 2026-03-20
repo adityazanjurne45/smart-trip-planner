@@ -135,6 +135,7 @@ const TripWizard = ({ onSubmit }: TripWizardProps) => {
       budget: parseInt(budget),
       startDate: tripDates?.startDate ? format(tripDates.startDate, "yyyy-MM-dd") : undefined,
       endDate: tripDates?.endDate ? format(tripDates.endDate, "yyyy-MM-dd") : undefined,
+      travelStyle: travelStyle as TripDetails['travelStyle'],
     };
 
     try {
