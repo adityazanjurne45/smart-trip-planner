@@ -489,6 +489,18 @@ const TripRecommendations = ({
           </div>
         </TabsContent>
 
+        {/* Prepare Tab */}
+        <TabsContent value="prepare" className="space-y-6 animate-fade-in">
+          <div className="grid md:grid-cols-2 gap-6">
+            <PackingChecklist
+              destination={tripDetails.destinationPoint}
+              duration={tripDetails.duration}
+              weather={weather}
+            />
+            <ExpenseTracker totalBudget={tripDetails.budget} />
+          </div>
+        </TabsContent>
+
         {/* Book Tickets Tab */}
         <TabsContent value="booking" className="animate-fade-in">
           <TicketBooking tripDetails={tripDetails} />
