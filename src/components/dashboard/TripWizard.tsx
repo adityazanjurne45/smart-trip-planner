@@ -4,12 +4,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { Slider } from "@/components/ui/slider";
-import { MapPin, Navigation, Calendar, Wallet, Sparkles, Loader2, ArrowLeft, ArrowRight, Check, AlertTriangle, CalendarDays } from "lucide-react";
+import { MapPin, Navigation, Calendar, Wallet, Sparkles, Loader2, ArrowLeft, ArrowRight, Check, AlertTriangle, CalendarDays, Users } from "lucide-react";
 import { TripDetails } from "@/types/trip";
 import { z } from "zod";
 import CityAutocomplete from "./CityAutocomplete";
 import { cn } from "@/lib/utils";
 import TripDatePicker, { TripDates } from "./TripDatePicker";
+import TravelStyleSelector from "./TravelStyleSelector";
 import { differenceInDays, format } from "date-fns";
 
 const tripSchema = z.object({
