@@ -211,7 +211,7 @@ const TripRecommendations = ({
 
       {/* Tabs for different views */}
       <Tabs defaultValue="overview" className="w-full">
-        <TabsList className="grid w-full grid-cols-5 mb-6">
+        <TabsList className="grid w-full grid-cols-6 mb-6">
           <TabsTrigger value="overview" className="gap-2">
             <List className="w-4 h-4" />
             <span className="hidden sm:inline">Overview</span>
@@ -228,9 +228,13 @@ const TripRecommendations = ({
             <Map className="w-4 h-4" />
             <span className="hidden sm:inline">Details</span>
           </TabsTrigger>
+          <TabsTrigger value="prepare" className="gap-2">
+            <Backpack className="w-4 h-4" />
+            <span className="hidden sm:inline">Prepare</span>
+          </TabsTrigger>
           <TabsTrigger value="booking" className="gap-2">
             <Ticket className="w-4 h-4" />
-            <span className="hidden sm:inline">Book Tickets</span>
+            <span className="hidden sm:inline">Book</span>
           </TabsTrigger>
         </TabsList>
 
