@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TripDetails, Recommendations, PlaceImage } from "@/types/trip";
-import { MapPin, Building2, Car, ArrowLeft, Loader2, Clock, DollarSign, Star, Navigation, Save, Check, Calendar, Map, List, MapPinned, ImageIcon, Ticket } from "lucide-react";
+import { MapPin, Building2, Car, ArrowLeft, Loader2, Clock, DollarSign, Star, Navigation, Save, Check, Calendar, Map, List, MapPinned, ImageIcon, Ticket, Backpack } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import WeatherCard from "./WeatherCard";
@@ -16,6 +16,11 @@ import DestinationTime from "./DestinationTime";
 import WeatherSuggestions from "./WeatherSuggestions";
 import TicketBooking from "./TicketBooking";
 import SmartWarningsCard from "./SmartWarningsCard";
+import ExpenseTracker from "./ExpenseTracker";
+import PackingChecklist from "./PackingChecklist";
+import OfflineTripToggle from "./OfflineTripToggle";
+import ShareTrip from "./ShareTrip";
+import RecommendationReason, { getPlaceReasons, getHotelReasons, getVehicleReasons } from "./RecommendationReason";
 
 interface TripRecommendationsProps {
   tripDetails: TripDetails;
@@ -192,17 +197,21 @@ const TripRecommendations = ({
           <ArrowLeft className="w-4 h-4" />
           New Trip
         </Button>
-        <TripActions
-          tripDetails={tripDetails}
-          recommendations={recommendations}
-          onSaveTrip={saveToHistory}
-          isSaving={savingTrip}
-        />
+        <div className="flex items-center gap-2 flex-wrap">
+          <OfflineTripToggle tripDetails={tripDetails} recommendations={recommendations} />
+          <ShareTrip tripDetails={tripDetails} />
+          <TripActions
+            tripDetails={tripDetails}
+            recommendations={recommendations}
+            onSaveTrip={saveToHistory}
+            isSaving={savingTrip}
+          />
+        </div>
       </div>
 
       {/* Tabs for different views */}
       <Tabs defaultValue="overview" className="w-full">
-        <TabsList className="grid w-full grid-cols-5 mb-6">
+        <TabsList className="grid w-full grid-cols-6 mb-6">
           <TabsTrigger value="overview" className="gap-2">
             <List className="w-4 h-4" />
             <span className="hidden sm:inline">Overview</span>
@@ -219,9 +228,13 @@ const TripRecommendations = ({
             <Map className="w-4 h-4" />
             <span className="hidden sm:inline">Details</span>
           </TabsTrigger>
+          <TabsTrigger value="prepare" className="gap-2">
+            <Backpack className="w-4 h-4" />
+            <span className="hidden sm:inline">Prepare</span>
+          </TabsTrigger>
           <TabsTrigger value="booking" className="gap-2">
             <Ticket className="w-4 h-4" />
-            <span className="hidden sm:inline">Book Tickets</span>
+            <span className="hidden sm:inline">Book</span>
           </TabsTrigger>
         </TabsList>
 
@@ -406,6 +419,7 @@ const TripRecommendations = ({
                         {place.entryFee}
                       </div>
                     </div>
+                    <RecommendationReason reasons={getPlaceReasons(place)} />
                   </div>
                 </div>
               ))}
@@ -439,6 +453,7 @@ const TripRecommendations = ({
                       </div>
                       <div className="text-primary font-semibold">{hotel.pricePerNight}/night</div>
                     </div>
+                    <RecommendationReason reasons={getHotelReasons(hotel, tripDetails.budget, tripDetails.duration)} />
                   </div>
                 </div>
               ))}
@@ -469,10 +484,23 @@ const TripRecommendations = ({
                     </div>
                     <p className="text-muted-foreground text-sm mb-2">{vehicle.reason}</p>
                     <p className="text-xs text-muted-foreground">Best for: {vehicle.suitableFor}</p>
+                    <RecommendationReason reasons={getVehicleReasons(vehicle)} />
                   </div>
                 </div>
               ))}
             </div>
+          </div>
+        </TabsContent>
+
+        {/* Prepare Tab */}
+        <TabsContent value="prepare" className="space-y-6 animate-fade-in">
+          <div className="grid md:grid-cols-2 gap-6">
+            <PackingChecklist
+              destination={tripDetails.destinationPoint}
+              duration={tripDetails.duration}
+              weather={weather}
+            />
+            <ExpenseTracker totalBudget={tripDetails.budget} />
           </div>
         </TabsContent>
 

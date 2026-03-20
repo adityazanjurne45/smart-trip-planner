@@ -4,12 +4,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { Slider } from "@/components/ui/slider";
-import { MapPin, Navigation, Calendar, Wallet, Sparkles, Loader2, ArrowLeft, ArrowRight, Check, AlertTriangle, CalendarDays } from "lucide-react";
+import { MapPin, Navigation, Calendar, Wallet, Sparkles, Loader2, ArrowLeft, ArrowRight, Check, AlertTriangle, CalendarDays, Users } from "lucide-react";
 import { TripDetails } from "@/types/trip";
 import { z } from "zod";
 import CityAutocomplete from "./CityAutocomplete";
 import { cn } from "@/lib/utils";
 import TripDatePicker, { TripDates } from "./TripDatePicker";
+import TravelStyleSelector from "./TravelStyleSelector";
 import { differenceInDays, format } from "date-fns";
 
 const tripSchema = z.object({
@@ -26,9 +27,10 @@ interface TripWizardProps {
 const STEPS = [
   { id: 1, title: "Departure", icon: MapPin, color: "text-primary", bgColor: "bg-primary/10" },
   { id: 2, title: "Destination", icon: Navigation, color: "text-accent", bgColor: "bg-accent/10" },
-  { id: 3, title: "Dates", icon: CalendarDays, color: "text-travel-coral", bgColor: "bg-travel-coral/10" },
-  { id: 4, title: "Duration", icon: Calendar, color: "text-travel-forest", bgColor: "bg-travel-forest/10" },
-  { id: 5, title: "Budget", icon: Wallet, color: "text-travel-gold", bgColor: "bg-travel-gold/10" },
+  { id: 3, title: "Travelers", icon: Users, color: "text-purple-500", bgColor: "bg-purple-500/10" },
+  { id: 4, title: "Dates", icon: CalendarDays, color: "text-travel-coral", bgColor: "bg-travel-coral/10" },
+  { id: 5, title: "Duration", icon: Calendar, color: "text-travel-forest", bgColor: "bg-travel-forest/10" },
+  { id: 6, title: "Budget", icon: Wallet, color: "text-travel-gold", bgColor: "bg-travel-gold/10" },
 ];
 
 const BUDGET_LEVELS = [
@@ -43,6 +45,7 @@ const TripWizard = ({ onSubmit }: TripWizardProps) => {
   const [boardingPoint, setBoardingPoint] = useState("");
   const [destinationPoint, setDestinationPoint] = useState("");
   const [tripDates, setTripDates] = useState<TripDates | undefined>();
+  const [travelStyle, setTravelStyle] = useState("solo");
   const [duration, setDuration] = useState("7");
   const [budget, setBudget] = useState("2000");
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -80,19 +83,22 @@ const TripWizard = ({ onSubmit }: TripWizardProps) => {
         }
         break;
       case 3:
+        // Travel style - always valid (has default)
+        break;
+      case 4:
         if (!tripDates?.startDate || !tripDates?.endDate) {
           setErrors({ dates: "Please select your travel dates" });
           return false;
         }
         break;
-      case 4:
+      case 5:
         const dur = parseInt(duration);
         if (!dur || dur < 1 || dur > 30) {
           setErrors({ duration: "Duration must be between 1 and 30 days" });
           return false;
         }
         break;
-      case 5:
+      case 6:
         const bud = parseInt(budget);
         if (!bud || bud < 100) {
           setErrors({ budget: "Budget must be at least $100" });
@@ -129,6 +135,7 @@ const TripWizard = ({ onSubmit }: TripWizardProps) => {
       budget: parseInt(budget),
       startDate: tripDates?.startDate ? format(tripDates.startDate, "yyyy-MM-dd") : undefined,
       endDate: tripDates?.endDate ? format(tripDates.endDate, "yyyy-MM-dd") : undefined,
+      travelStyle: travelStyle as TripDetails['travelStyle'],
     };
 
     try {
@@ -208,6 +215,10 @@ const TripWizard = ({ onSubmit }: TripWizardProps) => {
         );
       case 3:
         return (
+          <TravelStyleSelector value={travelStyle} onChange={setTravelStyle} />
+        );
+      case 4:
+        return (
           <div className="space-y-6 animate-fade-up">
             <div className="text-center">
               <div className={`w-16 h-16 rounded-2xl ${currentStepData.bgColor} flex items-center justify-center mx-auto mb-4`}>
@@ -224,7 +235,7 @@ const TripWizard = ({ onSubmit }: TripWizardProps) => {
             )}
           </div>
         );
-      case 4:
+      case 5:
         return (
           <div className="space-y-6 animate-fade-up">
             <div className="text-center">
@@ -294,7 +305,7 @@ const TripWizard = ({ onSubmit }: TripWizardProps) => {
             </div>
           </div>
         );
-      case 5:
+      case 6:
         const budgetLevel = getBudgetLevel();
         return (
           <div className="space-y-6 animate-fade-up">

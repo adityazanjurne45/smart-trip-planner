@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import PostTripRating from "@/components/dashboard/PostTripRating";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -196,6 +197,18 @@ const TripCard = ({ trip, onDelete, onDuplicate, index }: TripCardProps) => {
           <p className="text-sm text-muted-foreground line-clamp-2 mb-3">
             {trip.notes}
           </p>
+        )}
+
+        {/* Post-Trip Rating for completed trips without rating */}
+        {status.label === "Completed" && !trip.rating && (
+          <div className="mb-3">
+            <PostTripRating 
+              tripId={trip.id} 
+              destination={trip.destination} 
+              currentRating={trip.rating}
+              currentNotes={trip.notes}
+            />
+          </div>
         )}
 
         {/* Action Button */}
