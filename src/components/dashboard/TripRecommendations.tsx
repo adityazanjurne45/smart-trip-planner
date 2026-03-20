@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TripDetails, Recommendations, PlaceImage } from "@/types/trip";
-import { MapPin, Building2, Car, ArrowLeft, Loader2, Clock, DollarSign, Star, Navigation, Save, Check, Calendar, Map, List, MapPinned, ImageIcon, Ticket } from "lucide-react";
+import { MapPin, Building2, Car, ArrowLeft, Loader2, Clock, DollarSign, Star, Navigation, Save, Check, Calendar, Map, List, MapPinned, ImageIcon, Ticket, Backpack } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import WeatherCard from "./WeatherCard";
@@ -16,6 +16,11 @@ import DestinationTime from "./DestinationTime";
 import WeatherSuggestions from "./WeatherSuggestions";
 import TicketBooking from "./TicketBooking";
 import SmartWarningsCard from "./SmartWarningsCard";
+import ExpenseTracker from "./ExpenseTracker";
+import PackingChecklist from "./PackingChecklist";
+import OfflineTripToggle from "./OfflineTripToggle";
+import ShareTrip from "./ShareTrip";
+import RecommendationReason, { getPlaceReasons, getHotelReasons, getVehicleReasons } from "./RecommendationReason";
 
 interface TripRecommendationsProps {
   tripDetails: TripDetails;
