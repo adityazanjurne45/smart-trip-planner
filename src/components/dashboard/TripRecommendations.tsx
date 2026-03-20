@@ -484,6 +484,7 @@ const TripRecommendations = ({
                     </div>
                     <p className="text-muted-foreground text-sm mb-2">{vehicle.reason}</p>
                     <p className="text-xs text-muted-foreground">Best for: {vehicle.suitableFor}</p>
+                    <RecommendationReason reasons={getVehicleReasons(vehicle)} />
                   </div>
                 </div>
               ))}
