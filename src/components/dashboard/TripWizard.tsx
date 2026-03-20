@@ -215,6 +215,10 @@ const TripWizard = ({ onSubmit }: TripWizardProps) => {
         );
       case 3:
         return (
+          <TravelStyleSelector value={travelStyle} onChange={setTravelStyle} />
+        );
+      case 4:
+        return (
           <div className="space-y-6 animate-fade-up">
             <div className="text-center">
               <div className={`w-16 h-16 rounded-2xl ${currentStepData.bgColor} flex items-center justify-center mx-auto mb-4`}>
