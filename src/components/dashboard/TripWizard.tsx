@@ -305,7 +305,7 @@ const TripWizard = ({ onSubmit }: TripWizardProps) => {
             </div>
           </div>
         );
-      case 5:
+      case 6:
         const budgetLevel = getBudgetLevel();
         return (
           <div className="space-y-6 animate-fade-up">
