@@ -199,6 +199,18 @@ const TripCard = ({ trip, onDelete, onDuplicate, index }: TripCardProps) => {
           </p>
         )}
 
+        {/* Post-Trip Rating for completed trips without rating */}
+        {status.label === "Completed" && !trip.rating && (
+          <div className="mb-3">
+            <PostTripRating 
+              tripId={trip.id} 
+              destination={trip.destination} 
+              currentRating={trip.rating}
+              currentNotes={trip.notes}
+            />
+          </div>
+        )}
+
         {/* Action Button */}
         <Button variant="outline" className="w-full gap-2" size="sm">
           <Eye className="w-4 h-4" />
