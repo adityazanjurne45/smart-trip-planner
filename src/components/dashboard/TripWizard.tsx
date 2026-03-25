@@ -11,6 +11,8 @@ import CityAutocomplete from "./CityAutocomplete";
 import { cn } from "@/lib/utils";
 import TripDatePicker, { TripDates } from "./TripDatePicker";
 import TravelStyleSelector from "./TravelStyleSelector";
+import TripQualityMeter from "./TripQualityMeter";
+import SafetyRecommendations from "./SafetyRecommendations";
 import { differenceInDays, format } from "date-fns";
 
 const tripSchema = z.object({
@@ -215,7 +217,10 @@ const TripWizard = ({ onSubmit }: TripWizardProps) => {
         );
       case 3:
         return (
-          <TravelStyleSelector value={travelStyle} onChange={setTravelStyle} />
+          <div className="space-y-0">
+            <TravelStyleSelector value={travelStyle} onChange={setTravelStyle} />
+            <SafetyRecommendations travelStyle={travelStyle} />
+          </div>
         );
       case 4:
         return (
@@ -303,6 +308,15 @@ const TripWizard = ({ onSubmit }: TripWizardProps) => {
                 </Button>
               ))}
             </div>
+
+            {/* Trip Quality Meter */}
+            {destinationPoint && durationValue > 0 && (
+              <TripQualityMeter
+                destination={destinationPoint}
+                duration={durationValue}
+                onDurationChange={(days) => setDuration(String(days))}
+              />
+            )}
           </div>
         );
       case 6:
