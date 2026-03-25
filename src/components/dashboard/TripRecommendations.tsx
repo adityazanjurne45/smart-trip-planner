@@ -425,6 +425,7 @@ const TripRecommendations = ({
                       </div>
                     </div>
                     <RecommendationReason reasons={getPlaceReasons(place)} />
+                    <InstagramScore placeName={place.name} />
                   </div>
                 </div>
               ))}
