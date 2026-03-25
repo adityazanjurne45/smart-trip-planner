@@ -11,6 +11,8 @@ import CityAutocomplete from "./CityAutocomplete";
 import { cn } from "@/lib/utils";
 import TripDatePicker, { TripDates } from "./TripDatePicker";
 import TravelStyleSelector from "./TravelStyleSelector";
+import TripQualityMeter from "./TripQualityMeter";
+import SafetyRecommendations from "./SafetyRecommendations";
 import { differenceInDays, format } from "date-fns";
 
 const tripSchema = z.object({
