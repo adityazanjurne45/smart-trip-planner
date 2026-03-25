@@ -249,7 +249,7 @@ const TripWizard = ({ onSubmit }: TripWizardProps) => {
             )}
           </div>
         );
-      case 5:
+      case 6:
         return (
           <div className="space-y-6 animate-fade-up">
             <div className="text-center">
