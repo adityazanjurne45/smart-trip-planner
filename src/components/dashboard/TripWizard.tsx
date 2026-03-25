@@ -230,6 +230,8 @@ const TripWizard = ({ onSubmit }: TripWizardProps) => {
           </div>
         );
       case 4:
+        return <TripMoodSelector value={travelMood} onChange={setTravelMood} />;
+      case 5:
         return (
           <div className="space-y-6 animate-fade-up">
             <div className="text-center">
