@@ -6,6 +6,7 @@ export interface TripDetails {
   startDate?: string;
   endDate?: string;
   travelStyle?: 'solo' | 'couple' | 'family' | 'friends';
+  travelMood?: 'chill' | 'adventure' | 'romantic' | 'spiritual';
 }
 
 export interface PlaceImage {

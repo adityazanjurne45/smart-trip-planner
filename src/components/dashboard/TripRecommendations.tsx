@@ -21,6 +21,8 @@ import PackingChecklist from "./PackingChecklist";
 import OfflineTripToggle from "./OfflineTripToggle";
 import ShareTrip from "./ShareTrip";
 import RecommendationReason, { getPlaceReasons, getHotelReasons, getVehicleReasons } from "./RecommendationReason";
+import InstagramScore from "./InstagramScore";
+import SmartTravelSummary from "./SmartTravelSummary";
 
 interface TripRecommendationsProps {
   tripDetails: TripDetails;
@@ -305,6 +307,9 @@ const TripRecommendations = ({
             </div>
           </div>
 
+          {/* Smart Travel Summary */}
+          <SmartTravelSummary tripDetails={tripDetails} recommendations={recommendations} />
+
           {/* Smart Warnings */}
           <SmartWarningsCard 
             tripDetails={tripDetails} 
@@ -420,6 +425,7 @@ const TripRecommendations = ({
                       </div>
                     </div>
                     <RecommendationReason reasons={getPlaceReasons(place)} />
+                    <InstagramScore placeName={place.name} />
                   </div>
                 </div>
               ))}
