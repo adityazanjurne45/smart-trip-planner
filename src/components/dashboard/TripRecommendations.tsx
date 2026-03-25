@@ -307,6 +307,9 @@ const TripRecommendations = ({
             </div>
           </div>
 
+          {/* Smart Travel Summary */}
+          <SmartTravelSummary tripDetails={tripDetails} recommendations={recommendations} />
+
           {/* Smart Warnings */}
           <SmartWarningsCard 
             tripDetails={tripDetails} 
