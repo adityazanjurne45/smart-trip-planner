@@ -144,6 +144,7 @@ const TripWizard = ({ onSubmit }: TripWizardProps) => {
       startDate: tripDates?.startDate ? format(tripDates.startDate, "yyyy-MM-dd") : undefined,
       endDate: tripDates?.endDate ? format(tripDates.endDate, "yyyy-MM-dd") : undefined,
       travelStyle: travelStyle as TripDetails['travelStyle'],
+      travelMood: travelMood as TripDetails['travelMood'],
     };
 
     try {
