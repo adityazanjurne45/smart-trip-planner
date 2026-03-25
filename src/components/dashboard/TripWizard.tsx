@@ -91,19 +91,22 @@ const TripWizard = ({ onSubmit }: TripWizardProps) => {
         // Travel style - always valid (has default)
         break;
       case 4:
+        // Travel mood - always valid (has default)
+        break;
+      case 5:
         if (!tripDates?.startDate || !tripDates?.endDate) {
           setErrors({ dates: "Please select your travel dates" });
           return false;
         }
         break;
-      case 5:
+      case 6:
         const dur = parseInt(duration);
         if (!dur || dur < 1 || dur > 30) {
           setErrors({ duration: "Duration must be between 1 and 30 days" });
           return false;
         }
         break;
-      case 6:
+      case 7:
         const bud = parseInt(budget);
         if (!bud || bud < 100) {
           setErrors({ budget: "Budget must be at least $100" });
