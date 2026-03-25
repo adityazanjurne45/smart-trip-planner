@@ -217,7 +217,10 @@ const TripWizard = ({ onSubmit }: TripWizardProps) => {
         );
       case 3:
         return (
-          <TravelStyleSelector value={travelStyle} onChange={setTravelStyle} />
+          <div className="space-y-0">
+            <TravelStyleSelector value={travelStyle} onChange={setTravelStyle} />
+            <SafetyRecommendations travelStyle={travelStyle} />
+          </div>
         );
       case 4:
         return (
