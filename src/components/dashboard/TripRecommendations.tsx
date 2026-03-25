@@ -21,6 +21,8 @@ import PackingChecklist from "./PackingChecklist";
 import OfflineTripToggle from "./OfflineTripToggle";
 import ShareTrip from "./ShareTrip";
 import RecommendationReason, { getPlaceReasons, getHotelReasons, getVehicleReasons } from "./RecommendationReason";
+import InstagramScore from "./InstagramScore";
+import SmartTravelSummary from "./SmartTravelSummary";
 
 interface TripRecommendationsProps {
   tripDetails: TripDetails;
