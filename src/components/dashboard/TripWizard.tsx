@@ -50,6 +50,7 @@ const TripWizard = ({ onSubmit }: TripWizardProps) => {
   const [destinationPoint, setDestinationPoint] = useState("");
   const [tripDates, setTripDates] = useState<TripDates | undefined>();
   const [travelStyle, setTravelStyle] = useState("solo");
+  const [travelMood, setTravelMood] = useState("chill");
   const [duration, setDuration] = useState("7");
   const [budget, setBudget] = useState("2000");
   const [errors, setErrors] = useState<Record<string, string>>({});
