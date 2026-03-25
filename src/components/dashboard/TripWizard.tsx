@@ -308,6 +308,15 @@ const TripWizard = ({ onSubmit }: TripWizardProps) => {
                 </Button>
               ))}
             </div>
+
+            {/* Trip Quality Meter */}
+            {destinationPoint && durationValue > 0 && (
+              <TripQualityMeter
+                destination={destinationPoint}
+                duration={durationValue}
+                onDurationChange={(days) => setDuration(String(days))}
+              />
+            )}
           </div>
         );
       case 6:
