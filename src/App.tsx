@@ -10,6 +10,7 @@ import PlanTrip from "./pages/PlanTrip";
 import MyTrips from "./pages/MyTrips";
 import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
+import Admin from "./pages/Admin";
 
 const queryClient = new QueryClient();
 
@@ -26,6 +27,7 @@ const App = () => (
           <Route path="/plan-trip" element={<PlanTrip />} />
           <Route path="/my-trips" element={<MyTrips />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/admin" element={<Admin />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

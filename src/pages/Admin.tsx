@@ -61,14 +61,13 @@ const Admin = () => {
   }, [navigate]);
 
   const checkAdmin = async (userId: string) => {
-    const { data } = await supabase
-      .from("user_roles")
-      .select("role")
-      .eq("user_id", userId)
-      .eq("role", "admin")
-      .maybeSingle();
+    // Use has_role function via rpc
+    const { data } = await supabase.rpc("has_role" as any, {
+      _user_id: userId,
+      _role: "admin",
+    });
 
-    if (data) {
+    if (data === true) {
       setIsAdmin(true);
       await fetchUsers();
     } else {
@@ -89,14 +88,13 @@ const Admin = () => {
       .order("created_at", { ascending: false });
 
     if (profiles) {
-      setUsers(profiles);
-      // Fetch trip counts
+      setUsers(profiles as AdminUser[]);
       const { data: trips } = await supabase
         .from("past_trips")
         .select("user_id");
       if (trips) {
         const counts: Record<string, number> = {};
-        trips.forEach((t) => {
+        trips.forEach((t: any) => {
           counts[t.user_id] = (counts[t.user_id] || 0) + 1;
         });
         setTripCounts(counts);
@@ -148,7 +146,6 @@ const Admin = () => {
 
   return (
     <div className="min-h-screen bg-secondary/20">
-      {/* Admin Header */}
       <header className="bg-background border-b border-border">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -211,7 +208,7 @@ const Admin = () => {
           </Card>
         </div>
 
-        {/* User Management */}
+        {/* User Table */}
         <Card>
           <CardHeader className="pb-3">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -253,12 +250,8 @@ const Admin = () => {
                   ) : (
                     filteredUsers.map((u) => (
                       <TableRow key={u.user_id}>
-                        <TableCell className="font-medium">
-                          {u.full_name || "—"}
-                        </TableCell>
-                        <TableCell className="text-muted-foreground">
-                          {u.email || "—"}
-                        </TableCell>
+                        <TableCell className="font-medium">{u.full_name || "—"}</TableCell>
+                        <TableCell className="text-muted-foreground">{u.email || "—"}</TableCell>
                         <TableCell>
                           {u.home_city ? (
                             <span className="flex items-center gap-1 text-sm">
@@ -268,9 +261,7 @@ const Admin = () => {
                         </TableCell>
                         <TableCell>
                           {u.travel_style ? (
-                            <Badge variant="secondary" className="capitalize">
-                              {u.travel_style}
-                            </Badge>
+                            <Badge variant="secondary" className="capitalize">{u.travel_style}</Badge>
                           ) : "—"}
                         </TableCell>
                         <TableCell>
