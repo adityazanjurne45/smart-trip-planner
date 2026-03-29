@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { Slider } from "@/components/ui/slider";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { MapPin, Navigation, Calendar, Wallet, Sparkles, Loader2, ArrowLeft, ArrowRight, Check, AlertTriangle, CalendarDays, Users, Heart } from "lucide-react";
 import { TripDetails } from "@/types/trip";
 import { z } from "zod";
@@ -15,6 +16,7 @@ import TripQualityMeter from "./TripQualityMeter";
 import SafetyRecommendations from "./SafetyRecommendations";
 import TripMoodSelector from "./TripMoodSelector";
 import { differenceInDays, format } from "date-fns";
+import { getCurrencyForDestination, getAllCurrencies, convertFromUSD, convertToUSD, formatCurrency, CurrencyInfo } from "@/lib/currency";
 
 const tripSchema = z.object({
   boardingPoint: z.string().min(2, "Boarding point is required").max(100),
