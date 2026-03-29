@@ -54,14 +54,28 @@ const TripWizard = ({ onSubmit }: TripWizardProps) => {
   const [travelStyle, setTravelStyle] = useState("solo");
   const [travelMood, setTravelMood] = useState("chill");
   const [duration, setDuration] = useState("7");
-  const [budget, setBudget] = useState("2000");
+  const [budget, setBudget] = useState("2000"); // Always stored in USD internally
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [currency, setCurrency] = useState<CurrencyInfo>(getCurrencyForDestination(""));
+  const allCurrencies = getAllCurrencies();
+
+  // Auto-detect currency when destination changes
+  useEffect(() => {
+    if (destinationPoint.trim().length >= 2) {
+      const detected = getCurrencyForDestination(destinationPoint);
+      setCurrency(detected);
+    }
+  }, [destinationPoint]);
 
   const progress = (currentStep / STEPS.length) * 100;
   const budgetValue = parseInt(budget) || 0;
   const durationValue = parseInt(duration) || 0;
   const dailyBudget = durationValue > 0 ? Math.round(budgetValue / durationValue) : 0;
+
+  // Display values in selected currency
+  const displayBudget = convertFromUSD(budgetValue, currency);
+  const displayDailyBudget = convertFromUSD(dailyBudget, currency);
 
   const getBudgetLevel = () => {
     if (budgetValue < 500) return BUDGET_LEVELS[0];
