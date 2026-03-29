@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { Slider } from "@/components/ui/slider";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { MapPin, Navigation, Calendar, Wallet, Sparkles, Loader2, ArrowLeft, ArrowRight, Check, AlertTriangle, CalendarDays, Users, Heart } from "lucide-react";
 import { TripDetails } from "@/types/trip";
 import { z } from "zod";
@@ -15,6 +16,7 @@ import TripQualityMeter from "./TripQualityMeter";
 import SafetyRecommendations from "./SafetyRecommendations";
 import TripMoodSelector from "./TripMoodSelector";
 import { differenceInDays, format } from "date-fns";
+import { getCurrencyForDestination, getAllCurrencies, convertFromUSD, convertToUSD, formatCurrency, CurrencyInfo } from "@/lib/currency";
 
 const tripSchema = z.object({
   boardingPoint: z.string().min(2, "Boarding point is required").max(100),
@@ -38,10 +40,10 @@ const STEPS = [
 ];
 
 const BUDGET_LEVELS = [
-  { label: "Budget", range: "$100-500", min: 100, max: 500, color: "bg-travel-forest" },
-  { label: "Moderate", range: "$500-2000", min: 500, max: 2000, color: "bg-primary" },
-  { label: "Comfortable", range: "$2000-5000", min: 2000, max: 5000, color: "bg-travel-gold" },
-  { label: "Luxury", range: "$5000+", min: 5000, max: 100000, color: "bg-accent" },
+  { label: "Budget", range: "100-500", min: 100, max: 500, color: "bg-travel-forest" },
+  { label: "Moderate", range: "500-2000", min: 500, max: 2000, color: "bg-primary" },
+  { label: "Comfortable", range: "2000-5000", min: 2000, max: 5000, color: "bg-travel-gold" },
+  { label: "Luxury", range: "5000+", min: 5000, max: 100000, color: "bg-accent" },
 ];
 
 const TripWizard = ({ onSubmit }: TripWizardProps) => {
@@ -52,14 +54,28 @@ const TripWizard = ({ onSubmit }: TripWizardProps) => {
   const [travelStyle, setTravelStyle] = useState("solo");
   const [travelMood, setTravelMood] = useState("chill");
   const [duration, setDuration] = useState("7");
-  const [budget, setBudget] = useState("2000");
+  const [budget, setBudget] = useState("2000"); // Always stored in USD internally
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [currency, setCurrency] = useState<CurrencyInfo>(getCurrencyForDestination(""));
+  const allCurrencies = getAllCurrencies();
+
+  // Auto-detect currency when destination changes
+  useEffect(() => {
+    if (destinationPoint.trim().length >= 2) {
+      const detected = getCurrencyForDestination(destinationPoint);
+      setCurrency(detected);
+    }
+  }, [destinationPoint]);
 
   const progress = (currentStep / STEPS.length) * 100;
   const budgetValue = parseInt(budget) || 0;
   const durationValue = parseInt(duration) || 0;
   const dailyBudget = durationValue > 0 ? Math.round(budgetValue / durationValue) : 0;
+
+  // Display values in selected currency
+  const displayBudget = convertFromUSD(budgetValue, currency);
+  const displayDailyBudget = convertFromUSD(dailyBudget, currency);
 
   const getBudgetLevel = () => {
     if (budgetValue < 500) return BUDGET_LEVELS[0];
@@ -340,9 +356,36 @@ const TripWizard = ({ onSubmit }: TripWizardProps) => {
               <p className="text-muted-foreground">Total budget for your trip</p>
             </div>
 
+            {/* Currency Selector */}
+            <div className="flex items-center gap-3 p-3 rounded-xl bg-muted/50 border border-border">
+              <span className="text-sm text-muted-foreground whitespace-nowrap">Currency:</span>
+              <Select value={currency.code} onValueChange={(code) => {
+                const found = allCurrencies.find(c => c.code === code);
+                if (found) setCurrency(found);
+              }}>
+                <SelectTrigger className="rounded-xl flex-1">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="max-h-60">
+                  {allCurrencies.map((c) => (
+                    <SelectItem key={c.code} value={c.code}>
+                      {c.symbol} {c.code} – {c.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
             {/* Budget Display */}
             <div className="text-center py-4">
-              <span className="text-4xl font-bold text-foreground">${budgetValue.toLocaleString()}</span>
+              <span className="text-4xl font-bold text-foreground">
+                {formatCurrency(displayBudget, currency)}
+              </span>
+              {currency.code !== "USD" && (
+                <p className="text-sm text-muted-foreground mt-1">
+                  ≈ ${budgetValue.toLocaleString()} USD
+                </p>
+              )}
             </div>
 
             {/* Slider */}
@@ -356,8 +399,8 @@ const TripWizard = ({ onSubmit }: TripWizardProps) => {
                 className="py-4"
               />
               <div className="flex justify-between text-xs text-muted-foreground mt-1">
-                <span>$100</span>
-                <span>$10,000+</span>
+                <span>{formatCurrency(convertFromUSD(100, currency), currency)}</span>
+                <span>{formatCurrency(convertFromUSD(10000, currency), currency)}+</span>
               </div>
             </div>
 
@@ -394,7 +437,9 @@ const TripWizard = ({ onSubmit }: TripWizardProps) => {
               {dailyBudget > 0 && (
                 <div className="flex items-center justify-between pt-2 border-t border-border">
                   <span className="text-sm text-muted-foreground">Daily budget</span>
-                  <span className="font-semibold text-foreground">${dailyBudget}/day</span>
+                  <span className="font-semibold text-foreground">
+                    {formatCurrency(displayDailyBudget, currency)}/day
+                  </span>
                 </div>
               )}
             </div>
@@ -417,7 +462,7 @@ const TripWizard = ({ onSubmit }: TripWizardProps) => {
                   onClick={() => setBudget(String(amount))}
                   className="rounded-xl text-xs"
                 >
-                  ${amount >= 1000 ? `${amount/1000}k` : amount}
+                  {formatCurrency(convertFromUSD(amount, currency), currency)}
                 </Button>
               ))}
             </div>

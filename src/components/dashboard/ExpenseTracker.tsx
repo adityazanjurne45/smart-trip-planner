@@ -10,6 +10,7 @@ import {
   TrendingUp, AlertTriangle, CheckCircle2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { CurrencyInfo } from "@/lib/currency";
 
 interface Expense {
   id: string;
@@ -30,9 +31,11 @@ const CATEGORIES = [
 interface ExpenseTrackerProps {
   totalBudget: number;
   tripId?: string;
+  currency?: CurrencyInfo;
 }
 
-const ExpenseTracker = ({ totalBudget }: ExpenseTrackerProps) => {
+const ExpenseTracker = ({ totalBudget, currency }: ExpenseTrackerProps) => {
+  const sym = currency?.symbol || "$";
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [newCategory, setNewCategory] = useState("");
@@ -91,7 +94,7 @@ const ExpenseTracker = ({ totalBudget }: ExpenseTrackerProps) => {
           <div className="flex justify-between text-sm">
             <span className="text-muted-foreground">Spent</span>
             <span className={cn("font-semibold", isOverBudget ? "text-destructive" : "text-foreground")}>
-              ${totalSpent.toFixed(0)} / ${totalBudget}
+              {sym}{totalSpent.toFixed(0)} / {sym}{totalBudget}
             </span>
           </div>
           <Progress
@@ -102,12 +105,12 @@ const ExpenseTracker = ({ totalBudget }: ExpenseTrackerProps) => {
             {isOverBudget ? (
               <Badge variant="destructive" className="gap-1">
                 <AlertTriangle className="w-3 h-3" />
-                Over budget by ${Math.abs(remaining).toFixed(0)}
+                Over budget by {sym}{Math.abs(remaining).toFixed(0)}
               </Badge>
             ) : (
               <Badge variant="secondary" className="gap-1 bg-travel-forest/10 text-travel-forest border-travel-forest/20">
                 <CheckCircle2 className="w-3 h-3" />
-                ${remaining.toFixed(0)} remaining
+                {sym}{remaining.toFixed(0)} remaining
               </Badge>
             )}
           </div>
@@ -123,7 +126,7 @@ const ExpenseTracker = ({ totalBudget }: ExpenseTrackerProps) => {
                   <div className={cn("w-8 h-8 rounded-lg mx-auto flex items-center justify-center mb-1", `${cat.bg}/10`)}>
                     <Icon className={cn("w-4 h-4", cat.color)} />
                   </div>
-                  <p className="text-xs font-medium text-foreground">${cat.total.toFixed(0)}</p>
+                  <p className="text-xs font-medium text-foreground">{sym}{cat.total.toFixed(0)}</p>
                   <p className="text-[10px] text-muted-foreground truncate">{cat.label.split(" ")[0]}</p>
                 </div>
               );
@@ -154,7 +157,7 @@ const ExpenseTracker = ({ totalBudget }: ExpenseTrackerProps) => {
             />
             <div className="flex gap-2">
               <div className="relative flex-1">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">$</span>
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">{sym}</span>
                 <Input
                   type="number"
                   placeholder="0"
@@ -185,7 +188,7 @@ const ExpenseTracker = ({ totalBudget }: ExpenseTrackerProps) => {
                     <p className="text-sm font-medium text-foreground truncate">{expense.description}</p>
                     <p className="text-xs text-muted-foreground">{cat?.label}</p>
                   </div>
-                  <span className="text-sm font-semibold text-foreground">${expense.amount.toFixed(0)}</span>
+                  <span className="text-sm font-semibold text-foreground">{sym}{expense.amount.toFixed(0)}</span>
                   <Button
                     size="icon"
                     variant="ghost"

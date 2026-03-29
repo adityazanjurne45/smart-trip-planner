@@ -16,19 +16,21 @@
  import { cn } from "@/lib/utils";
  import PlaceImageGallery from "@/components/ui/PlaceImageGallery";
  
- interface TransportSelectionProps {
-   vehicles: Vehicle[];
-   destination: string;
-   onSelectVehicle: (vehicle: Vehicle) => void;
-   selectedVehicle?: Vehicle;
- }
+interface TransportSelectionProps {
+  vehicles: Vehicle[];
+  destination: string;
+  onSelectVehicle: (vehicle: Vehicle) => void;
+  selectedVehicle?: Vehicle;
+  country?: string;
+}
  
- const TransportSelection = ({
-   vehicles,
-   destination,
-   onSelectVehicle,
-   selectedVehicle,
- }: TransportSelectionProps) => {
+const TransportSelection = ({
+  vehicles,
+  destination,
+  onSelectVehicle,
+  selectedVehicle,
+  country,
+}: TransportSelectionProps) => {
    const [showDetails, setShowDetails] = useState<string | null>(null);
  
    const getVehicleIcon = (type: string) => {
@@ -72,12 +74,12 @@
                  setShowDetails(isExpanded ? null : vehicle.type)
                }
              >
-               <div className="relative">
-                 <PlaceImageGallery
-                   query={`${vehicle.type} India transportation rental`}
-                   type="transport"
-                   aspectRatio={16 / 9}
-                 />
+                <div className="relative">
+                  <PlaceImageGallery
+                    query={`${vehicle.type} ${destination || country || ""} transportation`}
+                    type="transport"
+                    aspectRatio={16 / 9}
+                  />
  
                  {vehicle.isEcoFriendly && (
                    <Badge className="absolute top-2 left-2 bg-green-500 text-white gap-1">
