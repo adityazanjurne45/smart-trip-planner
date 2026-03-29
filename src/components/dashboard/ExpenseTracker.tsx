@@ -110,7 +110,7 @@ const ExpenseTracker = ({ totalBudget, currency }: ExpenseTrackerProps) => {
             ) : (
               <Badge variant="secondary" className="gap-1 bg-travel-forest/10 text-travel-forest border-travel-forest/20">
                 <CheckCircle2 className="w-3 h-3" />
-                ${remaining.toFixed(0)} remaining
+                {sym}{remaining.toFixed(0)} remaining
               </Badge>
             )}
           </div>
