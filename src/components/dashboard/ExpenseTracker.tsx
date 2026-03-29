@@ -10,6 +10,7 @@ import {
   TrendingUp, AlertTriangle, CheckCircle2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { CurrencyInfo } from "@/lib/currency";
 
 interface Expense {
   id: string;
@@ -30,9 +31,11 @@ const CATEGORIES = [
 interface ExpenseTrackerProps {
   totalBudget: number;
   tripId?: string;
+  currency?: CurrencyInfo;
 }
 
-const ExpenseTracker = ({ totalBudget }: ExpenseTrackerProps) => {
+const ExpenseTracker = ({ totalBudget, currency }: ExpenseTrackerProps) => {
+  const sym = currency?.symbol || "$";
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [newCategory, setNewCategory] = useState("");
