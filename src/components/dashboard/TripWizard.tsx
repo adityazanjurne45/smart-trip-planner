@@ -40,10 +40,10 @@ const STEPS = [
 ];
 
 const BUDGET_LEVELS = [
-  { label: "Budget", range: "$100-500", min: 100, max: 500, color: "bg-travel-forest" },
-  { label: "Moderate", range: "$500-2000", min: 500, max: 2000, color: "bg-primary" },
-  { label: "Comfortable", range: "$2000-5000", min: 2000, max: 5000, color: "bg-travel-gold" },
-  { label: "Luxury", range: "$5000+", min: 5000, max: 100000, color: "bg-accent" },
+  { label: "Budget", range: "100-500", min: 100, max: 500, color: "bg-travel-forest" },
+  { label: "Moderate", range: "500-2000", min: 500, max: 2000, color: "bg-primary" },
+  { label: "Comfortable", range: "2000-5000", min: 2000, max: 5000, color: "bg-travel-gold" },
+  { label: "Luxury", range: "5000+", min: 5000, max: 100000, color: "bg-accent" },
 ];
 
 const TripWizard = ({ onSubmit }: TripWizardProps) => {
