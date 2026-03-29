@@ -16,12 +16,13 @@
  import { cn } from "@/lib/utils";
  import PlaceImageGallery from "@/components/ui/PlaceImageGallery";
  
- interface TransportSelectionProps {
-   vehicles: Vehicle[];
-   destination: string;
-   onSelectVehicle: (vehicle: Vehicle) => void;
-   selectedVehicle?: Vehicle;
- }
+interface TransportSelectionProps {
+  vehicles: Vehicle[];
+  destination: string;
+  onSelectVehicle: (vehicle: Vehicle) => void;
+  selectedVehicle?: Vehicle;
+  country?: string;
+}
  
  const TransportSelection = ({
    vehicles,
