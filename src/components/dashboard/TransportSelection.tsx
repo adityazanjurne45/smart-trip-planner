@@ -74,12 +74,12 @@ const TransportSelection = ({
                  setShowDetails(isExpanded ? null : vehicle.type)
                }
              >
-               <div className="relative">
-                 <PlaceImageGallery
-                   query={`${vehicle.type} India transportation rental`}
-                   type="transport"
-                   aspectRatio={16 / 9}
-                 />
+                <div className="relative">
+                  <PlaceImageGallery
+                    query={`${vehicle.type} ${destination || country || ""} transportation`}
+                    type="transport"
+                    aspectRatio={16 / 9}
+                  />
  
                  {vehicle.isEcoFriendly && (
                    <Badge className="absolute top-2 left-2 bg-green-500 text-white gap-1">

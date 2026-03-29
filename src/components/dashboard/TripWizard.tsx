@@ -356,9 +356,36 @@ const TripWizard = ({ onSubmit }: TripWizardProps) => {
               <p className="text-muted-foreground">Total budget for your trip</p>
             </div>
 
+            {/* Currency Selector */}
+            <div className="flex items-center gap-3 p-3 rounded-xl bg-muted/50 border border-border">
+              <span className="text-sm text-muted-foreground whitespace-nowrap">Currency:</span>
+              <Select value={currency.code} onValueChange={(code) => {
+                const found = allCurrencies.find(c => c.code === code);
+                if (found) setCurrency(found);
+              }}>
+                <SelectTrigger className="rounded-xl flex-1">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="max-h-60">
+                  {allCurrencies.map((c) => (
+                    <SelectItem key={c.code} value={c.code}>
+                      {c.symbol} {c.code} – {c.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
             {/* Budget Display */}
             <div className="text-center py-4">
-              <span className="text-4xl font-bold text-foreground">${budgetValue.toLocaleString()}</span>
+              <span className="text-4xl font-bold text-foreground">
+                {formatCurrency(displayBudget, currency)}
+              </span>
+              {currency.code !== "USD" && (
+                <p className="text-sm text-muted-foreground mt-1">
+                  ≈ ${budgetValue.toLocaleString()} USD
+                </p>
+              )}
             </div>
 
             {/* Slider */}
@@ -372,8 +399,8 @@ const TripWizard = ({ onSubmit }: TripWizardProps) => {
                 className="py-4"
               />
               <div className="flex justify-between text-xs text-muted-foreground mt-1">
-                <span>$100</span>
-                <span>$10,000+</span>
+                <span>{formatCurrency(convertFromUSD(100, currency), currency)}</span>
+                <span>{formatCurrency(convertFromUSD(10000, currency), currency)}+</span>
               </div>
             </div>
 
@@ -410,7 +437,9 @@ const TripWizard = ({ onSubmit }: TripWizardProps) => {
               {dailyBudget > 0 && (
                 <div className="flex items-center justify-between pt-2 border-t border-border">
                   <span className="text-sm text-muted-foreground">Daily budget</span>
-                  <span className="font-semibold text-foreground">${dailyBudget}/day</span>
+                  <span className="font-semibold text-foreground">
+                    {formatCurrency(displayDailyBudget, currency)}/day
+                  </span>
                 </div>
               )}
             </div>
@@ -433,7 +462,7 @@ const TripWizard = ({ onSubmit }: TripWizardProps) => {
                   onClick={() => setBudget(String(amount))}
                   className="rounded-xl text-xs"
                 >
-                  ${amount >= 1000 ? `${amount/1000}k` : amount}
+                  {formatCurrency(convertFromUSD(amount, currency), currency)}
                 </Button>
               ))}
             </div>
