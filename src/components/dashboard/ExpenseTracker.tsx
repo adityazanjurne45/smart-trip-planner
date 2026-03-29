@@ -94,7 +94,7 @@ const ExpenseTracker = ({ totalBudget, currency }: ExpenseTrackerProps) => {
           <div className="flex justify-between text-sm">
             <span className="text-muted-foreground">Spent</span>
             <span className={cn("font-semibold", isOverBudget ? "text-destructive" : "text-foreground")}>
-              ${totalSpent.toFixed(0)} / ${totalBudget}
+              {sym}{totalSpent.toFixed(0)} / {sym}{totalBudget}
             </span>
           </div>
           <Progress
