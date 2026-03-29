@@ -126,7 +126,7 @@ const ExpenseTracker = ({ totalBudget, currency }: ExpenseTrackerProps) => {
                   <div className={cn("w-8 h-8 rounded-lg mx-auto flex items-center justify-center mb-1", `${cat.bg}/10`)}>
                     <Icon className={cn("w-4 h-4", cat.color)} />
                   </div>
-                  <p className="text-xs font-medium text-foreground">${cat.total.toFixed(0)}</p>
+                  <p className="text-xs font-medium text-foreground">{sym}{cat.total.toFixed(0)}</p>
                   <p className="text-[10px] text-muted-foreground truncate">{cat.label.split(" ")[0]}</p>
                 </div>
               );
