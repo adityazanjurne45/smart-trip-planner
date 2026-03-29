@@ -24,12 +24,13 @@ interface TransportSelectionProps {
   country?: string;
 }
  
- const TransportSelection = ({
-   vehicles,
-   destination,
-   onSelectVehicle,
-   selectedVehicle,
- }: TransportSelectionProps) => {
+const TransportSelection = ({
+  vehicles,
+  destination,
+  onSelectVehicle,
+  selectedVehicle,
+  country,
+}: TransportSelectionProps) => {
    const [showDetails, setShowDetails] = useState<string | null>(null);
  
    const getVehicleIcon = (type: string) => {
