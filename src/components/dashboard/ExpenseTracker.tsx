@@ -105,7 +105,7 @@ const ExpenseTracker = ({ totalBudget, currency }: ExpenseTrackerProps) => {
             {isOverBudget ? (
               <Badge variant="destructive" className="gap-1">
                 <AlertTriangle className="w-3 h-3" />
-                Over budget by ${Math.abs(remaining).toFixed(0)}
+                Over budget by {sym}{Math.abs(remaining).toFixed(0)}
               </Badge>
             ) : (
               <Badge variant="secondary" className="gap-1 bg-travel-forest/10 text-travel-forest border-travel-forest/20">
