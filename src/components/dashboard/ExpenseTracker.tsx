@@ -188,7 +188,7 @@ const ExpenseTracker = ({ totalBudget, currency }: ExpenseTrackerProps) => {
                     <p className="text-sm font-medium text-foreground truncate">{expense.description}</p>
                     <p className="text-xs text-muted-foreground">{cat?.label}</p>
                   </div>
-                  <span className="text-sm font-semibold text-foreground">${expense.amount.toFixed(0)}</span>
+                  <span className="text-sm font-semibold text-foreground">{sym}{expense.amount.toFixed(0)}</span>
                   <Button
                     size="icon"
                     variant="ghost"
