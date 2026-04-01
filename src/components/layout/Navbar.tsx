@@ -14,6 +14,8 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import SmartNotificationPanel from "@/components/dashboard/SmartNotificationPanel";
+import NotificationTicker from "@/components/layout/NotificationTicker";
+
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [profileData, setProfileData] = useState<{ full_name: string | null; avatar_url: string | null } | null>(null);
