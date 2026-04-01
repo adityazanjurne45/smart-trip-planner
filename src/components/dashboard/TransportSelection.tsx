@@ -1,20 +1,22 @@
- import { useState } from "react";
- import { Card, CardContent } from "@/components/ui/card";
- import { Button } from "@/components/ui/button";
- import { Badge } from "@/components/ui/badge";
- import {
-   Car,
-   Bike,
-   Bus,
-   Check,
-   Leaf,
-   MapPin,
-   DollarSign,
-   Info,
- } from "lucide-react";
- import { Vehicle } from "@/types/trip";
- import { cn } from "@/lib/utils";
- import PlaceImageGallery from "@/components/ui/PlaceImageGallery";
+import { useState } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import {
+  Car,
+  Bike,
+  Bus,
+  Check,
+  Leaf,
+  MapPin,
+  DollarSign,
+  Info,
+  ExternalLink,
+} from "lucide-react";
+import { Vehicle } from "@/types/trip";
+import { cn } from "@/lib/utils";
+import PlaceImageGallery from "@/components/ui/PlaceImageGallery";
+import { getBusBookingPlatforms, getTaxiBookingPlatforms } from "@/lib/bookingLinks";
  
 interface TransportSelectionProps {
   vehicles: Vehicle[];
