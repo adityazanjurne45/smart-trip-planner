@@ -32,7 +32,11 @@ serve(async (req) => {
     if (!weatherResponse.ok) {
       const errorData = await weatherResponse.json();
       console.error("Weather API error:", errorData);
-      throw new Error(errorData.message || "Failed to fetch weather");
+      // Return graceful response instead of throwing
+      return new Response(
+        JSON.stringify({ current: null, forecast: null, error: errorData.message || "city not found" }),
+        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
     }
 
     const weatherData = await weatherResponse.json();
