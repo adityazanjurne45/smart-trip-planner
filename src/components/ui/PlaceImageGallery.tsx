@@ -83,16 +83,28 @@ const PlaceImageGallery = ({
     );
   }
 
+  // Category-based fallback images from Unsplash
+  const getFallbackImage = () => {
+    const fallbacks: Record<string, string> = {
+      hotel: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600&q=80',
+      tourist_place: 'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=600&q=80',
+      transport: 'https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=600&q=80',
+      destination: 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=600&q=80',
+    };
+    return fallbacks[type] || fallbacks.destination;
+  };
+
   if (error || images.length === 0) {
     return (
-      <div className={cn("relative overflow-hidden rounded-xl bg-muted", className)}>
+      <div className={cn("relative overflow-hidden rounded-xl group", className)}>
         <AspectRatio ratio={aspectRatio}>
-          <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-muted to-muted/50">
-            <div className="flex flex-col items-center gap-2">
-              <ImageOff className="w-8 h-8 text-muted-foreground" />
-              <span className="text-sm text-muted-foreground">No image available</span>
-            </div>
-          </div>
+          <img
+            src={getFallbackImage()}
+            alt={query}
+            loading="lazy"
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
         </AspectRatio>
       </div>
     );

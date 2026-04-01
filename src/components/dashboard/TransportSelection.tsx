@@ -1,20 +1,22 @@
- import { useState } from "react";
- import { Card, CardContent } from "@/components/ui/card";
- import { Button } from "@/components/ui/button";
- import { Badge } from "@/components/ui/badge";
- import {
-   Car,
-   Bike,
-   Bus,
-   Check,
-   Leaf,
-   MapPin,
-   DollarSign,
-   Info,
- } from "lucide-react";
- import { Vehicle } from "@/types/trip";
- import { cn } from "@/lib/utils";
- import PlaceImageGallery from "@/components/ui/PlaceImageGallery";
+import { useState } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import {
+  Car,
+  Bike,
+  Bus,
+  Check,
+  Leaf,
+  MapPin,
+  DollarSign,
+  Info,
+  ExternalLink,
+} from "lucide-react";
+import { Vehicle } from "@/types/trip";
+import { cn } from "@/lib/utils";
+import PlaceImageGallery from "@/components/ui/PlaceImageGallery";
+import { getBusBookingPlatforms, getTaxiBookingPlatforms } from "@/lib/bookingLinks";
  
 interface TransportSelectionProps {
   vehicles: Vehicle[];
@@ -133,32 +135,103 @@ const TransportSelection = ({
                    </Button>
                  </div>
  
-                 {/* Expanded Details */}
-                 {isExpanded && (
-                   <div className="mt-4 pt-4 border-t animate-fade-in space-y-3">
-                     {vehicle.whereToFind && (
-                       <div className="flex items-start gap-2">
-                         <MapPin className="w-4 h-4 text-muted-foreground shrink-0 mt-0.5" />
-                         <div>
-                           <p className="text-xs text-muted-foreground">
-                             Where to find
-                           </p>
-                           <p className="text-sm">{vehicle.whereToFind}</p>
-                         </div>
-                       </div>
-                     )}
- 
-                     {vehicle.tips && (
-                       <div className="flex items-start gap-2">
-                         <Info className="w-4 h-4 text-muted-foreground shrink-0 mt-0.5" />
-                         <div>
-                           <p className="text-xs text-muted-foreground">Tip</p>
-                           <p className="text-sm">{vehicle.tips}</p>
-                         </div>
-                       </div>
-                     )}
-                   </div>
-                 )}
+                {/* Expanded Details */}
+                  {isExpanded && (
+                    <div className="mt-4 pt-4 border-t animate-fade-in space-y-3">
+                      {vehicle.whereToFind && (
+                        <div className="flex items-start gap-2">
+                          <MapPin className="w-4 h-4 text-muted-foreground shrink-0 mt-0.5" />
+                          <div>
+                            <p className="text-xs text-muted-foreground">
+                              Where to find
+                            </p>
+                            <p className="text-sm">{vehicle.whereToFind}</p>
+                          </div>
+                        </div>
+                      )}
+
+                      {vehicle.tips && (
+                        <div className="flex items-start gap-2">
+                          <Info className="w-4 h-4 text-muted-foreground shrink-0 mt-0.5" />
+                          <div>
+                            <p className="text-xs text-muted-foreground">Tip</p>
+                            <p className="text-sm">{vehicle.tips}</p>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Booking Buttons */}
+                      <div className="pt-2 border-t space-y-2">
+                        <p className="text-xs text-muted-foreground">Book via trusted partner:</p>
+                        {vehicle.type.toLowerCase().includes('bus') && (
+                          <div className="flex flex-wrap gap-2">
+                            {getBusBookingPlatforms(destination).map((p) => (
+                              <Button
+                                key={p.name}
+                                size="sm"
+                                variant="outline"
+                                className="text-xs gap-1 hover:bg-primary hover:text-primary-foreground"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  window.open(p.getUrl(destination), '_blank', 'noopener,noreferrer');
+                                }}
+                              >
+                                <Bus className="w-3 h-3" />
+                                {p.name}
+                              </Button>
+                            ))}
+                          </div>
+                        )}
+                        {(vehicle.type.toLowerCase().includes('taxi') ||
+                          vehicle.type.toLowerCase().includes('cab') ||
+                          vehicle.type.toLowerCase().includes('uber') ||
+                          vehicle.type.toLowerCase().includes('ride') ||
+                          vehicle.type.toLowerCase().includes('auto')) && (
+                          <div className="flex flex-wrap gap-2">
+                            {getTaxiBookingPlatforms(destination).map((p) => (
+                              <Button
+                                key={p.name}
+                                size="sm"
+                                variant="outline"
+                                className="text-xs gap-1 hover:bg-primary hover:text-primary-foreground"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  window.open(p.getUrl(destination), '_blank', 'noopener,noreferrer');
+                                }}
+                              >
+                                <Car className="w-3 h-3" />
+                                {p.name}
+                              </Button>
+                            ))}
+                          </div>
+                        )}
+                        {!vehicle.type.toLowerCase().includes('bus') &&
+                         !vehicle.type.toLowerCase().includes('taxi') &&
+                         !vehicle.type.toLowerCase().includes('cab') &&
+                         !vehicle.type.toLowerCase().includes('uber') &&
+                         !vehicle.type.toLowerCase().includes('ride') &&
+                         !vehicle.type.toLowerCase().includes('auto') && (
+                          <div className="flex flex-wrap gap-2">
+                            {getTaxiBookingPlatforms(destination).map((p) => (
+                              <Button
+                                key={p.name}
+                                size="sm"
+                                variant="outline"
+                                className="text-xs gap-1 hover:bg-primary hover:text-primary-foreground"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  window.open(p.getUrl(destination), '_blank', 'noopener,noreferrer');
+                                }}
+                              >
+                                <ExternalLink className="w-3 h-3" />
+                                {p.name}
+                              </Button>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
                </CardContent>
              </Card>
            );
