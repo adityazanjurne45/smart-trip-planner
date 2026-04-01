@@ -124,24 +124,46 @@ import { getHotelBookingPlatforms } from "@/lib/bookingLinks";
                    )}
                  </div>
  
-                 <div className="flex items-center justify-between mt-3">
-                   <span className="text-lg font-bold text-primary">
-                     {hotel.pricePerNight}
-                     <span className="text-sm font-normal text-muted-foreground">
-                       /night
-                     </span>
-                   </span>
-                   <Button
-                     size="sm"
-                     variant={isSelected ? "default" : "outline"}
-                     onClick={(e) => {
-                       e.stopPropagation();
-                       onSelectHotel(hotel);
-                     }}
-                   >
-                     {isSelected ? "Selected" : "Select"}
-                   </Button>
-                 </div>
+                <div className="flex items-center justify-between mt-3">
+                    <span className="text-lg font-bold text-primary">
+                      {hotel.pricePerNight}
+                      <span className="text-sm font-normal text-muted-foreground">
+                        /night
+                      </span>
+                    </span>
+                    <Button
+                      size="sm"
+                      variant={isSelected ? "default" : "outline"}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onSelectHotel(hotel);
+                      }}
+                    >
+                      {isSelected ? "Selected" : "Select"}
+                    </Button>
+                  </div>
+
+                  {/* Book Now Buttons */}
+                  <div className="mt-3 pt-3 border-t">
+                    <p className="text-xs text-muted-foreground mb-2">Book on a trusted platform:</p>
+                    <div className="flex flex-wrap gap-2">
+                      {getHotelBookingPlatforms(destination).map((platform) => (
+                        <Button
+                          key={platform.name}
+                          size="sm"
+                          variant="outline"
+                          className="text-xs gap-1 hover:bg-primary hover:text-primary-foreground transition-colors"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            window.open(platform.getUrl(hotel.name, destination), '_blank', 'noopener,noreferrer');
+                          }}
+                        >
+                          <ExternalLink className="w-3 h-3" />
+                          {platform.name}
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
  
                  {/* Expanded Details */}
                  {isExpanded && (
