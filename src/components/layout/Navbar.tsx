@@ -14,6 +14,8 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import SmartNotificationPanel from "@/components/dashboard/SmartNotificationPanel";
+import NotificationTicker from "@/components/layout/NotificationTicker";
+
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [profileData, setProfileData] = useState<{ full_name: string | null; avatar_url: string | null } | null>(null);
@@ -87,6 +89,7 @@ const Navbar = () => {
   const isActive = (path: string) => location.pathname === path;
 
   return (
+    <>
     <nav 
       className={cn(
         "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
@@ -262,6 +265,8 @@ const Navbar = () => {
         )}
       </div>
     </nav>
+    {user && <NotificationTicker />}
+    </>
   );
 };
 

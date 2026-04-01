@@ -215,18 +215,51 @@ const SmartNotificationPanel = ({ className, destination, tripStartDate }: Smart
       allNotifications.push(...generateWeatherNotifications(weatherData));
     }
 
-    // Add general travel tips
-    allNotifications.push({
-      id: "tip-documents",
-      type: "tip",
-      title: "💡 Travel Tip",
-      message: "Keep digital copies of your ID and travel documents for emergencies.",
-      timestamp: new Date(Date.now() - 3600000).toISOString(),
-      isRead: true,
-    });
+    // Dynamic travel alerts & offers
+    const dynamicAlerts: TripNotification[] = [
+      {
+        id: "alert-deals",
+        type: "tip",
+        title: "🏷️ Exclusive Deals",
+        message: destination
+          ? `Check out special hotel deals in ${destination} — save up to 30%!`
+          : "Explore trending travel deals and save on your next trip!",
+        timestamp: new Date(Date.now() - 1800000).toISOString(),
+        isRead: false,
+      },
+      {
+        id: "alert-safety",
+        type: "tip",
+        title: "🛡️ Travel Safety",
+        message: "Always carry digital copies of your ID and travel documents for emergencies.",
+        timestamp: new Date(Date.now() - 3600000).toISOString(),
+        isRead: true,
+      },
+      {
+        id: "alert-budget",
+        type: "budget",
+        title: "💰 Budget Tip",
+        message: "Book accommodations mid-week to save 15-25% compared to weekend rates.",
+        timestamp: new Date(Date.now() - 5400000).toISOString(),
+        isRead: true,
+      },
+    ];
+
+    if (destination) {
+      dynamicAlerts.unshift({
+        id: "alert-destination",
+        type: "tip",
+        title: `📍 ${destination} Insider Tip`,
+        message: `Explore local street food and hidden gems in ${destination} for an authentic experience!`,
+        timestamp: new Date(Date.now() - 600000).toISOString(),
+        isRead: false,
+      });
+    }
+
+    allNotifications.push(...dynamicAlerts);
 
     setNotifications(allNotifications);
-  }, [weatherData, generateTripReminders, generateWeatherNotifications]);
+  }, [weatherData, generateTripReminders, generateWeatherNotifications, destination]);
 
   const unreadCount = notifications.filter((n) => !n.isRead).length;
 
