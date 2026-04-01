@@ -265,6 +265,8 @@ const Navbar = () => {
         )}
       </div>
     </nav>
+    {user && <NotificationTicker />}
+    </>
   );
 };
 
