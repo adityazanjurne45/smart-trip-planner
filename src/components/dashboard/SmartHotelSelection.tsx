@@ -1,21 +1,23 @@
- import { useState } from "react";
- import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
- import { Button } from "@/components/ui/button";
- import { Badge } from "@/components/ui/badge";
- import {
-   Building2,
-   MapPin,
-   Star,
-   Check,
-   Wifi,
-   Waves,
-   Dumbbell,
-   Leaf,
-   Navigation,
- } from "lucide-react";
- import { Hotel } from "@/types/trip";
- import { cn } from "@/lib/utils";
- import PlaceImageGallery from "@/components/ui/PlaceImageGallery";
+import { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import {
+  Building2,
+  MapPin,
+  Star,
+  Check,
+  Wifi,
+  Waves,
+  Dumbbell,
+  Leaf,
+  Navigation,
+  ExternalLink,
+} from "lucide-react";
+import { Hotel } from "@/types/trip";
+import { cn } from "@/lib/utils";
+import PlaceImageGallery from "@/components/ui/PlaceImageGallery";
+import { getHotelBookingPlatforms } from "@/lib/bookingLinks";
  
  interface SmartHotelSelectionProps {
    hotels: Hotel[];
