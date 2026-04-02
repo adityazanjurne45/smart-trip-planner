@@ -10,6 +10,7 @@ import AIProcessingScreen from "@/components/dashboard/AIProcessingScreen";
 import { Loader2, MapPin, Sparkles } from "lucide-react";
 import { useProfile } from "@/hooks/useProfile";
 import { TripDetails, Recommendations } from "@/types/trip";
+import SurpriseMe from "@/components/dashboard/SurpriseMe";
 
 const PlanTrip = () => {
   const [user, setUser] = useState<User | null>(null);
