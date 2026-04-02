@@ -237,6 +237,17 @@ const Dashboard = () => {
               </div>
             )}
           </div>
+          {/* Achievements */}
+          {pastTrips && (
+            <div className="mt-8 animate-fade-up" style={{ animationDelay: "0.35s" }}>
+              <Achievements
+                tripsCount={pastTrips.length}
+                citiesVisited={new Set(pastTrips.map(t => t.destination)).size}
+                avgBudget={pastTrips.length ? pastTrips.reduce((a, t) => a + t.budget, 0) / pastTrips.length : 0}
+                avgRating={pastTrips.filter(t => t.rating).length ? pastTrips.filter(t => t.rating).reduce((a, t) => a + (t.rating || 0), 0) / pastTrips.filter(t => t.rating).length : 0}
+              />
+            </div>
+          )}
           {/* Travel Analytics */}
           {pastTrips && pastTrips.length > 0 && (
             <div className="mt-8 animate-fade-up" style={{ animationDelay: "0.4s" }}>

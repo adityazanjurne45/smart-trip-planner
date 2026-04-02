@@ -135,8 +135,20 @@ const PlanTrip = () => {
           {/* Main Content */}
           <div className="animate-fade-up" style={{ animationDelay: "0.1s" }}>
             {!tripDetails ? (
-              <div className="bg-card rounded-2xl border border-border shadow-soft p-8">
-                <TripWizard onSubmit={handleTripSubmit} />
+              <div className="space-y-6">
+                <div className="bg-card rounded-2xl border border-border shadow-soft p-8">
+                  <TripWizard onSubmit={handleTripSubmit} />
+                </div>
+                <SurpriseMe
+                  onSelect={(destination, duration, budget) => {
+                    handleTripSubmit({
+                      boardingPoint: "Your City",
+                      destinationPoint: destination,
+                      duration,
+                      budget,
+                    });
+                  }}
+                />
               </div>
             ) : (
               <TripRecommendations
