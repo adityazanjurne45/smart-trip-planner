@@ -18,6 +18,7 @@ import {
   User,
   Sparkles,
   X,
+  MapPin as MapPinIcon,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { TripDetails, Recommendations } from "@/types/trip";
@@ -27,22 +28,32 @@ interface Message {
   id: string;
   role: "user" | "assistant";
   content: string;
+  mapAction?: boolean;
 }
 
 interface AIAssistantProps {
   tripDetails?: TripDetails;
   recommendations?: Recommendations;
+  onMapRequest?: () => void;
 }
+
+const MAP_INTENTS = [
+  "show map", "open map", "view map", "display map",
+  "show route", "view route", "show directions",
+  "show destinations", "view destinations", "plot destinations",
+  "where is", "show location", "map of",
+  "navigate to", "directions to",
+];
 
 const QUICK_QUESTIONS = [
   "What's the best time to visit?",
   "Suggest local food to try",
   "Any safety tips?",
-  "Public transport options?",
+  "Show map of destinations",
   "Budget saving tips?",
 ];
 
-const AIAssistant = ({ tripDetails, recommendations }: AIAssistantProps) => {
+const AIAssistant = ({ tripDetails, recommendations, onMapRequest }: AIAssistantProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -63,6 +74,11 @@ const AIAssistant = ({ tripDetails, recommendations }: AIAssistantProps) => {
     }
   }, [messages]);
 
+  const detectMapIntent = (text: string): boolean => {
+    const lower = text.toLowerCase();
+    return MAP_INTENTS.some(intent => lower.includes(intent));
+  };
+
   const handleSend = async (question?: string) => {
     const messageText = question || input.trim();
     if (!messageText || isLoading) return;
@@ -76,6 +92,8 @@ const AIAssistant = ({ tripDetails, recommendations }: AIAssistantProps) => {
     setMessages((prev) => [...prev, userMessage]);
     setInput("");
     setIsLoading(true);
+
+    const isMapIntent = detectMapIntent(messageText);
 
     try {
       const context = tripDetails
@@ -96,6 +114,7 @@ const AIAssistant = ({ tripDetails, recommendations }: AIAssistantProps) => {
         id: (Date.now() + 1).toString(),
         role: "assistant",
         content: data.answer || "I'm sorry, I couldn't process that question. Please try again.",
+        mapAction: isMapIntent && !!tripDetails,
       };
 
       setMessages((prev) => [...prev, assistantMessage]);
@@ -180,6 +199,20 @@ const AIAssistant = ({ tripDetails, recommendations }: AIAssistantProps) => {
                   )}
                 >
                   <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+                  {message.mapAction && onMapRequest && (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="mt-2 gap-2 text-xs"
+                      onClick={() => {
+                        onMapRequest();
+                        setIsOpen(false);
+                      }}
+                    >
+                      <MapPinIcon className="w-3 h-3" />
+                      View on Map
+                    </Button>
+                  )}
                 </div>
               </div>
             ))}

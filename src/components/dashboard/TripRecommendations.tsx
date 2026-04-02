@@ -31,6 +31,8 @@ interface TripRecommendationsProps {
   onGenerated: (recs: Recommendations) => void;
   onNewTrip: () => void;
   userProfile?: UserProfile | null;
+  activeTab?: string;
+  onTabChange?: (tab: string) => void;
 }
 
 const TripRecommendations = ({
@@ -40,6 +42,8 @@ const TripRecommendations = ({
   onGenerated,
   onNewTrip,
   userProfile,
+  activeTab,
+  onTabChange,
 }: TripRecommendationsProps) => {
   const { toast } = useToast();
   const [tripSaved, setTripSaved] = useState(false);
@@ -212,7 +216,7 @@ const TripRecommendations = ({
       </div>
 
       {/* Tabs for different views */}
-      <Tabs defaultValue="overview" className="w-full">
+      <Tabs value={activeTab || "overview"} onValueChange={onTabChange} className="w-full">
         <TabsList className="grid w-full grid-cols-6 mb-6">
           <TabsTrigger value="overview" className="gap-2">
             <List className="w-4 h-4" />

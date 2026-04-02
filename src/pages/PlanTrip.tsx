@@ -17,6 +17,7 @@ const PlanTrip = () => {
   const [tripDetails, setTripDetails] = useState<TripDetails | null>(null);
   const [recommendations, setRecommendations] = useState<Recommendations | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [activeTab, setActiveTab] = useState("overview");
   const [showProcessingScreen, setShowProcessingScreen] = useState(false);
   const navigate = useNavigate();
 
@@ -94,6 +95,8 @@ const PlanTrip = () => {
             onGenerated={handleRecommendationsGenerated}
             onNewTrip={handleNewTrip}
             userProfile={profile}
+            activeTab={activeTab}
+            onTabChange={setActiveTab}
           />
         </div>
       </>
@@ -142,6 +145,8 @@ const PlanTrip = () => {
                 onGenerated={handleRecommendationsGenerated}
                 onNewTrip={handleNewTrip}
                 userProfile={profile}
+                activeTab={activeTab}
+                onTabChange={setActiveTab}
               />
             )}
           </div>
@@ -151,7 +156,8 @@ const PlanTrip = () => {
       {/* AI Travel Assistant */}
       <AIAssistant 
         tripDetails={tripDetails ?? undefined} 
-        recommendations={recommendations ?? undefined} 
+        recommendations={recommendations ?? undefined}
+        onMapRequest={() => setActiveTab("map")}
       />
     </div>
   );
