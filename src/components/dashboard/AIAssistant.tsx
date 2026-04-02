@@ -73,6 +73,11 @@ const AIAssistant = ({ tripDetails, recommendations, onMapRequest }: AIAssistant
     }
   }, [messages]);
 
+  const detectMapIntent = (text: string): boolean => {
+    const lower = text.toLowerCase();
+    return MAP_INTENTS.some(intent => lower.includes(intent));
+  };
+
   const handleSend = async (question?: string) => {
     const messageText = question || input.trim();
     if (!messageText || isLoading) return;
@@ -86,6 +91,8 @@ const AIAssistant = ({ tripDetails, recommendations, onMapRequest }: AIAssistant
     setMessages((prev) => [...prev, userMessage]);
     setInput("");
     setIsLoading(true);
+
+    const isMapIntent = detectMapIntent(messageText);
 
     try {
       const context = tripDetails
@@ -106,6 +113,7 @@ const AIAssistant = ({ tripDetails, recommendations, onMapRequest }: AIAssistant
         id: (Date.now() + 1).toString(),
         role: "assistant",
         content: data.answer || "I'm sorry, I couldn't process that question. Please try again.",
+        mapAction: isMapIntent && !!tripDetails,
       };
 
       setMessages((prev) => [...prev, assistantMessage]);
