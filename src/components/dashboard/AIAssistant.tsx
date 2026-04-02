@@ -49,7 +49,7 @@ const QUICK_QUESTIONS = [
   "What's the best time to visit?",
   "Suggest local food to try",
   "Any safety tips?",
-  "Public transport options?",
+  "Show map of destinations",
   "Budget saving tips?",
 ];
 
