@@ -514,6 +514,18 @@ const TripRecommendations = ({
             />
             <ExpenseTracker totalBudget={tripDetails.budget} />
           </div>
+          <GroupExpenseSplitter />
+        </TabsContent>
+
+        {/* Story Tab */}
+        <TabsContent value="story" className="animate-fade-in">
+          {recommendations.dayWiseItinerary && recommendations.dayWiseItinerary.length > 0 ? (
+            <TripStoryTimeline itinerary={recommendations.dayWiseItinerary} tripDetails={tripDetails} />
+          ) : (
+            <div className="text-center py-12 text-muted-foreground">
+              <p>Trip story will appear once your itinerary is generated.</p>
+            </div>
+          )}
         </TabsContent>
 
         {/* Book Tickets Tab */}
