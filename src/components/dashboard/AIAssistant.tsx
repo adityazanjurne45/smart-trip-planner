@@ -10,7 +10,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { MapPin as MapPinIcon } from "lucide-react";
+import {
   MessageCircle,
   Send,
   Loader2,
@@ -18,6 +18,7 @@ import { MapPin as MapPinIcon } from "lucide-react";
   User,
   Sparkles,
   X,
+  MapPin as MapPinIcon,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { TripDetails, Recommendations } from "@/types/trip";
