@@ -17,6 +17,7 @@ const PlanTrip = () => {
   const [tripDetails, setTripDetails] = useState<TripDetails | null>(null);
   const [recommendations, setRecommendations] = useState<Recommendations | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [activeTab, setActiveTab] = useState("overview");
   const [showProcessingScreen, setShowProcessingScreen] = useState(false);
   const navigate = useNavigate();
 
