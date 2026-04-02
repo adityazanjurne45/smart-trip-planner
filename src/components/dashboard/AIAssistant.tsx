@@ -27,12 +27,22 @@ interface Message {
   id: string;
   role: "user" | "assistant";
   content: string;
+  mapAction?: boolean;
 }
 
 interface AIAssistantProps {
   tripDetails?: TripDetails;
   recommendations?: Recommendations;
+  onMapRequest?: () => void;
 }
+
+const MAP_INTENTS = [
+  "show map", "open map", "view map", "display map",
+  "show route", "view route", "show directions",
+  "show destinations", "view destinations", "plot destinations",
+  "where is", "show location", "map of",
+  "navigate to", "directions to",
+];
 
 const QUICK_QUESTIONS = [
   "What's the best time to visit?",
