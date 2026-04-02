@@ -216,7 +216,7 @@ const TripRecommendations = ({
       </div>
 
       {/* Tabs for different views */}
-      <Tabs defaultValue="overview" className="w-full">
+      <Tabs value={activeTab || "overview"} onValueChange={onTabChange} className="w-full">
         <TabsList className="grid w-full grid-cols-6 mb-6">
           <TabsTrigger value="overview" className="gap-2">
             <List className="w-4 h-4" />
