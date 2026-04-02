@@ -219,28 +219,32 @@ const TripRecommendations = ({
 
       {/* Tabs for different views */}
       <Tabs value={activeTab || "overview"} onValueChange={onTabChange} className="w-full">
-        <TabsList className="grid w-full grid-cols-6 mb-6">
-          <TabsTrigger value="overview" className="gap-2">
+        <TabsList className="grid w-full grid-cols-7 mb-6">
+          <TabsTrigger value="overview" className="gap-1">
             <List className="w-4 h-4" />
             <span className="hidden sm:inline">Overview</span>
           </TabsTrigger>
-          <TabsTrigger value="map" className="gap-2">
+          <TabsTrigger value="map" className="gap-1">
             <MapPinned className="w-4 h-4" />
             <span className="hidden sm:inline">Map</span>
           </TabsTrigger>
-          <TabsTrigger value="itinerary" className="gap-2">
+          <TabsTrigger value="itinerary" className="gap-1">
             <Calendar className="w-4 h-4" />
             <span className="hidden sm:inline">Day-by-Day</span>
           </TabsTrigger>
-          <TabsTrigger value="details" className="gap-2">
+          <TabsTrigger value="story" className="gap-1">
+            <BookOpen className="w-4 h-4" />
+            <span className="hidden sm:inline">Story</span>
+          </TabsTrigger>
+          <TabsTrigger value="details" className="gap-1">
             <Map className="w-4 h-4" />
             <span className="hidden sm:inline">Details</span>
           </TabsTrigger>
-          <TabsTrigger value="prepare" className="gap-2">
+          <TabsTrigger value="prepare" className="gap-1">
             <Backpack className="w-4 h-4" />
             <span className="hidden sm:inline">Prepare</span>
           </TabsTrigger>
-          <TabsTrigger value="booking" className="gap-2">
+          <TabsTrigger value="booking" className="gap-1">
             <Ticket className="w-4 h-4" />
             <span className="hidden sm:inline">Book</span>
           </TabsTrigger>
