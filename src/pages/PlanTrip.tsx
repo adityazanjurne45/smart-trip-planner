@@ -156,7 +156,8 @@ const PlanTrip = () => {
       {/* AI Travel Assistant */}
       <AIAssistant 
         tripDetails={tripDetails ?? undefined} 
-        recommendations={recommendations ?? undefined} 
+        recommendations={recommendations ?? undefined}
+        onMapRequest={() => setActiveTab("map")}
       />
     </div>
   );
