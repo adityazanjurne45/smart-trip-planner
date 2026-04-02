@@ -31,6 +31,8 @@ interface TripRecommendationsProps {
   onGenerated: (recs: Recommendations) => void;
   onNewTrip: () => void;
   userProfile?: UserProfile | null;
+  activeTab?: string;
+  onTabChange?: (tab: string) => void;
 }
 
 const TripRecommendations = ({
@@ -40,6 +42,8 @@ const TripRecommendations = ({
   onGenerated,
   onNewTrip,
   userProfile,
+  activeTab,
+  onTabChange,
 }: TripRecommendationsProps) => {
   const { toast } = useToast();
   const [tripSaved, setTripSaved] = useState(false);
