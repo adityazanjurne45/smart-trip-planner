@@ -8,6 +8,7 @@ import { useProfile } from "@/hooks/useProfile";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import TravelAnalytics from "@/components/dashboard/TravelAnalytics";
+import Achievements from "@/components/dashboard/Achievements";
 
 const Dashboard = () => {
   const [user, setUser] = useState<User | null>(null);
