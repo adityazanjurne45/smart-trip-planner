@@ -199,6 +199,20 @@ const AIAssistant = ({ tripDetails, recommendations, onMapRequest }: AIAssistant
                   )}
                 >
                   <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+                  {message.mapAction && onMapRequest && (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="mt-2 gap-2 text-xs"
+                      onClick={() => {
+                        onMapRequest();
+                        setIsOpen(false);
+                      }}
+                    >
+                      <MapPinIcon className="w-3 h-3" />
+                      View on Map
+                    </Button>
+                  )}
                 </div>
               </div>
             ))}
