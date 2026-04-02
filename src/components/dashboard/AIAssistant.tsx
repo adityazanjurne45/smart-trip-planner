@@ -10,7 +10,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import {
+import { MapPin as MapPinIcon } from "lucide-react";
   MessageCircle,
   Send,
   Loader2,
