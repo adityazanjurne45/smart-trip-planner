@@ -52,7 +52,7 @@ const QUICK_QUESTIONS = [
   "Budget saving tips?",
 ];
 
-const AIAssistant = ({ tripDetails, recommendations }: AIAssistantProps) => {
+const AIAssistant = ({ tripDetails, recommendations, onMapRequest }: AIAssistantProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
     {
