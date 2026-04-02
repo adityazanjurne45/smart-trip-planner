@@ -23,6 +23,8 @@ import ShareTrip from "./ShareTrip";
 import RecommendationReason, { getPlaceReasons, getHotelReasons, getVehicleReasons } from "./RecommendationReason";
 import InstagramScore from "./InstagramScore";
 import SmartTravelSummary from "./SmartTravelSummary";
+import TripStoryTimeline from "./TripStoryTimeline";
+import GroupExpenseSplitter from "./GroupExpenseSplitter";
 
 interface TripRecommendationsProps {
   tripDetails: TripDetails;
