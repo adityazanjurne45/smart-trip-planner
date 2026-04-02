@@ -95,6 +95,8 @@ const PlanTrip = () => {
             onGenerated={handleRecommendationsGenerated}
             onNewTrip={handleNewTrip}
             userProfile={profile}
+            activeTab={activeTab}
+            onTabChange={setActiveTab}
           />
         </div>
       </>
