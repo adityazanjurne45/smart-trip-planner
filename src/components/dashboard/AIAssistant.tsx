@@ -28,7 +28,7 @@ interface Message {
   id: string;
   role: "user" | "assistant";
   content: string;
-  mapAction?: boolean;
+  tabAction?: string;
 }
 
 interface AIAssistantProps {

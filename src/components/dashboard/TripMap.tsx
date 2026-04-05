@@ -490,11 +490,22 @@ const TripMap = ({ tripDetails, recommendations }: TripMapProps) => {
             </div>
 
             {/* Vehicle indicator */}
-            <div className="flex items-center justify-center gap-2 pt-2 border-t border-border">
-              <span className="text-xl">{vehicleType === "car" ? "🚗" : "🏍️"}</span>
-              <span className="text-sm text-muted-foreground">
-                Traveling by {vehicleType === "car" ? "Car" : "Bike"}
-              </span>
+            <div className="flex items-center justify-between gap-2 pt-2 border-t border-border">
+              <div className="flex items-center gap-2">
+                <span className="text-xl">{vehicleType === "car" ? "🚗" : "🏍️"}</span>
+                <span className="text-sm text-muted-foreground">
+                  Traveling by {vehicleType === "car" ? "Car" : "Bike"}
+                </span>
+              </div>
+              <a
+                href={`https://www.google.com/maps/dir/${encodeURIComponent(tripDetails.boardingPoint)}/${encodeURIComponent(tripDetails.destinationPoint)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 text-xs font-medium text-primary hover:underline"
+              >
+                <Navigation className="w-3 h-3" />
+                Open in Google Maps
+              </a>
             </div>
           </div>
         </div>

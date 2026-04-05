@@ -170,7 +170,7 @@ const PlanTrip = () => {
       <AIAssistant 
         tripDetails={tripDetails ?? undefined} 
         recommendations={recommendations ?? undefined}
-        onMapRequest={() => setActiveTab("map")}
+        onTabRequest={(tab) => setActiveTab(tab)}
       />
     </div>
   );
