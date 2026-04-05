@@ -17,12 +17,13 @@ import {
   Bot,
   User,
   Sparkles,
-  X,
   MapPin as MapPinIcon,
+  Trash2,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { TripDetails, Recommendations } from "@/types/trip";
 import { cn } from "@/lib/utils";
+import ReactMarkdown from "react-markdown";
 
 interface Message {
   id: string;
@@ -48,12 +49,14 @@ const TAB_INTENTS: Record<string, string[]> = {
   itinerary: [
     "show itinerary", "open itinerary", "view itinerary",
     "day by day", "day-by-day", "daily plan", "show schedule",
-    "what to do each day", "show plan",
+    "what to do each day", "show plan", "today plan", "today's plan",
+    "what should i do today",
   ],
   details: [
     "show hotels", "open hotels", "view hotels", "hotel options",
     "show places", "tourist places", "attractions",
     "show transport", "transport options", "vehicle options",
+    "restaurants", "food options", "where to eat",
   ],
   booking: [
     "book ticket", "book hotel", "book bus", "book train", "book flight",
@@ -67,35 +70,35 @@ const TAB_INTENTS: Record<string, string[]> = {
   overview: [
     "show overview", "trip summary", "show summary",
     "show budget", "budget breakdown", "how much will it cost",
+    "optimize budget", "save money", "cheaper option",
   ],
   story: [
     "show story", "trip story", "trip timeline", "show timeline",
   ],
 };
 
-const QUICK_QUESTIONS = [
-  "What's the best time to visit?",
-  "Suggest local food to try",
-  "Any safety tips?",
-  "Show map of destinations",
-  "Show my itinerary",
-  "Budget saving tips?",
-];
+const TAB_LABELS: Record<string, string> = {
+  map: "Map", itinerary: "Day-by-Day", details: "Details",
+  booking: "Book Tickets", prepare: "Prepare", overview: "Overview", story: "Story",
+};
 
 const AIAssistant = ({ tripDetails, recommendations, onTabRequest }: AIAssistantProps) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: "welcome",
-      role: "assistant",
-      content: tripDetails
-        ? `Hi! I'm your AI travel assistant. I can help you with questions about your trip to ${tripDetails.destinationPoint}. Try saying "show map", "show itinerary", or "show hotels"!`
-        : "Hi! I'm your AI travel assistant. Ask me anything about planning your trip!",
-    },
-  ]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  // Reset welcome message when trip changes
+  useEffect(() => {
+    setMessages([{
+      id: "welcome",
+      role: "assistant",
+      content: tripDetails
+        ? `Hi! I'm your AI travel assistant for **${tripDetails.destinationPoint}** 🌍\n\nI can help with:\n- 🗺️ \"Show map\" — view your route\n- 📅 \"Show itinerary\" — day-by-day plan\n- 💰 \"Optimize budget\" — saving tips\n- 🎒 \"Packing list\" — what to bring\n\nWhat would you like to know?`
+        : "Hi! I'm your AI travel assistant. Plan a trip first, then I can help with maps, itineraries, budgets, and more!",
+    }]);
+  }, [tripDetails?.destinationPoint]);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -111,10 +114,18 @@ const AIAssistant = ({ tripDetails, recommendations, onTabRequest }: AIAssistant
     return null;
   };
 
-  const TAB_LABELS: Record<string, string> = {
-    map: "Map", itinerary: "Day-by-Day", details: "Details",
-    booking: "Book Tickets", prepare: "Prepare", overview: "Overview", story: "Story",
-  };
+  const quickQuestions = tripDetails ? [
+    "What's the best time to visit?",
+    "Show map of destinations",
+    "Show my itinerary",
+    "Optimize budget",
+    "Packing list",
+    "Local food recommendations",
+  ] : [
+    "Best destinations for adventure?",
+    "Budget travel tips",
+    "Family-friendly destinations?",
+  ];
 
   const handleSend = async (question?: string) => {
     const messageText = question || input.trim();
@@ -134,7 +145,7 @@ const AIAssistant = ({ tripDetails, recommendations, onTabRequest }: AIAssistant
 
     try {
       const context = tripDetails
-        ? `User is planning a trip from ${tripDetails.boardingPoint} to ${tripDetails.destinationPoint} for ${tripDetails.duration} days with a budget of $${tripDetails.budget}.`
+        ? `User is planning a trip from ${tripDetails.boardingPoint} to ${tripDetails.destinationPoint} for ${tripDetails.duration} days with a budget of $${tripDetails.budget}. Travel style: ${tripDetails.travelStyle || "solo"}. Mood: ${tripDetails.travelMood || "chill"}.`
         : "User is exploring travel options.";
 
       const { data, error } = await supabase.functions.invoke("ai-travel-assistant", {
@@ -157,12 +168,11 @@ const AIAssistant = ({ tripDetails, recommendations, onTabRequest }: AIAssistant
       setMessages((prev) => [...prev, assistantMessage]);
     } catch (error) {
       console.error("AI Assistant error:", error);
-      const errorMessage: Message = {
+      setMessages((prev) => [...prev, {
         id: (Date.now() + 1).toString(),
         role: "assistant",
         content: "I'm having trouble connecting right now. Please try again in a moment.",
-      };
-      setMessages((prev) => [...prev, errorMessage]);
+      }]);
     } finally {
       setIsLoading(false);
     }
@@ -175,12 +185,22 @@ const AIAssistant = ({ tripDetails, recommendations, onTabRequest }: AIAssistant
     }
   };
 
+  const clearChat = () => {
+    setMessages([{
+      id: "welcome-new",
+      role: "assistant",
+      content: tripDetails
+        ? `Chat cleared! I'm still here to help with your trip to **${tripDetails.destinationPoint}**. What do you need?`
+        : "Chat cleared! How can I help you?",
+    }]);
+  };
+
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
       <SheetTrigger asChild>
         <Button
           size="lg"
-          className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg hover:shadow-xl transition-all z-50 travel-gradient-hero"
+          className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg hover:shadow-xl hover:scale-110 transition-all z-50 travel-gradient-hero"
         >
           <MessageCircle className="w-6 h-6" />
         </Button>
@@ -195,10 +215,15 @@ const AIAssistant = ({ tripDetails, recommendations, onTabRequest }: AIAssistant
               <div>
                 <SheetTitle className="text-left">AI Travel Assistant</SheetTitle>
                 <SheetDescription className="text-left">
-                  Ask me anything about your trip
+                  {tripDetails ? `Helping with ${tripDetails.destinationPoint}` : "Ask me anything about travel"}
                 </SheetDescription>
               </div>
             </div>
+            {messages.length > 2 && (
+              <Button variant="ghost" size="icon" onClick={clearChat} title="Clear chat" className="h-8 w-8">
+                <Trash2 className="w-4 h-4" />
+              </Button>
+            )}
           </div>
         </SheetHeader>
 
@@ -235,12 +260,18 @@ const AIAssistant = ({ tripDetails, recommendations, onTabRequest }: AIAssistant
                       : "bg-primary text-primary-foreground"
                   )}
                 >
-                  <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+                  {message.role === "assistant" ? (
+                    <div className="text-sm prose prose-sm dark:prose-invert max-w-none [&>p]:mb-2 [&>ul]:mb-2 [&>ol]:mb-2 [&>p:last-child]:mb-0">
+                      <ReactMarkdown>{message.content}</ReactMarkdown>
+                    </div>
+                  ) : (
+                    <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+                  )}
                   {message.tabAction && onTabRequest && (
                     <Button
                       size="sm"
                       variant="outline"
-                      className="mt-2 gap-2 text-xs"
+                      className="mt-2 gap-2 text-xs bg-background/50 hover:bg-background"
                       onClick={() => {
                         onTabRequest(message.tabAction!);
                         setIsOpen(false);
@@ -260,7 +291,11 @@ const AIAssistant = ({ tripDetails, recommendations, onTabRequest }: AIAssistant
                   <Bot className="w-4 h-4" />
                 </div>
                 <div className="bg-muted rounded-2xl px-4 py-3">
-                  <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
+                  <div className="flex gap-1.5">
+                    {[0, 1, 2].map(i => (
+                      <div key={i} className="w-2 h-2 rounded-full bg-muted-foreground/40 animate-bounce" style={{ animationDelay: `${i * 0.15}s` }} />
+                    ))}
+                  </div>
                 </div>
               </div>
             )}
@@ -272,7 +307,7 @@ const AIAssistant = ({ tripDetails, recommendations, onTabRequest }: AIAssistant
           <div className="px-4 pb-2">
             <p className="text-xs text-muted-foreground mb-2">Quick questions:</p>
             <div className="flex flex-wrap gap-2">
-              {QUICK_QUESTIONS.map((q) => (
+              {quickQuestions.map((q) => (
                 <button
                   key={q}
                   onClick={() => handleSend(q)}
@@ -292,7 +327,7 @@ const AIAssistant = ({ tripDetails, recommendations, onTabRequest }: AIAssistant
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="Ask a question..."
+              placeholder={tripDetails ? "Ask about your trip..." : "Ask a travel question..."}
               className="flex-1 rounded-xl"
               disabled={isLoading}
             />

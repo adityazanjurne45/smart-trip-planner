@@ -138,6 +138,10 @@ const TripMap = ({ tripDetails, recommendations }: TripMapProps) => {
   const [isAnimating, setIsAnimating] = useState(true);
   const [mapReady, setMapReady] = useState(false);
   const [mapStyle, setMapStyle] = useState<"satellite" | "street">("satellite");
+  const [dayFilter, setDayFilter] = useState<number | null>(null); // null = all days
+  
+  // Calculate total days for filter buttons
+  const totalDays = tripDetails.duration || 1;
   
   const {
     markers,
@@ -420,6 +424,32 @@ const TripMap = ({ tripDetails, recommendations }: TripMapProps) => {
           </Button>
         </div>
       </div>
+
+      {/* Day-wise filter bar */}
+      {totalDays > 1 && (
+        <div className="flex items-center gap-2 px-4 py-2 border-b border-border bg-muted/50 overflow-x-auto">
+          <span className="text-xs text-muted-foreground whitespace-nowrap">Filter:</span>
+          <button
+            onClick={() => setDayFilter(null)}
+            className={`text-xs px-3 py-1 rounded-full whitespace-nowrap transition-colors ${
+              dayFilter === null ? "bg-primary text-primary-foreground" : "bg-background border border-border hover:bg-primary/10"
+            }`}
+          >
+            All Days
+          </button>
+          {Array.from({ length: Math.min(totalDays, 10) }, (_, i) => (
+            <button
+              key={i + 1}
+              onClick={() => setDayFilter(i + 1)}
+              className={`text-xs px-3 py-1 rounded-full whitespace-nowrap transition-colors ${
+                dayFilter === i + 1 ? "bg-primary text-primary-foreground" : "bg-background border border-border hover:bg-primary/10"
+              }`}
+            >
+              Day {i + 1}
+            </button>
+          ))}
+        </div>
+      )}
 
       {/* Map container */}
       <div className={`relative ${isExpanded ? "h-[calc(100%-64px)]" : "h-[400px] md:h-[500px]"}`}>

@@ -7,6 +7,7 @@ import TripWizard from "@/components/dashboard/TripWizard";
 import TripRecommendations from "@/components/dashboard/TripRecommendations";
 import AIAssistant from "@/components/dashboard/AIAssistant";
 import AIProcessingScreen from "@/components/dashboard/AIProcessingScreen";
+import ErrorBoundary from "@/components/ui/ErrorBoundary";
 import { Loader2, MapPin, Sparkles } from "lucide-react";
 import { useProfile } from "@/hooks/useProfile";
 import { TripDetails, Recommendations } from "@/types/trip";
@@ -29,18 +30,14 @@ const PlanTrip = () => {
       (event, session) => {
         setUser(session?.user ?? null);
         setLoading(false);
-        if (!session?.user) {
-          navigate("/auth");
-        }
+        if (!session?.user) navigate("/auth");
       }
     );
 
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
       setLoading(false);
-      if (!session?.user) {
-        navigate("/auth");
-      }
+      if (!session?.user) navigate("/auth");
     });
 
     return () => subscription.unsubscribe();
@@ -52,9 +49,7 @@ const PlanTrip = () => {
     setIsGenerating(true);
   };
 
-  const handleProcessingComplete = () => {
-    // Keep showing until recommendations are ready
-  };
+  const handleProcessingComplete = () => {};
 
   const handleRecommendationsGenerated = (recs: Recommendations) => {
     setRecommendations(recs);
@@ -66,28 +61,21 @@ const PlanTrip = () => {
     setTripDetails(null);
     setRecommendations(null);
     setShowProcessingScreen(false);
+    setActiveTab("overview");
   };
 
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
-          <Loader2 className="w-10 h-10 animate-spin text-primary mx-auto mb-4" />
-          <p className="text-muted-foreground">Loading...</p>
-        </div>
+        <Loader2 className="w-10 h-10 animate-spin text-primary" />
       </div>
     );
   }
 
-  // Show AI Processing Screen while generating
   if (showProcessingScreen && tripDetails && !recommendations) {
     return (
       <>
-        <AIProcessingScreen 
-          tripDetails={tripDetails}
-          onComplete={handleProcessingComplete}
-        />
-        {/* Hidden TripRecommendations to trigger generation */}
+        <AIProcessingScreen tripDetails={tripDetails} onComplete={handleProcessingComplete} />
         <div style={{ display: 'none' }}>
           <TripRecommendations
             tripDetails={tripDetails}
@@ -110,18 +98,14 @@ const PlanTrip = () => {
       <main className="container mx-auto px-4 pt-24 pb-12">
         <div className="max-w-5xl mx-auto">
           {/* Page Header */}
-          <div className="mb-8 animate-fade-up">
+          <div className="mb-8 animate-fade-in">
             <div className="flex items-center gap-3 mb-2">
               <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center">
                 <MapPin className="w-6 h-6 text-primary" />
               </div>
               <div>
-                <h1 className="text-3xl md:text-4xl font-bold text-foreground">
-                  Plan Your Trip
-                </h1>
-                <p className="text-muted-foreground">
-                  Let our AI create the perfect travel plan for you
-                </p>
+                <h1 className="text-3xl md:text-4xl font-bold text-foreground">Plan Your Trip</h1>
+                <p className="text-muted-foreground">Let our AI create the perfect travel plan for you</p>
               </div>
             </div>
             {profile && !tripDetails && (
@@ -133,7 +117,7 @@ const PlanTrip = () => {
           </div>
 
           {/* Main Content */}
-          <div className="animate-fade-up" style={{ animationDelay: "0.1s" }}>
+          <div className="animate-fade-in" style={{ animationDelay: "0.05s" }}>
             {!tripDetails ? (
               <div className="space-y-6">
                 <div className="bg-card rounded-2xl border border-border shadow-soft p-8">
@@ -151,24 +135,26 @@ const PlanTrip = () => {
                 />
               </div>
             ) : (
-              <TripRecommendations
-                tripDetails={tripDetails}
-                recommendations={recommendations}
-                isGenerating={isGenerating}
-                onGenerated={handleRecommendationsGenerated}
-                onNewTrip={handleNewTrip}
-                userProfile={profile}
-                activeTab={activeTab}
-                onTabChange={setActiveTab}
-              />
+              <ErrorBoundary fallbackMessage="Something went wrong loading your trip recommendations. Please try planning again.">
+                <TripRecommendations
+                  tripDetails={tripDetails}
+                  recommendations={recommendations}
+                  isGenerating={isGenerating}
+                  onGenerated={handleRecommendationsGenerated}
+                  onNewTrip={handleNewTrip}
+                  userProfile={profile}
+                  activeTab={activeTab}
+                  onTabChange={setActiveTab}
+                />
+              </ErrorBoundary>
             )}
           </div>
         </div>
       </main>
 
       {/* AI Travel Assistant */}
-      <AIAssistant 
-        tripDetails={tripDetails ?? undefined} 
+      <AIAssistant
+        tripDetails={tripDetails ?? undefined}
         recommendations={recommendations ?? undefined}
         onTabRequest={(tab) => setActiveTab(tab)}
       />
