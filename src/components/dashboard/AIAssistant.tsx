@@ -82,14 +82,14 @@ const QUICK_QUESTIONS = [
   "Budget saving tips?",
 ];
 
-const AIAssistant = ({ tripDetails, recommendations, onMapRequest }: AIAssistantProps) => {
+const AIAssistant = ({ tripDetails, recommendations, onTabRequest }: AIAssistantProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "welcome",
       role: "assistant",
       content: tripDetails
-        ? `Hi! I'm your AI travel assistant. I can help you with questions about your trip to ${tripDetails.destinationPoint}. What would you like to know?`
+        ? `Hi! I'm your AI travel assistant. I can help you with questions about your trip to ${tripDetails.destinationPoint}. Try saying "show map", "show itinerary", or "show hotels"!`
         : "Hi! I'm your AI travel assistant. Ask me anything about planning your trip!",
     },
   ]);
@@ -103,9 +103,17 @@ const AIAssistant = ({ tripDetails, recommendations, onMapRequest }: AIAssistant
     }
   }, [messages]);
 
-  const detectMapIntent = (text: string): boolean => {
+  const detectTabIntent = (text: string): string | null => {
     const lower = text.toLowerCase();
-    return MAP_INTENTS.some(intent => lower.includes(intent));
+    for (const [tab, intents] of Object.entries(TAB_INTENTS)) {
+      if (intents.some(intent => lower.includes(intent))) return tab;
+    }
+    return null;
+  };
+
+  const TAB_LABELS: Record<string, string> = {
+    map: "Map", itinerary: "Day-by-Day", details: "Details",
+    booking: "Book Tickets", prepare: "Prepare", overview: "Overview", story: "Story",
   };
 
   const handleSend = async (question?: string) => {
@@ -122,7 +130,7 @@ const AIAssistant = ({ tripDetails, recommendations, onMapRequest }: AIAssistant
     setInput("");
     setIsLoading(true);
 
-    const isMapIntent = detectMapIntent(messageText);
+    const detectedTab = detectTabIntent(messageText);
 
     try {
       const context = tripDetails
@@ -143,7 +151,7 @@ const AIAssistant = ({ tripDetails, recommendations, onMapRequest }: AIAssistant
         id: (Date.now() + 1).toString(),
         role: "assistant",
         content: data.answer || "I'm sorry, I couldn't process that question. Please try again.",
-        mapAction: isMapIntent && !!tripDetails,
+        tabAction: detectedTab && tripDetails ? detectedTab : undefined,
       };
 
       setMessages((prev) => [...prev, assistantMessage]);
