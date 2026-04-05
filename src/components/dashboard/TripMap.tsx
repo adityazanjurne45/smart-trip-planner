@@ -138,6 +138,10 @@ const TripMap = ({ tripDetails, recommendations }: TripMapProps) => {
   const [isAnimating, setIsAnimating] = useState(true);
   const [mapReady, setMapReady] = useState(false);
   const [mapStyle, setMapStyle] = useState<"satellite" | "street">("satellite");
+  const [dayFilter, setDayFilter] = useState<number | null>(null); // null = all days
+  
+  // Calculate total days for filter buttons
+  const totalDays = tripDetails.duration || 1;
   
   const {
     markers,
