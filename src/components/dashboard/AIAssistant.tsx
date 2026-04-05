@@ -236,18 +236,18 @@ const AIAssistant = ({ tripDetails, recommendations, onTabRequest }: AIAssistant
                   )}
                 >
                   <p className="text-sm whitespace-pre-wrap">{message.content}</p>
-                  {message.mapAction && onMapRequest && (
+                  {message.tabAction && onTabRequest && (
                     <Button
                       size="sm"
                       variant="outline"
                       className="mt-2 gap-2 text-xs"
                       onClick={() => {
-                        onMapRequest();
+                        onTabRequest(message.tabAction!);
                         setIsOpen(false);
                       }}
                     >
                       <MapPinIcon className="w-3 h-3" />
-                      View on Map
+                      Open {TAB_LABELS[message.tabAction] || message.tabAction}
                     </Button>
                   )}
                 </div>
