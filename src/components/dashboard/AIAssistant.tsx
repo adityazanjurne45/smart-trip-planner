@@ -28,39 +28,68 @@ interface Message {
   id: string;
   role: "user" | "assistant";
   content: string;
-  mapAction?: boolean;
+  tabAction?: string;
 }
 
 interface AIAssistantProps {
   tripDetails?: TripDetails;
   recommendations?: Recommendations;
-  onMapRequest?: () => void;
+  onTabRequest?: (tab: string) => void;
 }
 
-const MAP_INTENTS = [
-  "show map", "open map", "view map", "display map",
-  "show route", "view route", "show directions",
-  "show destinations", "view destinations", "plot destinations",
-  "where is", "show location", "map of",
-  "navigate to", "directions to",
-];
+const TAB_INTENTS: Record<string, string[]> = {
+  map: [
+    "show map", "open map", "view map", "display map",
+    "show route", "view route", "show directions",
+    "show destinations", "view destinations", "plot destinations",
+    "where is", "show location", "map of",
+    "navigate to", "directions to",
+  ],
+  itinerary: [
+    "show itinerary", "open itinerary", "view itinerary",
+    "day by day", "day-by-day", "daily plan", "show schedule",
+    "what to do each day", "show plan",
+  ],
+  details: [
+    "show hotels", "open hotels", "view hotels", "hotel options",
+    "show places", "tourist places", "attractions",
+    "show transport", "transport options", "vehicle options",
+  ],
+  booking: [
+    "book ticket", "book hotel", "book bus", "book train", "book flight",
+    "booking", "reserve", "show booking",
+  ],
+  prepare: [
+    "packing list", "what to pack", "show packing",
+    "expense", "budget tracker", "show expenses",
+    "group split", "split expenses",
+  ],
+  overview: [
+    "show overview", "trip summary", "show summary",
+    "show budget", "budget breakdown", "how much will it cost",
+  ],
+  story: [
+    "show story", "trip story", "trip timeline", "show timeline",
+  ],
+};
 
 const QUICK_QUESTIONS = [
   "What's the best time to visit?",
   "Suggest local food to try",
   "Any safety tips?",
   "Show map of destinations",
+  "Show my itinerary",
   "Budget saving tips?",
 ];
 
-const AIAssistant = ({ tripDetails, recommendations, onMapRequest }: AIAssistantProps) => {
+const AIAssistant = ({ tripDetails, recommendations, onTabRequest }: AIAssistantProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "welcome",
       role: "assistant",
       content: tripDetails
-        ? `Hi! I'm your AI travel assistant. I can help you with questions about your trip to ${tripDetails.destinationPoint}. What would you like to know?`
+        ? `Hi! I'm your AI travel assistant. I can help you with questions about your trip to ${tripDetails.destinationPoint}. Try saying "show map", "show itinerary", or "show hotels"!`
         : "Hi! I'm your AI travel assistant. Ask me anything about planning your trip!",
     },
   ]);
@@ -74,9 +103,17 @@ const AIAssistant = ({ tripDetails, recommendations, onMapRequest }: AIAssistant
     }
   }, [messages]);
 
-  const detectMapIntent = (text: string): boolean => {
+  const detectTabIntent = (text: string): string | null => {
     const lower = text.toLowerCase();
-    return MAP_INTENTS.some(intent => lower.includes(intent));
+    for (const [tab, intents] of Object.entries(TAB_INTENTS)) {
+      if (intents.some(intent => lower.includes(intent))) return tab;
+    }
+    return null;
+  };
+
+  const TAB_LABELS: Record<string, string> = {
+    map: "Map", itinerary: "Day-by-Day", details: "Details",
+    booking: "Book Tickets", prepare: "Prepare", overview: "Overview", story: "Story",
   };
 
   const handleSend = async (question?: string) => {
@@ -93,7 +130,7 @@ const AIAssistant = ({ tripDetails, recommendations, onMapRequest }: AIAssistant
     setInput("");
     setIsLoading(true);
 
-    const isMapIntent = detectMapIntent(messageText);
+    const detectedTab = detectTabIntent(messageText);
 
     try {
       const context = tripDetails
@@ -114,7 +151,7 @@ const AIAssistant = ({ tripDetails, recommendations, onMapRequest }: AIAssistant
         id: (Date.now() + 1).toString(),
         role: "assistant",
         content: data.answer || "I'm sorry, I couldn't process that question. Please try again.",
-        mapAction: isMapIntent && !!tripDetails,
+        tabAction: detectedTab && tripDetails ? detectedTab : undefined,
       };
 
       setMessages((prev) => [...prev, assistantMessage]);
@@ -199,18 +236,18 @@ const AIAssistant = ({ tripDetails, recommendations, onMapRequest }: AIAssistant
                   )}
                 >
                   <p className="text-sm whitespace-pre-wrap">{message.content}</p>
-                  {message.mapAction && onMapRequest && (
+                  {message.tabAction && onTabRequest && (
                     <Button
                       size="sm"
                       variant="outline"
                       className="mt-2 gap-2 text-xs"
                       onClick={() => {
-                        onMapRequest();
+                        onTabRequest(message.tabAction!);
                         setIsOpen(false);
                       }}
                     >
                       <MapPinIcon className="w-3 h-3" />
-                      View on Map
+                      Open {TAB_LABELS[message.tabAction] || message.tabAction}
                     </Button>
                   )}
                 </div>
