@@ -34,22 +34,51 @@ interface Message {
 interface AIAssistantProps {
   tripDetails?: TripDetails;
   recommendations?: Recommendations;
-  onMapRequest?: () => void;
+  onTabRequest?: (tab: string) => void;
 }
 
-const MAP_INTENTS = [
-  "show map", "open map", "view map", "display map",
-  "show route", "view route", "show directions",
-  "show destinations", "view destinations", "plot destinations",
-  "where is", "show location", "map of",
-  "navigate to", "directions to",
-];
+const TAB_INTENTS: Record<string, string[]> = {
+  map: [
+    "show map", "open map", "view map", "display map",
+    "show route", "view route", "show directions",
+    "show destinations", "view destinations", "plot destinations",
+    "where is", "show location", "map of",
+    "navigate to", "directions to",
+  ],
+  itinerary: [
+    "show itinerary", "open itinerary", "view itinerary",
+    "day by day", "day-by-day", "daily plan", "show schedule",
+    "what to do each day", "show plan",
+  ],
+  details: [
+    "show hotels", "open hotels", "view hotels", "hotel options",
+    "show places", "tourist places", "attractions",
+    "show transport", "transport options", "vehicle options",
+  ],
+  booking: [
+    "book ticket", "book hotel", "book bus", "book train", "book flight",
+    "booking", "reserve", "show booking",
+  ],
+  prepare: [
+    "packing list", "what to pack", "show packing",
+    "expense", "budget tracker", "show expenses",
+    "group split", "split expenses",
+  ],
+  overview: [
+    "show overview", "trip summary", "show summary",
+    "show budget", "budget breakdown", "how much will it cost",
+  ],
+  story: [
+    "show story", "trip story", "trip timeline", "show timeline",
+  ],
+};
 
 const QUICK_QUESTIONS = [
   "What's the best time to visit?",
   "Suggest local food to try",
   "Any safety tips?",
   "Show map of destinations",
+  "Show my itinerary",
   "Budget saving tips?",
 ];
 
