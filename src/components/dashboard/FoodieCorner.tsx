@@ -146,7 +146,7 @@ const FoodieCorner = ({ tripDetails }: FoodieCornerProps) => {
   const [typeFilter, setTypeFilter] = useState<string>("all");
   const [showFilters, setShowFilters] = useState(false);
 
-  const currency = detectCurrencyFromDestination(tripDetails.destinationPoint);
+  const currency = getCurrencyForDestination(tripDetails.destinationPoint);
   const key = normalizeDestination(tripDetails.destinationPoint);
   const allFoods = key ? DESTINATION_FOODS[key] : getDefaultFoods(tripDetails.destinationPoint);
 
