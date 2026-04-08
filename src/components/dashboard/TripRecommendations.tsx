@@ -249,6 +249,10 @@ const TripRecommendations = ({
             <Ticket className="w-4 h-4" />
             <span className="hidden sm:inline">Book</span>
           </TabsTrigger>
+          <TabsTrigger value="foodie" className="gap-1">
+            <UtensilsCrossed className="w-4 h-4" />
+            <span className="hidden sm:inline">Food</span>
+          </TabsTrigger>
         </TabsList>
 
         {/* Overview Tab */}
