@@ -220,7 +220,7 @@ const TripRecommendations = ({
 
       {/* Tabs for different views */}
       <Tabs value={activeTab || "overview"} onValueChange={onTabChange} className="w-full">
-        <TabsList className="grid w-full grid-cols-7 mb-6">
+        <TabsList className="grid w-full grid-cols-8 mb-6">
           <TabsTrigger value="overview" className="gap-1">
             <List className="w-4 h-4" />
             <span className="hidden sm:inline">Overview</span>
