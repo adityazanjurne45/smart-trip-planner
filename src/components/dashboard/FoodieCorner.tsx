@@ -9,7 +9,7 @@ import {
   Filter, X
 } from "lucide-react";
 import { TripDetails } from "@/types/trip";
-import { detectCurrencyFromDestination } from "@/lib/currency";
+import { getCurrencyForDestination } from "@/lib/currency";
 
 interface FoodItem {
   name: string;
