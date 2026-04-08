@@ -84,6 +84,7 @@ const TAB_INTENTS: Record<string, string[]> = {
 const TAB_LABELS: Record<string, string> = {
   map: "Map", itinerary: "Day-by-Day", details: "Details",
   booking: "Book Tickets", prepare: "Prepare", overview: "Overview", story: "Story",
+  foodie: "Foodie Corner",
 };
 
 const AIAssistant = ({ tripDetails, recommendations, onTabRequest }: AIAssistantProps) => {

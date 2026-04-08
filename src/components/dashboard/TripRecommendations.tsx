@@ -541,6 +541,11 @@ const TripRecommendations = ({
         <TabsContent value="booking" className="animate-fade-in">
           <TicketBooking tripDetails={tripDetails} />
         </TabsContent>
+
+        {/* Foodie Corner Tab */}
+        <TabsContent value="foodie" className="animate-fade-in">
+          <FoodieCorner tripDetails={tripDetails} />
+        </TabsContent>
       </Tabs>
     </div>
   );

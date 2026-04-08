@@ -17,6 +17,7 @@ const Index = () => {
         </div>
         <HowItWorks />
         <TrustSignal />
+        <ContactSection />
       </main>
       <Footer />
     </div>
