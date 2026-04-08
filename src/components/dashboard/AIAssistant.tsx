@@ -56,7 +56,11 @@ const TAB_INTENTS: Record<string, string[]> = {
     "show hotels", "open hotels", "view hotels", "hotel options",
     "show places", "tourist places", "attractions",
     "show transport", "transport options", "vehicle options",
-    "restaurants", "food options", "where to eat",
+  ],
+  foodie: [
+    "food", "what to eat", "famous food", "local food", "foodie",
+    "restaurants", "food options", "where to eat", "street food",
+    "best food", "cuisine", "dishes", "snacks",
   ],
   booking: [
     "book ticket", "book hotel", "book bus", "book train", "book flight",
@@ -80,6 +84,7 @@ const TAB_INTENTS: Record<string, string[]> = {
 const TAB_LABELS: Record<string, string> = {
   map: "Map", itinerary: "Day-by-Day", details: "Details",
   booking: "Book Tickets", prepare: "Prepare", overview: "Overview", story: "Story",
+  foodie: "Foodie Corner",
 };
 
 const AIAssistant = ({ tripDetails, recommendations, onTabRequest }: AIAssistantProps) => {

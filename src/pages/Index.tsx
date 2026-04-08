@@ -3,6 +3,7 @@ import Hero from "@/components/landing/Hero";
 import Features from "@/components/landing/Features";
 import HowItWorks from "@/components/landing/HowItWorks";
 import TrustSignal from "@/components/landing/TrustSignal";
+import ContactSection from "@/components/landing/ContactSection";
 import Footer from "@/components/landing/Footer";
 
 const Index = () => {
@@ -16,6 +17,7 @@ const Index = () => {
         </div>
         <HowItWorks />
         <TrustSignal />
+        <ContactSection />
       </main>
       <Footer />
     </div>
