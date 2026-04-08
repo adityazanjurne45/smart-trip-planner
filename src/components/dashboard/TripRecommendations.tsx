@@ -25,6 +25,7 @@ import InstagramScore from "./InstagramScore";
 import SmartTravelSummary from "./SmartTravelSummary";
 import TripStoryTimeline from "./TripStoryTimeline";
 import GroupExpenseSplitter from "./GroupExpenseSplitter";
+import FoodieCorner from "./FoodieCorner";
 
 interface TripRecommendationsProps {
   tripDetails: TripDetails;
