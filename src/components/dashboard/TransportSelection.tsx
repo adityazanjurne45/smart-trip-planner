@@ -1,4 +1,6 @@
 import { useState } from "react";
+import BookingModal from "./BookingModal";
+import WishlistButton from "./WishlistButton";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -34,6 +36,7 @@ const TransportSelection = ({
   country,
 }: TransportSelectionProps) => {
    const [showDetails, setShowDetails] = useState<string | null>(null);
+   const [bookingItem, setBookingItem] = useState<{ name: string; type: "transport"; location: string; price: string } | null>(null);
  
    const getVehicleIcon = (type: string) => {
      const lower = type.toLowerCase();
@@ -90,13 +93,16 @@ const TransportSelection = ({
                    </Badge>
                  )}
  
-                 {isSelected && (
-                   <div className="absolute top-2 right-2">
-                     <div className="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center">
-                       <Check className="w-5 h-5" />
-                     </div>
-                   </div>
-                 )}
+                  {isSelected && (
+                    <div className="absolute top-2 right-10">
+                      <div className="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center">
+                        <Check className="w-5 h-5" />
+                      </div>
+                    </div>
+                  )}
+                  <div className="absolute top-2 right-2">
+                    <WishlistButton item={{ name: vehicle.type, type: "transport", location: destination, price: vehicle.estimatedCost }} />
+                  </div>
                </div>
  
                <CardContent className="p-4">
@@ -118,22 +124,35 @@ const TransportSelection = ({
                    {vehicle.reason}
                  </p>
  
-                 <div className="flex items-center justify-between">
-                   <Badge variant="secondary" className="text-xs">
-                     {vehicle.suitableFor}
-                   </Badge>
-                   <Button
-                     size="sm"
-                     variant={isSelected ? "default" : "outline"}
-                     className={isSelected ? "bg-blue-500 hover:bg-blue-600" : ""}
-                     onClick={(e) => {
-                       e.stopPropagation();
-                       onSelectVehicle(vehicle);
-                     }}
-                   >
-                     {isSelected ? "Selected" : "Select"}
-                   </Button>
-                 </div>
+                  <div className="flex items-center justify-between">
+                    <Badge variant="secondary" className="text-xs">
+                      {vehicle.suitableFor}
+                    </Badge>
+                    <div className="flex gap-2">
+                      <Button
+                        size="sm"
+                        variant="travel"
+                        className="text-xs"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setBookingItem({ name: vehicle.type, type: "transport", location: destination, price: vehicle.estimatedCost });
+                        }}
+                      >
+                        Book Now
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant={isSelected ? "default" : "outline"}
+                        className={isSelected ? "bg-blue-500 hover:bg-blue-600" : ""}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onSelectVehicle(vehicle);
+                        }}
+                      >
+                        {isSelected ? "Selected" : "Select"}
+                      </Button>
+                    </div>
+                  </div>
  
                 {/* Expanded Details */}
                   {isExpanded && (
@@ -236,9 +255,18 @@ const TransportSelection = ({
              </Card>
            );
          })}
-       </div>
-     </div>
-   );
- };
- 
- export default TransportSelection;
+      </div>
+
+      {bookingItem && (
+        <BookingModal
+          open={!!bookingItem}
+          onClose={() => setBookingItem(null)}
+          item={bookingItem}
+          destination={destination}
+        />
+      )}
+    </div>
+  );
+};
+
+export default TransportSelection;
