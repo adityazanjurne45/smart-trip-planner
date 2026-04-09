@@ -1,6 +1,6 @@
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { MapPin, Menu, X, User as UserIcon, LayoutDashboard, Route, History } from "lucide-react";
+import { MapPin, Menu, X, User as UserIcon, LayoutDashboard, Route, History, Heart, Ticket } from "lucide-react";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
@@ -84,6 +84,8 @@ const Navbar = () => {
     { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
     { to: "/plan-trip", label: "Plan Trip", icon: Route },
     { to: "/my-trips", label: "My Trips", icon: History },
+    { to: "/my-bookings", label: "Bookings", icon: Ticket },
+    { to: "/wishlist", label: "Wishlist", icon: Heart },
   ] : [];
 
   const isActive = (path: string) => location.pathname === path;
