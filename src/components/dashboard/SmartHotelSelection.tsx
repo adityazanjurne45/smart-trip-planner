@@ -1,4 +1,6 @@
 import { useState } from "react";
+import BookingModal from "./BookingModal";
+import WishlistButton from "./WishlistButton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -33,7 +35,7 @@ import { getHotelBookingPlatforms } from "@/lib/bookingLinks";
    selectedHotel,
  }: SmartHotelSelectionProps) => {
    const [expanded, setExpanded] = useState<string | null>(null);
- 
+   const [bookingItem, setBookingItem] = useState<{ name: string; type: "hotel"; location: string; price: string } | null>(null);
    const getAmenityIcon = (amenity: string) => {
      const lower = amenity.toLowerCase();
      if (lower.includes("wifi") || lower.includes("internet")) return Wifi;
@@ -96,13 +98,16 @@ import { getHotelBookingPlatforms } from "@/lib/bookingLinks";
                    )}
                  </div>
  
-                 {isSelected && (
-                   <div className="absolute top-2 right-2">
-                     <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center">
-                       <Check className="w-5 h-5" />
-                     </div>
-                   </div>
-                 )}
+                  {isSelected && (
+                    <div className="absolute top-2 right-10">
+                      <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center">
+                        <Check className="w-5 h-5" />
+                      </div>
+                    </div>
+                  )}
+                  <div className="absolute top-2 right-2">
+                    <WishlistButton item={{ name: hotel.name, type: "hotel", location: hotel.location, price: hotel.pricePerNight, rating: hotel.rating }} />
+                  </div>
                </div>
  
                <CardContent className="p-4">
@@ -143,27 +148,37 @@ import { getHotelBookingPlatforms } from "@/lib/bookingLinks";
                     </Button>
                   </div>
 
-                  {/* Book Now Buttons */}
-                  <div className="mt-3 pt-3 border-t">
-                    <p className="text-xs text-muted-foreground mb-2">Book on a trusted platform:</p>
-                    <div className="flex flex-wrap gap-2">
-                      {getHotelBookingPlatforms(destination).map((platform) => (
-                        <Button
-                          key={platform.name}
-                          size="sm"
-                          variant="outline"
-                          className="text-xs gap-1 hover:bg-primary hover:text-primary-foreground transition-colors"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            window.open(platform.getUrl(hotel.name, destination), '_blank', 'noopener,noreferrer');
-                          }}
-                        >
-                          <ExternalLink className="w-3 h-3" />
-                          {platform.name}
-                        </Button>
-                      ))}
-                    </div>
-                  </div>
+                   {/* Book Now Buttons */}
+                   <div className="mt-3 pt-3 border-t flex items-center gap-2">
+                     <Button
+                       size="sm"
+                       variant="travel"
+                       className="flex-1 text-xs"
+                       onClick={(e) => {
+                         e.stopPropagation();
+                         setBookingItem({ name: hotel.name, type: "hotel", location: hotel.location, price: hotel.pricePerNight });
+                       }}
+                     >
+                       Book Now
+                     </Button>
+                     <div className="flex flex-wrap gap-1">
+                       {getHotelBookingPlatforms(destination).slice(0, 2).map((platform) => (
+                         <Button
+                           key={platform.name}
+                           size="sm"
+                           variant="outline"
+                           className="text-xs gap-1 hover:bg-primary hover:text-primary-foreground transition-colors"
+                           onClick={(e) => {
+                             e.stopPropagation();
+                             window.open(platform.getUrl(hotel.name, destination), '_blank', 'noopener,noreferrer');
+                           }}
+                         >
+                           <ExternalLink className="w-3 h-3" />
+                           {platform.name}
+                         </Button>
+                       ))}
+                     </div>
+                   </div>
  
                  {/* Expanded Details */}
                  {isExpanded && (
@@ -210,9 +225,18 @@ import { getHotelBookingPlatforms } from "@/lib/bookingLinks";
              </Card>
            );
          })}
-       </div>
-     </div>
-   );
- };
- 
- export default SmartHotelSelection;
+      </div>
+
+      {bookingItem && (
+        <BookingModal
+          open={!!bookingItem}
+          onClose={() => setBookingItem(null)}
+          item={bookingItem}
+          destination={destination}
+        />
+      )}
+    </div>
+  );
+};
+
+export default SmartHotelSelection;
