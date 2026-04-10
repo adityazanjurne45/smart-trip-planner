@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -24,6 +24,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { TripDetails, Recommendations } from "@/types/trip";
 import { cn } from "@/lib/utils";
 import ReactMarkdown from "react-markdown";
+import VoiceMicButton from "./VoiceMicButton";
 
 interface Message {
   id: string;
@@ -328,11 +329,15 @@ const AIAssistant = ({ tripDetails, recommendations, onTabRequest }: AIAssistant
         {/* Input */}
         <div className="p-4 border-t bg-card">
           <div className="flex gap-2">
+            <VoiceMicButton
+              onTranscript={(text) => { if (text) handleSend(text); }}
+              disabled={isLoading}
+            />
             <Input
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder={tripDetails ? "Ask about your trip..." : "Ask a travel question..."}
+              placeholder={tripDetails ? "Ask or speak..." : "Ask or speak a travel question..."}
               className="flex-1 rounded-xl"
               disabled={isLoading}
             />
