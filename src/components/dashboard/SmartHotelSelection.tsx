@@ -1,4 +1,5 @@
 import { useState } from "react";
+import HotelDetailModal from "./HotelDetailModal";
 import BookingModal from "./BookingModal";
 import WishlistButton from "./WishlistButton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
