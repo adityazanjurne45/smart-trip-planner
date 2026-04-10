@@ -36,7 +36,8 @@ import { getHotelBookingPlatforms } from "@/lib/bookingLinks";
    selectedHotel,
  }: SmartHotelSelectionProps) => {
    const [expanded, setExpanded] = useState<string | null>(null);
-   const [bookingItem, setBookingItem] = useState<{ name: string; type: "hotel"; location: string; price: string } | null>(null);
+  const [bookingItem, setBookingItem] = useState<{ name: string; type: "hotel"; location: string; price: string } | null>(null);
+  const [detailHotel, setDetailHotel] = useState<Hotel | null>(null);
    const getAmenityIcon = (amenity: string) => {
      const lower = amenity.toLowerCase();
      if (lower.includes("wifi") || lower.includes("internet")) return Wifi;
@@ -149,37 +150,37 @@ import { getHotelBookingPlatforms } from "@/lib/bookingLinks";
                     </Button>
                   </div>
 
-                   {/* Book Now Buttons */}
-                   <div className="mt-3 pt-3 border-t flex items-center gap-2">
-                     <Button
-                       size="sm"
-                       variant="travel"
-                       className="flex-1 text-xs"
-                       onClick={(e) => {
-                         e.stopPropagation();
-                         setBookingItem({ name: hotel.name, type: "hotel", location: hotel.location, price: hotel.pricePerNight });
-                       }}
-                     >
-                       Book Now
-                     </Button>
-                     <div className="flex flex-wrap gap-1">
-                       {getHotelBookingPlatforms(destination).slice(0, 2).map((platform) => (
-                         <Button
-                           key={platform.name}
-                           size="sm"
-                           variant="outline"
-                           className="text-xs gap-1 hover:bg-primary hover:text-primary-foreground transition-colors"
-                           onClick={(e) => {
-                             e.stopPropagation();
-                             window.open(platform.getUrl(hotel.name, destination), '_blank', 'noopener,noreferrer');
-                           }}
-                         >
-                           <ExternalLink className="w-3 h-3" />
-                           {platform.name}
-                         </Button>
-                       ))}
-                     </div>
-                   </div>
+                    {/* Book Here & External Links */}
+                    <div className="mt-3 pt-3 border-t flex items-center gap-2">
+                      <Button
+                        size="sm"
+                        variant="travel"
+                        className="flex-1 text-xs"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setDetailHotel(hotel);
+                        }}
+                      >
+                        Book Here
+                      </Button>
+                      <div className="flex flex-wrap gap-1">
+                        {getHotelBookingPlatforms(destination).slice(0, 2).map((platform) => (
+                          <Button
+                            key={platform.name}
+                            size="sm"
+                            variant="outline"
+                            className="text-xs gap-1 hover:bg-primary hover:text-primary-foreground transition-colors"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              window.open(platform.getUrl(hotel.name, destination), '_blank', 'noopener,noreferrer');
+                            }}
+                          >
+                            <ExternalLink className="w-3 h-3" />
+                            {platform.name}
+                          </Button>
+                        ))}
+                      </div>
+                    </div>
  
                  {/* Expanded Details */}
                  {isExpanded && (
@@ -233,6 +234,15 @@ import { getHotelBookingPlatforms } from "@/lib/bookingLinks";
           open={!!bookingItem}
           onClose={() => setBookingItem(null)}
           item={bookingItem}
+          destination={destination}
+        />
+      )}
+
+      {detailHotel && (
+        <HotelDetailModal
+          open={!!detailHotel}
+          onClose={() => setDetailHotel(null)}
+          hotel={detailHotel}
           destination={destination}
         />
       )}
