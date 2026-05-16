@@ -198,10 +198,16 @@ import { supabase } from "@/integrations/supabase/client";
        setIsComplete(true);
        setTimeout(() => setIsComplete(false), 3000);
  
-       toast({
-         title: "PDF Downloaded!",
-         description: "Your complete trip plan has been saved as a PDF file.",
-       });
+      toast({
+        title: "PDF Downloaded!",
+        description: "Your complete trip plan has been saved as a PDF file.",
+      });
+      const dest = (tripDetails as any).destination ?? "trip";
+      supabase.rpc("log_activity" as any, {
+        _action_type: "pdf_exported",
+        _description: `exported a trip PDF for ${dest}`,
+        _metadata: { destination: dest },
+      });
      } catch (error) {
        console.error("PDF generation error:", error);
        toast({
