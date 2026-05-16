@@ -2,7 +2,8 @@
  import { Button } from "@/components/ui/button";
  import { Download, Loader2, FileText, Check } from "lucide-react";
  import { TripDetails, Recommendations } from "@/types/trip";
- import { toast } from "@/hooks/use-toast";
+import { toast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
  
  interface TripPDFDownloadProps {
    tripDetails: TripDetails;
