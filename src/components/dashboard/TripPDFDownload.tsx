@@ -202,7 +202,7 @@ import { supabase } from "@/integrations/supabase/client";
         title: "PDF Downloaded!",
         description: "Your complete trip plan has been saved as a PDF file.",
       });
-      const dest = (tripDetails as any).destination ?? "trip";
+      const dest = (tripDetails as any).destinationPoint ?? "trip";
       supabase.rpc("log_activity" as any, {
         _action_type: "pdf_exported",
         _description: `exported a trip PDF for ${dest}`,

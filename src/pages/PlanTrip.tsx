@@ -56,7 +56,7 @@ const PlanTrip = () => {
     setIsGenerating(false);
     setShowProcessingScreen(false);
     if (tripDetails) {
-      const dest = (tripDetails as any).destination ?? "destination";
+      const dest = (tripDetails as any).destinationPoint ?? "destination";
       supabase.rpc("log_activity" as any, {
         _action_type: "trip_created",
         _description: `created a new trip to ${dest}`,
