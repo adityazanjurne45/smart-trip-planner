@@ -14,7 +14,14 @@ import MyBookings from "./pages/MyBookings";
 import Wishlist from "./pages/Wishlist";
 import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
-import Admin from "./pages/Admin";
+import AdminLayout from "./pages/admin/AdminLayout";
+import AdminOverview from "./pages/admin/Overview";
+import AdminUsers from "./pages/admin/UsersPage";
+import AdminTrips from "./pages/admin/TripsPage";
+import AdminActivity from "./pages/admin/ActivityFeed";
+import AdminAnalytics from "./pages/admin/Analytics";
+import AdminNotifications from "./pages/admin/NotificationsPage";
+import AdminSettings from "./pages/admin/Settings";
 
 const queryClient = new QueryClient();
 
@@ -35,7 +42,15 @@ const App = () => (
               <Route path="/my-bookings" element={<MyBookings />} />
               <Route path="/wishlist" element={<Wishlist />} />
               <Route path="/profile" element={<Profile />} />
-              <Route path="/admin" element={<Admin />} />
+              <Route path="/admin" element={<AdminLayout />}>
+                <Route index element={<AdminOverview />} />
+                <Route path="users" element={<AdminUsers />} />
+                <Route path="trips" element={<AdminTrips />} />
+                <Route path="activity" element={<AdminActivity />} />
+                <Route path="analytics" element={<AdminAnalytics />} />
+                <Route path="notifications" element={<AdminNotifications />} />
+                <Route path="settings" element={<AdminSettings />} />
+              </Route>
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>

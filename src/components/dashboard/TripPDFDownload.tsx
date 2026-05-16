@@ -2,7 +2,8 @@
  import { Button } from "@/components/ui/button";
  import { Download, Loader2, FileText, Check } from "lucide-react";
  import { TripDetails, Recommendations } from "@/types/trip";
- import { toast } from "@/hooks/use-toast";
+import { toast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
  
  interface TripPDFDownloadProps {
    tripDetails: TripDetails;
@@ -197,10 +198,16 @@
        setIsComplete(true);
        setTimeout(() => setIsComplete(false), 3000);
  
-       toast({
-         title: "PDF Downloaded!",
-         description: "Your complete trip plan has been saved as a PDF file.",
-       });
+      toast({
+        title: "PDF Downloaded!",
+        description: "Your complete trip plan has been saved as a PDF file.",
+      });
+      const dest = (tripDetails as any).destinationPoint ?? "trip";
+      supabase.rpc("log_activity" as any, {
+        _action_type: "pdf_exported",
+        _description: `exported a trip PDF for ${dest}`,
+        _metadata: { destination: dest },
+      });
      } catch (error) {
        console.error("PDF generation error:", error);
        toast({

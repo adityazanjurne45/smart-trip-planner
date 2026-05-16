@@ -55,6 +55,19 @@ const PlanTrip = () => {
     setRecommendations(recs);
     setIsGenerating(false);
     setShowProcessingScreen(false);
+    if (tripDetails) {
+      const dest = (tripDetails as any).destinationPoint ?? "destination";
+      supabase.rpc("log_activity" as any, {
+        _action_type: "trip_created",
+        _description: `created a new trip to ${dest}`,
+        _metadata: { destination: dest },
+      });
+      supabase.rpc("log_activity" as any, {
+        _action_type: "ai_generated",
+        _description: `generated an AI itinerary for ${dest}`,
+        _metadata: { destination: dest },
+      });
+    }
   };
 
   const handleNewTrip = () => {
