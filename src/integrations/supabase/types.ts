@@ -14,40 +14,133 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_activity_log: {
+        Row: {
+          action_type: string
+          created_at: string
+          description: string
+          id: string
+          metadata: Json | null
+          user_id: string | null
+        }
+        Insert: {
+          action_type: string
+          created_at?: string
+          description: string
+          id?: string
+          metadata?: Json | null
+          user_id?: string | null
+        }
+        Update: {
+          action_type?: string
+          created_at?: string
+          description?: string
+          id?: string
+          metadata?: Json | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      admin_notifications: {
+        Row: {
+          created_at: string
+          id: string
+          message: string
+          metadata: Json | null
+          read: boolean
+          type: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          message: string
+          metadata?: Json | null
+          read?: boolean
+          type: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          message?: string
+          metadata?: Json | null
+          read?: boolean
+          type?: string
+        }
+        Relationships: []
+      }
+      admin_settings: {
+        Row: {
+          ai_enabled: boolean
+          id: string
+          pdf_enabled: boolean
+          signups_enabled: boolean
+          updated_at: string
+        }
+        Insert: {
+          ai_enabled?: boolean
+          id?: string
+          pdf_enabled?: boolean
+          signups_enabled?: boolean
+          updated_at?: string
+        }
+        Update: {
+          ai_enabled?: boolean
+          id?: string
+          pdf_enabled?: boolean
+          signups_enabled?: boolean
+          updated_at?: string
+        }
+        Relationships: []
+      }
       past_trips: {
         Row: {
+          ai_generated: boolean
           boarding_point: string
           budget: number
           created_at: string
           destination: string
           duration: number
+          end_date: string | null
           id: string
           notes: string | null
           rating: number | null
+          start_date: string | null
+          status: string
+          title: string | null
           trip_date: string
           user_id: string
         }
         Insert: {
+          ai_generated?: boolean
           boarding_point: string
           budget: number
           created_at?: string
           destination: string
           duration: number
+          end_date?: string | null
           id?: string
           notes?: string | null
           rating?: number | null
+          start_date?: string | null
+          status?: string
+          title?: string | null
           trip_date?: string
           user_id: string
         }
         Update: {
+          ai_generated?: boolean
           boarding_point?: string
           budget?: number
           created_at?: string
           destination?: string
           duration?: number
+          end_date?: string | null
           id?: string
           notes?: string | null
           rating?: number | null
+          start_date?: string | null
+          status?: string
+          title?: string | null
           trip_date?: string
           user_id?: string
         }
@@ -68,8 +161,10 @@ export type Database = {
           home_city: string | null
           id: string
           language_preference: string | null
+          last_active_at: string | null
           phone: string | null
           preferred_destinations: string[] | null
+          status: string
           traffic_sensitivity:
             | Database["public"]["Enums"]["traffic_sensitivity"]
             | null
@@ -97,8 +192,10 @@ export type Database = {
           home_city?: string | null
           id?: string
           language_preference?: string | null
+          last_active_at?: string | null
           phone?: string | null
           preferred_destinations?: string[] | null
+          status?: string
           traffic_sensitivity?:
             | Database["public"]["Enums"]["traffic_sensitivity"]
             | null
@@ -126,8 +223,10 @@ export type Database = {
           home_city?: string | null
           id?: string
           language_preference?: string | null
+          last_active_at?: string | null
           phone?: string | null
           preferred_destinations?: string[] | null
+          status?: string
           traffic_sensitivity?:
             | Database["public"]["Enums"]["traffic_sensitivity"]
             | null
@@ -170,6 +269,10 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      log_activity: {
+        Args: { _action_type: string; _description: string; _metadata?: Json }
+        Returns: undefined
       }
     }
     Enums: {
