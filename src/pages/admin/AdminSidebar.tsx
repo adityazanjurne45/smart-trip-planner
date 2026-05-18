@@ -11,7 +11,12 @@ import {
 const items = [
   { title: "Dashboard", url: "/admin", icon: LayoutDashboard, end: true },
   { title: "Users", url: "/admin/users", icon: Users },
+  { title: "Bookings", url: "/admin/bookings", icon: CalendarCheck },
   { title: "Trips", url: "/admin/trips", icon: Map },
+  { title: "Hotels", url: "/admin/hotels", icon: Hotel },
+  { title: "Offers & Coupons", url: "/admin/offers", icon: Tag },
+  { title: "Reviews", url: "/admin/reviews", icon: Star },
+  { title: "Wishlist", url: "/admin/wishlist", icon: Heart },
   { title: "Activity Feed", url: "/admin/activity", icon: Activity },
   { title: "Analytics", url: "/admin/analytics", icon: BarChart3 },
   { title: "Notifications", url: "/admin/notifications", icon: Bell },
