@@ -1,6 +1,7 @@
 import { NavLink, useLocation } from "react-router-dom";
 import {
   LayoutDashboard, Users, Map, Activity, BarChart3, Bell, Settings, Shield, ArrowLeft,
+  CalendarCheck, Hotel, Tag, Star, Heart,
 } from "lucide-react";
 import {
   Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel,
