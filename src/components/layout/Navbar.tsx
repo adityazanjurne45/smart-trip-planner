@@ -1,6 +1,7 @@
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { MapPin, Menu, X, User as UserIcon, LayoutDashboard, Route, History, Heart, Ticket } from "lucide-react";
+import { MapPin, Menu, X, User as UserIcon, LayoutDashboard, Route, History, Heart, Ticket, Shield } from "lucide-react";
+import { useAdminRole } from "@/hooks/useAdminRole";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
@@ -23,6 +24,7 @@ const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const { isAdmin } = useAdminRole();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -176,6 +178,14 @@ const Navbar = () => {
                         Profile Settings
                       </Link>
                     </DropdownMenuItem>
+                    {isAdmin && (
+                      <DropdownMenuItem asChild>
+                        <Link to="/admin" className="cursor-pointer flex items-center gap-2">
+                          <Shield className="w-4 h-4" />
+                          Admin Panel
+                        </Link>
+                      </DropdownMenuItem>
+                    )}
                   </div>
                   <DropdownMenuSeparator />
                   <div className="p-1">
@@ -243,6 +253,13 @@ const Navbar = () => {
                       <span className="text-sm text-muted-foreground">Notifications</span>
                       <SmartNotificationPanel />
                     </div>
+                    {isAdmin && (
+                      <Link to="/admin" onClick={() => setIsOpen(false)}>
+                        <Button variant="outline" className="w-full justify-start gap-2">
+                          <Shield className="w-4 h-4" /> Admin Panel
+                        </Button>
+                      </Link>
+                    )}
                     <Button variant="ghost" onClick={handleLogout} className="w-full justify-start text-destructive">
                       Log out
                     </Button>
