@@ -79,7 +79,7 @@ export default function BookingsPage() {
         </CardHeader>
         <CardContent>
           {filtered.length === 0 ? (
-            <EmptyState icon={CalendarCheck} title="No bookings yet" description="Bookings made by users will appear here." />
+            <EmptyState icon={CalendarCheck} title="No bookings yet" message="Bookings made by users will appear here." />
           ) : (
             <div className="overflow-x-auto">
               <Table>

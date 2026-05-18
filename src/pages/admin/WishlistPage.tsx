@@ -37,7 +37,7 @@ export default function WishlistPage() {
       </div>
 
       {items.length === 0 ? (
-        <EmptyState icon={Heart} title="No wishlist activity yet" description="Items saved by users will show up here." />
+        <EmptyState icon={Heart} title="No wishlist activity yet" message="Items saved by users will show up here." />
       ) : (
         <Card>
           <CardHeader><CardTitle className="flex items-center gap-2"><Heart className="w-5 h-5 text-rose-500" />Most Wishlisted</CardTitle></CardHeader>

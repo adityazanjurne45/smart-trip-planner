@@ -44,7 +44,7 @@ export default function ReviewsPage() {
       {loading ? (
         <p className="text-sm text-muted-foreground">Loading…</p>
       ) : reviews.length === 0 ? (
-        <EmptyState icon={Star} title="No reviews yet" description="User ratings on past trips will appear here." />
+        <EmptyState icon={Star} title="No reviews yet" message="User ratings on past trips will appear here." />
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {reviews.map(r => (

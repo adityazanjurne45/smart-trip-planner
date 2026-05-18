@@ -36,7 +36,7 @@ export default function HotelsPage() {
       </div>
 
       {rows.length === 0 ? (
-        <EmptyState icon={Hotel} title="No hotel bookings yet" description="Once users book hotels, top properties appear here." />
+        <EmptyState icon={Hotel} title="No hotel bookings yet" message="Once users book hotels, top properties appear here." />
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {rows.map((r, i) => (
