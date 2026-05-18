@@ -253,6 +253,13 @@ const Navbar = () => {
                       <span className="text-sm text-muted-foreground">Notifications</span>
                       <SmartNotificationPanel />
                     </div>
+                    {isAdmin && (
+                      <Link to="/admin" onClick={() => setIsOpen(false)}>
+                        <Button variant="outline" className="w-full justify-start gap-2">
+                          <Shield className="w-4 h-4" /> Admin Panel
+                        </Button>
+                      </Link>
+                    )}
                     <Button variant="ghost" onClick={handleLogout} className="w-full justify-start text-destructive">
                       Log out
                     </Button>
