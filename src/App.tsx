@@ -48,10 +48,16 @@ const App = () => (
               <Route path="/my-bookings" element={<MyBookings />} />
               <Route path="/wishlist" element={<Wishlist />} />
               <Route path="/profile" element={<Profile />} />
+              <Route path="/admin/login" element={<AdminLogin />} />
               <Route path="/admin" element={<AdminLayout />}>
                 <Route index element={<AdminOverview />} />
                 <Route path="users" element={<AdminUsers />} />
+                <Route path="bookings" element={<AdminBookings />} />
                 <Route path="trips" element={<AdminTrips />} />
+                <Route path="hotels" element={<AdminHotels />} />
+                <Route path="offers" element={<AdminOffers />} />
+                <Route path="reviews" element={<AdminReviews />} />
+                <Route path="wishlist" element={<AdminWishlist />} />
                 <Route path="activity" element={<AdminActivity />} />
                 <Route path="analytics" element={<AdminAnalytics />} />
                 <Route path="notifications" element={<AdminNotifications />} />
