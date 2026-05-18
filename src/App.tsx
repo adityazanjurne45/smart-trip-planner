@@ -15,9 +15,15 @@ import Wishlist from "./pages/Wishlist";
 import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
 import AdminLayout from "./pages/admin/AdminLayout";
+import AdminLogin from "./pages/admin/AdminLogin";
 import AdminOverview from "./pages/admin/Overview";
 import AdminUsers from "./pages/admin/UsersPage";
+import AdminBookings from "./pages/admin/BookingsPage";
 import AdminTrips from "./pages/admin/TripsPage";
+import AdminHotels from "./pages/admin/HotelsPage";
+import AdminOffers from "./pages/admin/OffersPage";
+import AdminReviews from "./pages/admin/ReviewsPage";
+import AdminWishlist from "./pages/admin/WishlistPage";
 import AdminActivity from "./pages/admin/ActivityFeed";
 import AdminAnalytics from "./pages/admin/Analytics";
 import AdminNotifications from "./pages/admin/NotificationsPage";
@@ -42,10 +48,16 @@ const App = () => (
               <Route path="/my-bookings" element={<MyBookings />} />
               <Route path="/wishlist" element={<Wishlist />} />
               <Route path="/profile" element={<Profile />} />
+              <Route path="/admin/login" element={<AdminLogin />} />
               <Route path="/admin" element={<AdminLayout />}>
                 <Route index element={<AdminOverview />} />
                 <Route path="users" element={<AdminUsers />} />
+                <Route path="bookings" element={<AdminBookings />} />
                 <Route path="trips" element={<AdminTrips />} />
+                <Route path="hotels" element={<AdminHotels />} />
+                <Route path="offers" element={<AdminOffers />} />
+                <Route path="reviews" element={<AdminReviews />} />
+                <Route path="wishlist" element={<AdminWishlist />} />
                 <Route path="activity" element={<AdminActivity />} />
                 <Route path="analytics" element={<AdminAnalytics />} />
                 <Route path="notifications" element={<AdminNotifications />} />

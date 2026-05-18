@@ -9,6 +9,7 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { LogOut, User as UserIcon } from "lucide-react";
 import { NotificationBell } from "./NotificationBell";
+import { ADMIN_SESSION_KEY } from "./AdminLogin";
 import { toast } from "sonner";
 
 export function AdminTopbar() {
@@ -17,9 +18,9 @@ export function AdminTopbar() {
   const initials = (user?.email ?? "A").slice(0, 2).toUpperCase();
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
-    toast.success("Signed out");
-    navigate("/auth");
+    localStorage.removeItem(ADMIN_SESSION_KEY);
+    toast.success("Admin signed out");
+    navigate("/admin/login", { replace: true });
   };
 
   return (
