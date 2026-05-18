@@ -178,6 +178,14 @@ const Navbar = () => {
                         Profile Settings
                       </Link>
                     </DropdownMenuItem>
+                    {isAdmin && (
+                      <DropdownMenuItem asChild>
+                        <Link to="/admin" className="cursor-pointer flex items-center gap-2">
+                          <Shield className="w-4 h-4" />
+                          Admin Panel
+                        </Link>
+                      </DropdownMenuItem>
+                    )}
                   </div>
                   <DropdownMenuSeparator />
                   <div className="p-1">
