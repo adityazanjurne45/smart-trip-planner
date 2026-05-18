@@ -1,6 +1,7 @@
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { MapPin, Menu, X, User as UserIcon, LayoutDashboard, Route, History, Heart, Ticket } from "lucide-react";
+import { MapPin, Menu, X, User as UserIcon, LayoutDashboard, Route, History, Heart, Ticket, Shield } from "lucide-react";
+import { useAdminRole } from "@/hooks/useAdminRole";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
