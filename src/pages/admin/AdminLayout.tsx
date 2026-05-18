@@ -1,36 +1,27 @@
 import { Outlet, useNavigate } from "react-router-dom";
-import { useEffect } from "react";
-import { useAdminRole } from "@/hooks/useAdminRole";
+import { useEffect, useState } from "react";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AdminSidebar } from "./AdminSidebar";
 import { AdminTopbar } from "./AdminTopbar";
-import { Loader2, Shield } from "lucide-react";
-import { toast } from "sonner";
+import { Loader2 } from "lucide-react";
+import { isAdminAuthed } from "./AdminLogin";
 
 export default function AdminLayout() {
-  const { isAdmin, loading, user } = useAdminRole();
   const navigate = useNavigate();
+  const [ok, setOk] = useState<boolean | null>(null);
 
   useEffect(() => {
-    if (loading) return;
-    if (!user) { navigate("/auth"); return; }
-    if (isAdmin === false) {
-      toast.error("Access denied — admin only");
-      navigate("/dashboard");
+    if (isAdminAuthed()) {
+      setOk(true);
+    } else {
+      navigate("/admin/login", { replace: true });
     }
-  }, [isAdmin, loading, user, navigate]);
+  }, [navigate]);
 
-  if (loading || isAdmin !== true) {
+  if (!ok) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
-        {loading ? (
-          <Loader2 className="w-10 h-10 animate-spin text-primary" />
-        ) : (
-          <div className="text-center">
-            <Shield className="w-12 h-12 text-destructive mx-auto mb-3" />
-            <p className="text-muted-foreground">Redirecting…</p>
-          </div>
-        )}
+        <Loader2 className="w-10 h-10 animate-spin text-primary" />
       </div>
     );
   }
