@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { MapPin, Heart } from "lucide-react";
+import { MapPin, Heart, Shield } from "lucide-react";
 
 const Footer = () => {
   return (
