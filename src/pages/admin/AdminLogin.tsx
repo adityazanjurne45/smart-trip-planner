@@ -23,7 +23,7 @@ export default function AdminLogin() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (isAdminAuthed()) navigate("/admin", { replace: true });
+    if (isAdminAuthed()) navigate("/admin-dashboard", { replace: true });
   }, [navigate]);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -33,7 +33,7 @@ export default function AdminLogin() {
       if (email.trim().toLowerCase() === DEMO_EMAIL && password === DEMO_PASSWORD) {
         localStorage.setItem(ADMIN_SESSION_KEY, "true");
         toast.success("Welcome, Admin");
-        navigate("/admin", { replace: true });
+        navigate("/admin-dashboard", { replace: true });
       } else {
         toast.error("Invalid admin credentials");
       }

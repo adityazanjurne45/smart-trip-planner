@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { MapPin, Heart } from "lucide-react";
+import { MapPin, Heart, Shield } from "lucide-react";
 
 const Footer = () => {
   return (
@@ -58,9 +58,18 @@ const Footer = () => {
           <p className="text-background/60 text-sm">
             © {new Date().getFullYear()} Travello. All rights reserved.
           </p>
-          <p className="text-background/60 text-sm flex items-center gap-1">
-            Made with <Heart className="w-4 h-4 text-travel-coral fill-travel-coral" /> for travelers
-          </p>
+          <div className="flex items-center gap-4">
+            <Link
+              to="/admin-login"
+              className="inline-flex items-center gap-2 text-sm text-background/70 hover:text-background border border-background/20 hover:border-background/40 rounded-lg px-3 py-1.5 transition-colors"
+            >
+              <Shield className="w-4 h-4" />
+              Admin Login
+            </Link>
+            <p className="text-background/60 text-sm flex items-center gap-1">
+              Made with <Heart className="w-4 h-4 text-travel-coral fill-travel-coral" /> for travelers
+            </p>
+          </div>
         </div>
       </div>
     </footer>

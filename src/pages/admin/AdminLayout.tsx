@@ -14,7 +14,7 @@ export default function AdminLayout() {
     if (isAdminAuthed()) {
       setOk(true);
     } else {
-      navigate("/admin/login", { replace: true });
+      navigate("/admin-login", { replace: true });
     }
   }, [navigate]);
 
