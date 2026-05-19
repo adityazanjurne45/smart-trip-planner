@@ -49,6 +49,10 @@ const App = () => (
               <Route path="/wishlist" element={<Wishlist />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/admin/login" element={<AdminLogin />} />
+              <Route path="/admin-login" element={<AdminLogin />} />
+              <Route path="/admin-dashboard" element={<AdminLayout />}>
+                <Route index element={<AdminOverview />} />
+              </Route>
               <Route path="/admin" element={<AdminLayout />}>
                 <Route index element={<AdminOverview />} />
                 <Route path="users" element={<AdminUsers />} />
