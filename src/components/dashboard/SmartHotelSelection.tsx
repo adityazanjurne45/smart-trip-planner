@@ -16,6 +16,8 @@ import {
   Leaf,
   Navigation,
   ExternalLink,
+  Flame,
+  AlertTriangle,
 } from "lucide-react";
 import { Hotel } from "@/types/trip";
 import { cn } from "@/lib/utils";
@@ -63,54 +65,75 @@ import { getHotelBookingPlatforms } from "@/lib/bookingLinks";
        </div>
  
        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-         {hotels.map((hotel, index) => {
-           const isSelected = selectedHotel?.name === hotel.name;
-           const isExpanded = expanded === hotel.name;
- 
-           return (
-             <Card
-               key={index}
-               className={cn(
-                 "travel-card overflow-hidden cursor-pointer transition-all",
-                 isSelected && "ring-2 ring-primary shadow-medium",
-                 !isSelected && "hover:shadow-medium"
-               )}
-               onClick={() => setExpanded(isExpanded ? null : hotel.name)}
-             >
-               <div className="relative">
-                 <PlaceImageGallery
-                   query={`${hotel.name} hotel ${destination}`}
-                   type="hotel"
-                   aspectRatio={16 / 10}
-                 />
- 
-                 {/* Badges */}
-                 <div className="absolute top-2 left-2 flex flex-wrap gap-1">
-                   {hotel.isBestLocation && (
-                     <Badge className="bg-green-500 text-white gap-1">
-                       <Navigation className="w-3 h-3" />
-                       Best Location
-                     </Badge>
-                   )}
-                   {hotel.isEcoFriendly && (
-                     <Badge className="bg-green-600 text-white gap-1">
-                       <Leaf className="w-3 h-3" />
-                       Eco-Friendly
-                     </Badge>
-                   )}
-                 </div>
- 
-                  {isSelected && (
-                    <div className="absolute top-2 right-10">
-                      <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center">
-                        <Check className="w-5 h-5" />
-                      </div>
+          {hotels.map((hotel, index) => {
+            const isSelected = selectedHotel?.name === hotel.name;
+            const isExpanded = expanded === hotel.name;
+            // Deterministic demo badges based on index so they stay stable per render
+            const isBestSeller = index === 0 || index % 3 === 0;
+            const isLimited = index % 2 === 1;
+
+            return (
+              <Card
+                key={index}
+                className={cn(
+                  "travel-card overflow-hidden cursor-pointer transition-all duration-300",
+                  "hover:-translate-y-1 hover:shadow-[0_20px_40px_-12px_hsl(var(--primary)/0.25)]",
+                  isSelected && "ring-2 ring-primary shadow-medium",
+                )}
+                onClick={() => setExpanded(isExpanded ? null : hotel.name)}
+              >
+                <div className="relative overflow-hidden">
+                  <div className="transition-transform duration-500 ease-out group-hover:scale-110 hover:scale-110">
+                    <PlaceImageGallery
+                      query={`${hotel.name} hotel ${destination}`}
+                      type="hotel"
+                      aspectRatio={16 / 10}
+                    />
+                  </div>
+
+                  {/* Badges */}
+                  <div className="absolute top-2 left-2 flex flex-wrap gap-1 max-w-[70%]">
+                    {isBestSeller && (
+                      <Badge className="bg-gradient-to-r from-amber-500 to-orange-500 text-white gap-1 shadow-md">
+                        <Flame className="w-3 h-3" />
+                        Best Seller
+                      </Badge>
+                    )}
+                    {hotel.isBestLocation && (
+                      <Badge className="bg-green-500 text-white gap-1">
+                        <Navigation className="w-3 h-3" />
+                        Best Location
+                      </Badge>
+                    )}
+                    {hotel.isEcoFriendly && (
+                      <Badge className="bg-green-600 text-white gap-1">
+                        <Leaf className="w-3 h-3" />
+                        Eco-Friendly
+                      </Badge>
+                    )}
+                  </div>
+
+                  {/* Bottom-overlay limited rooms badge */}
+                  {isLimited && (
+                    <div className="absolute bottom-2 left-2">
+                      <Badge className="bg-red-500/95 text-white gap-1 backdrop-blur animate-pulse">
+                        <AlertTriangle className="w-3 h-3" />
+                        Only 3 rooms left
+                      </Badge>
                     </div>
                   )}
-                  <div className="absolute top-2 right-2">
-                    <WishlistButton item={{ name: hotel.name, type: "hotel", location: hotel.location, price: hotel.pricePerNight, rating: hotel.rating }} />
-                  </div>
-               </div>
+
+                   {isSelected && (
+                     <div className="absolute top-2 right-10">
+                       <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center">
+                         <Check className="w-5 h-5" />
+                       </div>
+                     </div>
+                   )}
+                   <div className="absolute top-2 right-2">
+                     <WishlistButton item={{ name: hotel.name, type: "hotel", location: hotel.location, price: hotel.pricePerNight, rating: hotel.rating }} />
+                   </div>
+                </div>
  
                <CardContent className="p-4">
                  <div className="flex items-start justify-between mb-2">

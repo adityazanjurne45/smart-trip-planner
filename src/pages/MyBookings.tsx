@@ -2,16 +2,28 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/layout/Navbar";
-import { useBookings } from "@/contexts/BookingContext";
+import { useBookings, type Booking } from "@/contexts/BookingContext";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Ticket, MapPin, Calendar, Users, Loader2, Ban } from "lucide-react";
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
+} from "@/components/ui/dialog";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
+  Ticket, MapPin, Calendar, Users, Loader2, Ban, Eye, CheckCircle2, CreditCard,
+} from "lucide-react";
 import { toast } from "sonner";
+import PlaceImageGallery from "@/components/ui/PlaceImageGallery";
 
 const MyBookings = () => {
   const { bookings, cancelBooking } = useBookings();
   const [loading, setLoading] = useState(true);
+  const [viewBooking, setViewBooking] = useState<Booking | null>(null);
+  const [cancelId, setCancelId] = useState<string | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -52,38 +64,55 @@ const MyBookings = () => {
               </CardContent>
             </Card>
           ) : (
-            <div className="space-y-4 animate-fade-in">
+            <div className="grid sm:grid-cols-2 gap-4 animate-fade-in">
               {bookings.map(b => (
-                <Card key={b.id} className={`border-border shadow-soft transition-all ${b.status === "cancelled" ? "opacity-60" : "hover:shadow-medium"}`}>
-                  <CardContent className="p-5">
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                      <div className="flex-1 space-y-2">
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <h3 className="font-semibold text-lg text-foreground">{b.itemName}</h3>
-                          <Badge variant={b.status === "confirmed" ? "default" : "destructive"} className="capitalize">
-                            {b.status}
-                          </Badge>
-                          <Badge variant="secondary" className="capitalize">{b.type}</Badge>
-                        </div>
-                        <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
-                          <span className="flex items-center gap-1"><MapPin className="w-3 h-3" />{b.location}</span>
-                          <span className="flex items-center gap-1"><Users className="w-3 h-3" />{b.travelers} traveler{b.travelers > 1 ? "s" : ""}</span>
-                          {b.travelDates && <span className="flex items-center gap-1"><Calendar className="w-3 h-3" />{b.travelDates}</span>}
-                        </div>
-                        <p className="text-xs text-muted-foreground">Booking ID: {b.id} • Booked {new Date(b.createdAt).toLocaleDateString()}</p>
+                <Card
+                  key={b.id}
+                  className={`group overflow-hidden border-border shadow-soft transition-all duration-300 ${
+                    b.status === "cancelled"
+                      ? "opacity-60"
+                      : "hover:-translate-y-1 hover:shadow-[0_20px_40px_-12px_hsl(var(--primary)/0.25)]"
+                  }`}
+                >
+                  <div className="relative overflow-hidden">
+                    <div className="transition-transform duration-500 group-hover:scale-110">
+                      <PlaceImageGallery
+                        query={`${b.itemName} ${b.location}`}
+                        type={b.type === "hotel" ? "hotel" : "transport"}
+                        aspectRatio={16 / 9}
+                        showAttribution={false}
+                      />
+                    </div>
+                    <div className="absolute top-2 left-2 flex gap-1">
+                      <Badge variant={b.status === "confirmed" ? "default" : "destructive"} className="capitalize gap-1 shadow-md">
+                        {b.status === "confirmed" && <CheckCircle2 className="w-3 h-3" />}
+                        {b.status}
+                      </Badge>
+                      <Badge variant="secondary" className="capitalize shadow-md">{b.type}</Badge>
+                    </div>
+                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-3">
+                      <h3 className="font-semibold text-white line-clamp-1">{b.itemName}</h3>
+                      <p className="text-white/80 text-xs flex items-center gap-1"><MapPin className="w-3 h-3" />{b.location}</p>
+                    </div>
+                  </div>
+
+                  <CardContent className="p-4 space-y-3">
+                    <div className="flex flex-wrap gap-3 text-xs text-muted-foreground">
+                      <span className="flex items-center gap-1"><Users className="w-3 h-3" />{b.travelers} guest{b.travelers > 1 ? "s" : ""}</span>
+                      {b.travelDates && <span className="flex items-center gap-1"><Calendar className="w-3 h-3" />{b.travelDates}</span>}
+                    </div>
+                    <p className="text-[11px] text-muted-foreground font-mono">{b.id}</p>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-2xl font-bold text-primary leading-none">${b.total}</p>
+                        {b.discount > 0 && <p className="text-[10px] text-green-600 mt-0.5">Saved ${b.discount}</p>}
                       </div>
-                      <div className="flex items-center gap-3">
-                        <div className="text-right">
-                          <p className="text-2xl font-bold text-primary">${b.total}</p>
-                          {b.discount > 0 && <p className="text-xs text-green-600">Saved ${b.discount}</p>}
-                        </div>
+                      <div className="flex gap-2">
+                        <Button variant="outline" size="sm" onClick={() => setViewBooking(b)}>
+                          <Eye className="w-3 h-3 mr-1" /> View
+                        </Button>
                         {b.status === "confirmed" && (
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="text-destructive"
-                            onClick={() => { cancelBooking(b.id); toast("Booking cancelled"); }}
-                          >
+                          <Button variant="outline" size="sm" className="text-destructive" onClick={() => setCancelId(b.id)}>
                             <Ban className="w-3 h-3 mr-1" /> Cancel
                           </Button>
                         )}
@@ -96,6 +125,78 @@ const MyBookings = () => {
           )}
         </div>
       </main>
+
+      {/* View Details Dialog */}
+      <Dialog open={!!viewBooking} onOpenChange={(o) => !o && setViewBooking(null)}>
+        <DialogContent className="max-w-lg p-0 overflow-hidden">
+          {viewBooking && (
+            <>
+              <PlaceImageGallery
+                query={`${viewBooking.itemName} ${viewBooking.location}`}
+                type={viewBooking.type === "hotel" ? "hotel" : "transport"}
+                aspectRatio={16 / 9}
+                showAttribution={false}
+                className="rounded-b-none"
+              />
+              <div className="p-6 space-y-4">
+                <DialogHeader>
+                  <DialogTitle>{viewBooking.itemName}</DialogTitle>
+                  <DialogDescription className="flex items-center gap-1">
+                    <MapPin className="w-3 h-3" />{viewBooking.location}
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="grid grid-cols-2 gap-3 text-sm">
+                  <div><p className="text-muted-foreground text-xs">Booking ID</p><p className="font-mono font-medium">{viewBooking.id}</p></div>
+                  <div><p className="text-muted-foreground text-xs">Status</p><Badge variant={viewBooking.status === "confirmed" ? "default" : "destructive"} className="capitalize">{viewBooking.status}</Badge></div>
+                  <div><p className="text-muted-foreground text-xs">Traveler</p><p className="font-medium">{viewBooking.travelerName}</p></div>
+                  <div><p className="text-muted-foreground text-xs">Guests</p><p className="font-medium">{viewBooking.travelers}</p></div>
+                  <div><p className="text-muted-foreground text-xs">Email</p><p className="font-medium truncate">{viewBooking.email}</p></div>
+                  <div><p className="text-muted-foreground text-xs">Phone</p><p className="font-medium">{viewBooking.phone}</p></div>
+                  <div className="col-span-2"><p className="text-muted-foreground text-xs">Dates</p><p className="font-medium">{viewBooking.travelDates || "—"}</p></div>
+                </div>
+                <div className="bg-secondary/40 rounded-lg p-3 space-y-1 text-sm">
+                  <div className="flex justify-between"><span className="text-muted-foreground">Price</span><span>${viewBooking.price}</span></div>
+                  <div className="flex justify-between"><span className="text-muted-foreground">Tax</span><span>${viewBooking.tax}</span></div>
+                  {viewBooking.discount > 0 && (
+                    <div className="flex justify-between text-green-600"><span>Discount</span><span>-${viewBooking.discount}</span></div>
+                  )}
+                  <div className="flex justify-between border-t pt-1 font-bold"><span>Total Paid</span><span className="text-primary">${viewBooking.total}</span></div>
+                </div>
+                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <CreditCard className="w-3 h-3" />
+                  Paid via <span className="capitalize font-medium text-foreground">{viewBooking.paymentMethod}</span>
+                </div>
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Cancel confirmation */}
+      <AlertDialog open={!!cancelId} onOpenChange={(o) => !o && setCancelId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Cancel this booking?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will mark the booking as cancelled. This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Keep booking</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                if (cancelId) {
+                  cancelBooking(cancelId);
+                  toast.success("Booking cancelled");
+                }
+                setCancelId(null);
+              }}
+            >
+              Yes, cancel
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

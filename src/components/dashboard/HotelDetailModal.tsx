@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { useBookings } from "@/contexts/BookingContext";
 import { toast } from "sonner";
 import PlaceImageGallery from "@/components/ui/PlaceImageGallery";
+import HotelFoodMenu from "./HotelFoodMenu";
 import { Hotel } from "@/types/trip";
 import {
   Star, MapPin, Wifi, Waves, Dumbbell, Leaf, Navigation, Check,
@@ -173,6 +174,9 @@ const HotelDetailModal = ({ open, onClose, hotel, destination }: HotelDetailModa
                   </div>
                 </div>
               )}
+
+              {/* Restaurant / Food Menu */}
+              <HotelFoodMenu destination={destination} />
 
               {/* Booking form */}
               <Card className="border-primary/20">
