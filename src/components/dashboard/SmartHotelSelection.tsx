@@ -16,6 +16,8 @@ import {
   Leaf,
   Navigation,
   ExternalLink,
+  Flame,
+  AlertTriangle,
 } from "lucide-react";
 import { Hotel } from "@/types/trip";
 import { cn } from "@/lib/utils";
