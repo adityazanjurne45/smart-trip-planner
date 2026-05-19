@@ -175,6 +175,9 @@ const HotelDetailModal = ({ open, onClose, hotel, destination }: HotelDetailModa
                 </div>
               )}
 
+              {/* Restaurant / Food Menu */}
+              <HotelFoodMenu destination={destination} />
+
               {/* Booking form */}
               <Card className="border-primary/20">
                 <CardContent className="p-5 space-y-4">
