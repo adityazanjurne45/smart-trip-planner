@@ -1,71 +1,44 @@
-# Admin Dashboard Build Plan
+## Goal
+Whenever a user plans a trip, show a richer set of demo hotels whose names and locations feel authentic to the chosen destination — whether it's a country, city, or small village.
 
-A comprehensive, role-protected admin panel replacing the existing single-page `/admin` route with a multi-page dashboard using a collapsible sidebar layout.
+## Approach
+Add a deterministic, client-side demo hotel generator that produces 6 unique hotels per destination, and merge them with the AI-generated hotels already returned by `generate-trip-recommendations`. No backend or AI changes — purely a frontend enhancement so it works offline and never costs credits.
 
-## Database Changes (1 migration)
+## What will be built
 
-New tables to support the dashboard:
+### 1. New util: `src/lib/demoHotels.ts`
+- `detectRegion(destination)` — reuses the same region map style as `demoFoodMenu.ts` (India, Italy, France, Japan, Thailand, Indonesia, Spain, Mexico, UAE, plus added: UK, Greece, Switzerland, Egypt, USA, global fallback).
+- `detectPlaceType(destination)` — heuristic: "village" / small token → village, known capitals/metros → city, country name match → country.
+- Per-region name pools split into:
+  - **Prefixes** (e.g. France: `Le`, `La`, `Maison`, `Château`, `Hôtel`)
+  - **Cores** (regional words: `Lumière`, `Étoile`, `Marais`, `Riviera`…)
+  - **Suffixes** (`Palace`, `Residency`, `Boutique`, `Retreat`, `Inn`, `Lodge`)
+- `generateDemoHotels(destination, count = 6)` — combines prefix+core+suffix deterministically (seeded by destination string) so names stay stable on re-render and never repeat within the list. Each hotel also gets:
+  - `location` — realistic neighbourhood for that region (e.g. Paris → "Le Marais", Bali → "Seminyak", small village → "Village Center / Hillside / Riverside")
+  - `pricePerNight`, `rating` (4.2–4.9), `distanceToCenter`
+  - `amenities` (rotated from a pool)
+  - `nearbyAttractions` (region-aware)
+  - `isBestLocation` / `isEcoFriendly` flags spread across the list
+  - `coordinates` left undefined (AI hotels may still bring real ones)
 
-- **`admin_activity_log`** — stores user actions (signup, trip_created, ai_generated, pdf_exported, profile_updated, login_failed, user_suspended). Columns: `user_id`, `action_type`, `description`, `metadata jsonb`, `created_at`. RLS: admins can view all; system/users can insert their own.
-- **`admin_notifications`** — admin-targeted notifications. Columns: `type`, `message`, `metadata jsonb`, `read boolean`, `created_at`. RLS: only admins read/update.
-- **`admin_settings`** — single-row feature flags table: `ai_enabled`, `pdf_enabled`, `signups_enabled`. RLS: admin-only.
-- **Add to `profiles`**: `status text default 'active'` (active|suspended), `last_active_at timestamptz`.
-- **Add to `past_trips`**: `title text`, `status text default 'planned'` (planned|ongoing|completed), `ai_generated boolean default false`, `start_date date`, `end_date date`.
+### 2. Integration in `TripRecommendations.tsx`
+- After recommendations arrive, call `generateDemoHotels(destination)` and **merge**: keep AI hotels first, append demo hotels, then dedupe by lowercase name, capping at 6–8 total.
+- If AI returned no hotels (failure / fallback), fully populate from the generator so the UI is never empty.
 
-Enable realtime on `admin_activity_log` and `admin_notifications`.
+### 3. No UI changes
+`SmartHotelSelection.tsx` already renders any `Hotel[]` — richer data flows in automatically. The existing card-click → `HotelDetailModal` flow stays as-is.
 
-A trigger on `auth.users` insert (extending `handle_new_user`) inserts a signup activity row + notification. Helper RPC `log_activity(action_type, description, metadata)` for client logging.
+## Examples produced
+- Paris → "Hôtel Lumière", "Le Marais Boutique", "Maison Étoile Residency"
+- Jaipur → "Rajwada Heritage Palace", "Amber Haveli Retreat", "Pink City Residency"
+- Bali → "Ubud Serenity Villa", "Seminyak Beach Retreat", "Tegalalang Rice Lodge"
+- A village like "Kasol" → "Parvati Valley Inn", "Riverside Cottage Stay", "Hillview Village Lodge"
 
-## Routing & Protection
+## Files
+- **Create**: `src/lib/demoHotels.ts`
+- **Edit**: `src/components/dashboard/TripRecommendations.tsx` (merge demo hotels into `recommendations.hotels`)
 
-- New layout `src/pages/admin/AdminLayout.tsx` wrapping all admin routes with role check via `has_role` query. Non-admins → redirect to `/dashboard` with toast.
-- Routes added in `App.tsx`:
-  - `/admin` → Overview
-  - `/admin/users`
-  - `/admin/trips`
-  - `/admin/activity`
-  - `/admin/analytics`
-  - `/admin/notifications`
-  - `/admin/settings`
-
-## Components
-
-### Layout
-- `AdminSidebar.tsx` — shadcn Sidebar with `collapsible="icon"`, 7 nav items with lucide icons, active highlight via `NavLink`.
-- `AdminTopbar.tsx` — logo/"Admin Panel" label, `NotificationBell` (Popover with unread count badge, realtime subscription), avatar dropdown (profile, logout).
-
-### Pages
-- `Overview.tsx` — 4 stat cards (Total Users, Total Trips, AI Itineraries, PDFs Exported) with 30-day % change, recharts LineChart (signups), BarChart (trips/day), PieChart (trip status).
-- `Users.tsx` — searchable/sortable shadcn DataTable with pagination, filters (role/status/date), inline role dropdown, status toggle, click → Sheet slide-over with full profile + trips + activity.
-- `Trips.tsx` — table with filters, click → Dialog showing trip details + map preview (reusing `TripMap`).
-- `ActivityFeed.tsx` — realtime feed with "New activity" pill, action icons, relative timestamps (date-fns).
-- `Analytics.tsx` — date-range selector (7/30/90/all), popular destinations bar, AI usage line, PDF export line, avg trips/user stat, retention stat, Leaflet heatmap of destinations.
-- `Notifications.tsx` — full list, mark-as-read, mark-all-read, type icons.
-- `Settings.tsx` — admins list with add/remove role, feature flag switches, danger zone (delete user trips, wipe test data) with AlertDialog confirmations.
-
-### Shared
-- `StatCard.tsx`, `EmptyState.tsx`, `useAdminRole.ts` hook, `useRealtimeFeed.ts` hook.
-- Skeleton loaders for all data fetches; sonner toasts on all mutations; AlertDialog on destructive actions.
-
-## Integrations
-
-- Hook existing flows to log activity:
-  - `PlanTrip` → log `trip_created` + `ai_generated` when AI itinerary returned.
-  - `TripPDFDownload` → log `pdf_exported`.
-  - Profile updates in `Profile.tsx` → log `profile_updated`.
-
-## Out of scope (mocked)
-- Supabase storage usage / API call counts in Settings → display "N/A" or static placeholders (not queryable from client).
-- Failed login tracking → only logged when explicit error handler fires in `Auth.tsx`.
-
-## Files (high-level)
-
-Created: `AdminLayout.tsx`, `AdminSidebar.tsx`, `AdminTopbar.tsx`, `NotificationBell.tsx`, `pages/admin/Overview.tsx`, `Users.tsx`, `Trips.tsx`, `ActivityFeed.tsx`, `Analytics.tsx`, `Notifications.tsx`, `Settings.tsx`, hooks, shared components.
-
-Modified: `App.tsx` (routes), `pages/Admin.tsx` (redirect to new layout or replace), `PlanTrip.tsx`, `TripPDFDownload.tsx`, `Profile.tsx` (activity logging).
-
-Migration: 1 SQL migration as described above.
-
-## Approval
-
-Reply "approve" to proceed, or tell me what to adjust (e.g., skip heatmap, simplify Settings, drop activity logging hooks).
+## Out of scope
+- No edge function / AI prompt changes
+- No DB changes
+- No new images (existing `PlaceImageGallery` already fetches per-hotel images by name+destination)
