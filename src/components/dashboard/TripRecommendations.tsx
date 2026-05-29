@@ -26,6 +26,7 @@ import SmartTravelSummary from "./SmartTravelSummary";
 import TripStoryTimeline from "./TripStoryTimeline";
 import GroupExpenseSplitter from "./GroupExpenseSplitter";
 import FoodieCorner from "./FoodieCorner";
+import { mergeWithDemoHotels } from "@/lib/demoHotels";
 
 interface TripRecommendationsProps {
   tripDetails: TripDetails;
@@ -96,7 +97,7 @@ const TripRecommendations = ({
         }
         onGenerated({
           touristPlaces: [],
-          hotels: [],
+          hotels: mergeWithDemoHotels(tripDetails.destinationPoint, [], 6),
           vehicles: [],
           summary: "Unable to generate recommendations at this time. Please try again later.",
         });
@@ -104,7 +105,9 @@ const TripRecommendations = ({
       }
 
       if (data?.recommendations) {
-        onGenerated(data.recommendations);
+        const recs = data.recommendations as Recommendations;
+        recs.hotels = mergeWithDemoHotels(tripDetails.destinationPoint, recs.hotels, 6);
+        onGenerated(recs);
       } else {
         throw new Error("Invalid response format");
       }
@@ -117,7 +120,7 @@ const TripRecommendations = ({
       });
       onGenerated({
         touristPlaces: [],
-        hotels: [],
+        hotels: mergeWithDemoHotels(tripDetails.destinationPoint, [], 6),
         vehicles: [],
         summary: "Unable to generate recommendations at this time. Please try again later.",
       });
