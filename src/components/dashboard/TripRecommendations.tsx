@@ -26,6 +26,7 @@ import SmartTravelSummary from "./SmartTravelSummary";
 import TripStoryTimeline from "./TripStoryTimeline";
 import GroupExpenseSplitter from "./GroupExpenseSplitter";
 import FoodieCorner from "./FoodieCorner";
+import { mergeWithDemoHotels } from "@/lib/demoHotels";
 
 interface TripRecommendationsProps {
   tripDetails: TripDetails;
