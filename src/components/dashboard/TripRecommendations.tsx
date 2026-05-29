@@ -97,7 +97,7 @@ const TripRecommendations = ({
         }
         onGenerated({
           touristPlaces: [],
-          hotels: [],
+          hotels: mergeWithDemoHotels(tripDetails.destinationPoint, [], 6),
           vehicles: [],
           summary: "Unable to generate recommendations at this time. Please try again later.",
         });
