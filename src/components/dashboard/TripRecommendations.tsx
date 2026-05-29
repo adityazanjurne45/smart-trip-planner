@@ -105,7 +105,9 @@ const TripRecommendations = ({
       }
 
       if (data?.recommendations) {
-        onGenerated(data.recommendations);
+        const recs = data.recommendations as Recommendations;
+        recs.hotels = mergeWithDemoHotels(tripDetails.destinationPoint, recs.hotels, 6);
+        onGenerated(recs);
       } else {
         throw new Error("Invalid response format");
       }
