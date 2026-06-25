@@ -124,7 +124,7 @@ const Wishlist = () => {
                           <div className="absolute inset-0 transition-transform duration-700 group-hover:scale-110">
                             <PlaceImageGallery
                               query={`${item.name} ${item.location}`}
-                              type={item.type === "hotel" ? "hotel" : item.type === "food" ? "food" : item.type === "transport" ? "transport" : "place"}
+                              type={item.type === "hotel" ? "hotel" : item.type === "transport" ? "transport" : "tourist_place"}
                               aspectRatio={16 / 9}
                               showAttribution={false}
                             />
