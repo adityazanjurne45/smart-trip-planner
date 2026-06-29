@@ -116,9 +116,11 @@ const TripCard = ({ trip, onDelete, onDuplicate, index }: TripCardProps) => {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem className="gap-2">
-                <Eye className="w-4 h-4" />
-                View Details
+              <DropdownMenuItem className="gap-2" asChild>
+                <Link to={`/trip-details/${trip.id}`}>
+                  <Eye className="w-4 h-4" />
+                  View Details
+                </Link>
               </DropdownMenuItem>
               {isUpcoming && (
                 <DropdownMenuItem className="gap-2">
