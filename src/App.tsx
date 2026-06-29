@@ -10,6 +10,7 @@ import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import PlanTrip from "./pages/PlanTrip";
 import MyTrips from "./pages/MyTrips";
+import TripDetails from "./pages/TripDetails";
 import MyBookings from "./pages/MyBookings";
 import Wishlist from "./pages/Wishlist";
 import Profile from "./pages/Profile";
