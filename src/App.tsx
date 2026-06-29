@@ -10,6 +10,7 @@ import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import PlanTrip from "./pages/PlanTrip";
 import MyTrips from "./pages/MyTrips";
+import TripDetails from "./pages/TripDetails";
 import MyBookings from "./pages/MyBookings";
 import Wishlist from "./pages/Wishlist";
 import Profile from "./pages/Profile";
@@ -45,6 +46,8 @@ const App = () => (
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/plan-trip" element={<PlanTrip />} />
               <Route path="/my-trips" element={<MyTrips />} />
+              <Route path="/trip-details/:id" element={<TripDetails />} />
+              <Route path="/my-trips/details/:id" element={<TripDetails />} />
               <Route path="/my-bookings" element={<MyBookings />} />
               <Route path="/wishlist" element={<Wishlist />} />
               <Route path="/profile" element={<Profile />} />
