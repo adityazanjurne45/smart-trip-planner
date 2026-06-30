@@ -12,6 +12,8 @@ import { Loader2, MapPin, Sparkles } from "lucide-react";
 import { useProfile } from "@/hooks/useProfile";
 import { TripDetails, Recommendations } from "@/types/trip";
 import SurpriseMe from "@/components/dashboard/SurpriseMe";
+import { CurrencyProvider } from "@/contexts/CurrencyContext";
+
 
 const PlanTrip = () => {
   const [user, setUser] = useState<User | null>(null);
