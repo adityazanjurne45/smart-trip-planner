@@ -292,8 +292,9 @@ const DayWiseItinerary = ({
                                 </div>
                               </div>
                               <Badge variant="secondary" className="text-xs">
-                                {activity.cost}
+                                {formatPriceString(activity.cost)}
                               </Badge>
+
                             </div>
                           </div>
                         </div>
