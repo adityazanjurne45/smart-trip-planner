@@ -23,6 +23,8 @@ import { Hotel } from "@/types/trip";
 import { cn } from "@/lib/utils";
 import PlaceImageGallery from "@/components/ui/PlaceImageGallery";
 import { getHotelBookingPlatforms } from "@/lib/bookingLinks";
+import { Price } from "@/contexts/CurrencyContext";
+
  
  interface SmartHotelSelectionProps {
    hotels: Hotel[];
@@ -156,11 +158,12 @@ import { getHotelBookingPlatforms } from "@/lib/bookingLinks";
  
                 <div className="flex items-center justify-between mt-3">
                     <span className="text-lg font-bold text-primary">
-                      {hotel.pricePerNight}
+                      <Price value={hotel.pricePerNight} />
                       <span className="text-sm font-normal text-muted-foreground">
                         /night
                       </span>
                     </span>
+
                     <Button
                       size="sm"
                       variant={isSelected ? "default" : "outline"}

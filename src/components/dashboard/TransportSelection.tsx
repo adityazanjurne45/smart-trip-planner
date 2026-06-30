@@ -19,6 +19,8 @@ import { Vehicle } from "@/types/trip";
 import { cn } from "@/lib/utils";
 import PlaceImageGallery from "@/components/ui/PlaceImageGallery";
 import { getBusBookingPlatforms, getTaxiBookingPlatforms } from "@/lib/bookingLinks";
+import { Price } from "@/contexts/CurrencyContext";
+
  
 interface TransportSelectionProps {
   vehicles: Vehicle[];
@@ -116,8 +118,9 @@ const TransportSelection = ({
                      </h4>
                    </div>
                    <span className="text-lg font-bold text-blue-600">
-                     {vehicle.estimatedCost}
+                     <Price value={vehicle.estimatedCost} />
                    </span>
+
                  </div>
  
                  <p className="text-sm text-muted-foreground mb-3">

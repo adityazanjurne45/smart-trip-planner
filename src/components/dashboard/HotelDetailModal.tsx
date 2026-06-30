@@ -10,6 +10,8 @@ import { toast } from "sonner";
 import PlaceImageGallery from "@/components/ui/PlaceImageGallery";
 import HotelFoodMenu from "./HotelFoodMenu";
 import { Hotel } from "@/types/trip";
+import { useCurrency } from "@/contexts/CurrencyContext";
+
 import {
   Star, MapPin, Wifi, Waves, Dumbbell, Leaf, Navigation, Check,
   CreditCard, Smartphone, Building2, CheckCircle2, Loader2, Tag,
@@ -41,7 +43,9 @@ const getAmenityIcon = (amenity: string) => {
 
 const HotelDetailModal = ({ open, onClose, hotel, destination }: HotelDetailModalProps) => {
   const { addBooking } = useBookings();
+  const { formatAmount, formatPriceString } = useCurrency();
   const [step, setStep] = useState<Step>("details");
+
   const [processing, setProcessing] = useState(false);
   const [booking, setBooking] = useState<ReturnType<typeof addBooking> | null>(null);
   const [form, setForm] = useState({ name: "", email: "", phone: "", rooms: "1", travelers: "2", dates: "" });
@@ -141,7 +145,7 @@ const HotelDetailModal = ({ open, onClose, hotel, destination }: HotelDetailModa
                     <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />
                     <span className="text-xl font-bold">{hotel.rating}</span>
                   </div>
-                  <p className="text-2xl font-bold text-primary mt-1">{hotel.pricePerNight}<span className="text-sm font-normal text-muted-foreground">/night</span></p>
+                  <p className="text-2xl font-bold text-primary mt-1">{formatPriceString(hotel.pricePerNight)}<span className="text-sm font-normal text-muted-foreground">/night</span></p>
                 </div>
               </div>
 
@@ -193,18 +197,19 @@ const HotelDetailModal = ({ open, onClose, hotel, destination }: HotelDetailModa
 
                   {/* Price breakdown */}
                   <div className="bg-secondary/40 rounded-lg p-4 space-y-2 text-sm">
-                    <div className="flex justify-between"><span className="text-muted-foreground">Room cost ({rooms} × {hotel.pricePerNight})</span><span className="font-medium">${roomCost}</span></div>
-                    <div className="flex justify-between"><span className="text-muted-foreground">Taxes & Fees (12%)</span><span className="font-medium">${tax}</span></div>
+                    <div className="flex justify-between"><span className="text-muted-foreground">Room cost ({rooms} × {formatPriceString(hotel.pricePerNight)})</span><span className="font-medium">{formatAmount(roomCost)}</span></div>
+                    <div className="flex justify-between"><span className="text-muted-foreground">Taxes & Fees (12%)</span><span className="font-medium">{formatAmount(tax)}</span></div>
                     {discount && (
                       <div className="flex justify-between text-green-600">
                         <span className="flex items-center gap-1"><Tag className="w-3 h-3" />Coupon: {discount.code} (-{discount.percent}%)</span>
-                        <span>-${discount.amount}</span>
+                        <span>-{formatAmount(discount.amount)}</span>
                       </div>
                     )}
                     <div className="flex justify-between border-t pt-2 font-bold text-lg">
                       <span>Total</span>
-                      <span className="text-primary">${total}</span>
+                      <span className="text-primary">{formatAmount(total)}</span>
                     </div>
+
                   </div>
 
                   <Button className="w-full" size="lg" onClick={handleProceed}>Proceed to Book</Button>
@@ -234,7 +239,7 @@ const HotelDetailModal = ({ open, onClose, hotel, destination }: HotelDetailModa
               ))}
             </div>
             <div className="flex justify-between items-center pt-2">
-              <span className="text-lg font-bold">Total: <span className="text-primary">${total}</span></span>
+              <span className="text-lg font-bold">Total: <span className="text-primary">{formatAmount(total)}</span></span>
               <Button onClick={handlePayment} disabled={processing} className="gap-2">
                 {processing ? <><Loader2 className="w-4 h-4 animate-spin" /> Processing...</> : "Confirm Booking"}
               </Button>
@@ -259,7 +264,7 @@ const HotelDetailModal = ({ open, onClose, hotel, destination }: HotelDetailModa
                 <div className="flex justify-between"><span className="text-muted-foreground">Guests</span><span>{booking.travelers}</span></div>
                 <div className="flex justify-between"><span className="text-muted-foreground">Dates</span><span>{booking.travelDates || "—"}</span></div>
                 <div className="flex justify-between"><span className="text-muted-foreground">Payment</span><span className="capitalize">{booking.paymentMethod}</span></div>
-                <div className="flex justify-between border-t pt-2 font-bold"><span>Total Paid</span><span className="text-primary">${booking.total}</span></div>
+                <div className="flex justify-between border-t pt-2 font-bold"><span>Total Paid</span><span className="text-primary">{formatAmount(booking.total)}</span></div>
               </CardContent>
             </Card>
             <div className="flex gap-2">
