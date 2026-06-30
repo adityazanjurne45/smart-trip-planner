@@ -205,3 +205,24 @@ export function getCountryTransportTypes(destination: string): string[] {
   if (country && TRANSPORT_BY_COUNTRY[country]) return TRANSPORT_BY_COUNTRY[country];
   return ["Taxi", "Bus", "Car", "Bike"];
 }
+
+const LOCALE_BY_CODE: Record<string, string> = {
+  INR: "en-IN", USD: "en-US", EUR: "de-DE", GBP: "en-GB", JPY: "ja-JP",
+  CHF: "de-CH", AED: "ar-AE", SGD: "en-SG", AUD: "en-AU", CAD: "en-CA",
+  MYR: "ms-MY", IDR: "id-ID", NPR: "ne-NP", THB: "th-TH", VND: "vi-VN",
+  PHP: "en-PH", LKR: "si-LK", KRW: "ko-KR", CNY: "zh-CN", TRY: "tr-TR",
+  RUB: "ru-RU", SEK: "sv-SE", NOK: "nb-NO", DKK: "da-DK", NZD: "en-NZ",
+  ZAR: "en-ZA", EGP: "ar-EG", KES: "en-KE", SAR: "ar-SA", MXN: "es-MX",
+  BRL: "pt-BR",
+};
+
+for (const info of Object.values(CURRENCY_MAP)) {
+  if (!info.locale) info.locale = LOCALE_BY_CODE[info.code] || "en-US";
+}
+
+export function getCurrencyByCode(code: string): CurrencyInfo | null {
+  for (const info of Object.values(CURRENCY_MAP)) {
+    if (info.code === code) return info;
+  }
+  return null;
+}
