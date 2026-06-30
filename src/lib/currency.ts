@@ -4,7 +4,10 @@ export interface CurrencyInfo {
   symbol: string;
   name: string;
   rate: number; // Rate relative to USD (1 USD = X units)
+  locale: string;
 }
+
+
 
 const CURRENCY_MAP: Record<string, CurrencyInfo> = {
   // Asia
