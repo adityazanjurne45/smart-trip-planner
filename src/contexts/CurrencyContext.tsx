@@ -185,3 +185,10 @@ export const CurrencySelector: React.FC<{ className?: string }> = ({ className }
     </DropdownMenu>
   );
 };
+
+// Convenience render components used inside CurrencyProvider
+export const Price: React.FC<{ value: number | string | null | undefined; suffix?: string; className?: string }> = ({ value, suffix, className }) => {
+  const { formatPriceString } = useCurrency();
+  const text = formatPriceString(value as any);
+  return <span className={className}>{text}{suffix || ""}</span>;
+};
