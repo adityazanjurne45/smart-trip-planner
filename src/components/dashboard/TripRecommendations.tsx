@@ -27,6 +27,8 @@ import TripStoryTimeline from "./TripStoryTimeline";
 import GroupExpenseSplitter from "./GroupExpenseSplitter";
 import FoodieCorner from "./FoodieCorner";
 import { mergeWithDemoHotels } from "@/lib/demoHotels";
+import { CurrencyProvider, CurrencySelector, Price } from "@/contexts/CurrencyContext";
+
 
 interface TripRecommendationsProps {
   tripDetails: TripDetails;
@@ -202,6 +204,7 @@ const TripRecommendations = ({
   }
 
   return (
+    <CurrencyProvider destination={tripDetails.destinationPoint}>
     <div className="space-y-6">
       {/* Actions Bar */}
       <div className="flex items-center justify-between flex-wrap gap-4">
@@ -210,6 +213,7 @@ const TripRecommendations = ({
           New Trip
         </Button>
         <div className="flex items-center gap-2 flex-wrap">
+          <CurrencySelector />
           <OfflineTripToggle tripDetails={tripDetails} recommendations={recommendations} />
           <ShareTrip tripDetails={tripDetails} />
           <TripActions
@@ -220,6 +224,7 @@ const TripRecommendations = ({
           />
         </div>
       </div>
+
 
       {/* Tabs for different views */}
       <Tabs value={activeTab || "overview"} onValueChange={onTabChange} className="w-full">
@@ -551,7 +556,9 @@ const TripRecommendations = ({
         </TabsContent>
       </Tabs>
     </div>
+    </CurrencyProvider>
   );
 };
+
 
 export default TripRecommendations;
