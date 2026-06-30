@@ -22,6 +22,8 @@ import {
 } from "lucide-react";
 import { Recommendations, TripDetails } from "@/types/trip";
 import { cn } from "@/lib/utils";
+import { useCurrency } from "@/contexts/CurrencyContext";
+
 
 interface DayWiseItineraryProps {
   tripDetails: TripDetails;
@@ -131,8 +133,10 @@ const DayWiseItinerary = ({
   recommendations,
   weather,
 }: DayWiseItineraryProps) => {
+  const { formatAmount, formatPriceString } = useCurrency();
   const [expandedDay, setExpandedDay] = useState<number | null>(1);
   const days = Array.from({ length: tripDetails.duration }, (_, i) => i + 1);
+
   
   const dailyBudget = Math.round(tripDetails.budget / tripDetails.duration);
   const estimatedDailyCost = 120; // Rough estimate
@@ -159,12 +163,13 @@ const DayWiseItinerary = ({
               <div className="text-center">
                 <DollarSign className="w-5 h-5 mx-auto mb-1 opacity-80" />
                 <p className="text-sm opacity-80">Budget</p>
-                <p className="font-bold">${tripDetails.budget}</p>
+                <p className="font-bold">{formatAmount(tripDetails.budget)}</p>
               </div>
               <div className="text-center">
                 <DollarSign className="w-5 h-5 mx-auto mb-1 opacity-80" />
                 <p className="text-sm opacity-80">Per Day</p>
-                <p className="font-bold">${dailyBudget}</p>
+                <p className="font-bold">{formatAmount(dailyBudget)}</p>
+
               </div>
             </div>
           </div>
