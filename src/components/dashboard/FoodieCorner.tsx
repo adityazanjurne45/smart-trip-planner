@@ -9,7 +9,7 @@ import {
   Filter, X
 } from "lucide-react";
 import { TripDetails } from "@/types/trip";
-import { getCurrencyForDestination } from "@/lib/currency";
+import { useCurrency } from "@/contexts/CurrencyContext";
 
 interface FoodItem {
   name: string;
@@ -146,7 +146,7 @@ const FoodieCorner = ({ tripDetails }: FoodieCornerProps) => {
   const [typeFilter, setTypeFilter] = useState<string>("all");
   const [showFilters, setShowFilters] = useState(false);
 
-  const currency = getCurrencyForDestination(tripDetails.destinationPoint);
+  const { formatPriceString } = useCurrency();
   const key = normalizeDestination(tripDetails.destinationPoint);
   const allFoods = key ? DESTINATION_FOODS[key] : getDefaultFoods(tripDetails.destinationPoint);
 
@@ -295,7 +295,7 @@ const FoodieCorner = ({ tripDetails }: FoodieCornerProps) => {
                       {TYPE_LABELS[food.type]}
                     </Badge>
                     <Badge variant="outline" className="text-[10px]">
-                      {currency.symbol}{food.priceRange}
+                      {formatPriceString(food.priceRange)}
                     </Badge>
                   </div>
 
