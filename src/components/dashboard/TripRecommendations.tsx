@@ -308,7 +308,7 @@ const TripRecommendations = ({
                     <div className="text-muted-foreground">Days</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-foreground">${tripDetails.budget}</div>
+                    <div className="text-2xl font-bold text-foreground"><Price value={tripDetails.budget} /></div>
                     <div className="text-muted-foreground">Budget</div>
                   </div>
                   <div className="text-center">
@@ -375,7 +375,7 @@ const TripRecommendations = ({
                 {recommendations.hotels.slice(0, 3).map((hotel, i) => (
                   <li key={i} className="text-sm text-muted-foreground flex items-center justify-between">
                     <span className="truncate">{hotel.name}</span>
-                    <span className="text-primary font-medium">{hotel.pricePerNight}</span>
+                    <span className="text-primary font-medium"><Price value={hotel.pricePerNight} /></span>
                   </li>
                 ))}
               </ul>
@@ -392,7 +392,7 @@ const TripRecommendations = ({
                 {recommendations.vehicles.map((vehicle, i) => (
                   <li key={i} className="text-sm text-muted-foreground flex items-center justify-between">
                     <span>{vehicle.type}</span>
-                    <span className="text-travel-forest font-medium">{vehicle.estimatedCost}</span>
+                    <span className="text-travel-forest font-medium"><Price value={vehicle.estimatedCost} /></span>
                   </li>
                 ))}
               </ul>
@@ -444,7 +444,7 @@ const TripRecommendations = ({
                       </div>
                       <div className="flex items-center gap-1 text-muted-foreground">
                         <DollarSign className="w-4 h-4" />
-                        {place.entryFee}
+                        <Price value={place.entryFee} />
                       </div>
                     </div>
                     <RecommendationReason reasons={getPlaceReasons(place)} />
@@ -480,7 +480,7 @@ const TripRecommendations = ({
                         <Star className="w-4 h-4 text-travel-gold fill-travel-gold" />
                         <span className="text-foreground font-medium">{hotel.rating}</span>
                       </div>
-                      <div className="text-primary font-semibold">{hotel.pricePerNight}/night</div>
+                      <div className="text-primary font-semibold"><Price value={hotel.pricePerNight} />/night</div>
                     </div>
                     <RecommendationReason reasons={getHotelReasons(hotel, tripDetails.budget, tripDetails.duration)} />
                   </div>
@@ -509,7 +509,7 @@ const TripRecommendations = ({
                   <div className="p-5">
                     <div className="flex items-center justify-between mb-2">
                       <h3 className="font-semibold text-foreground">{vehicle.type}</h3>
-                      <span className="text-primary font-semibold">{vehicle.estimatedCost}</span>
+                      <span className="text-primary font-semibold"><Price value={vehicle.estimatedCost} /></span>
                     </div>
                     <p className="text-muted-foreground text-sm mb-2">{vehicle.reason}</p>
                     <p className="text-xs text-muted-foreground">Best for: {vehicle.suitableFor}</p>
